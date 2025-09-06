@@ -1,0 +1,89 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card-link { color: inherit; text-decoration: none; display: block; }
+.card-link:hover .card-title { text-decoration: underline; }
+
+.card-media { aspect-ratio: 4 / 3; background: #0b0e14; display: grid; place-items: center; }
+.card-media img { width: 100%; height: 100%; object-fit: cover; }
+
+.card-body { padding: var(--space-3); }
+.card-title { font-size: 1rem; font-weight: 600; }
+
+/* Brand */
+.brand { display: inline-flex; align-items: center; gap: var(--space-3); color: inherit; text-decoration: none; }
+.brand:hover { text-decoration: none; }
+.brand__logo { border-radius: 8px; }
+.brand__name { font-weight: 700; letter-spacing: 0.2px; }
+
+/* Form grid for controls */
+.form-grid {
+  display: grid;
+  grid-template-columns: max-content var(--control-w, 220px);
+  align-items: center;
+  gap: var(--space-3) calc(var(--space-6));
+  margin: 0 auto;
+  max-width: 400px;
+}
+.form-grid > label { justify-self: start; }
+.form-grid > .control {
+  justify-self: end;
+  width: var(--control-w, 220px);
+}
+.form-grid input[type="range"].control { width: var(--control-w, 220px); }
+.form-grid input[type="color"].control { width: var(--control-w, 220px); height: 32px; padding: 0; }
+
+/* Styled numeric inputs for Rain Controls */
+.form-grid input[type="number"].control {
+  background: #3f48cc;
+  color: #ffffff;
+  border: 1px solid #3f48cc;
+  border-radius: var(--radius);
+  padding: var(--space-2);
+  caret-color: #ffffff;
+  color-scheme: dark; /* improves spinner contrast in supported browsers */
+}
+.form-grid input[type="number"].control::selection { background: rgba(255,255,255,0.25); }
+.form-grid input[type="number"].control:focus-visible {
+  outline: 2px solid #c8d7ff;
+  outline-offset: 2px;
+}
+/* Optional: tone down WebKit spin buttons to match the scheme */
+.form-grid input[type="number"].control::-webkit-outer-spin-button,
+.form-grid input[type="number"].control::-webkit-inner-spin-button {
+  filter: invert(1) contrast(1.2);
+}
+
+/* Teardrop toggle */
+.teardrop-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.teardrop-btn:hover { background: var(--bg-elev); }
+.teardrop-btn:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.teardrop-btn svg { transform: rotate(180deg); transform-origin: 50% 50%; }
+.teardrop-btn .drop { fill: #0f1115; stroke: #3f48cc; stroke-width: 2px; }
+.teardrop-btn.on .drop { fill: #3f48cc; stroke: #3f48cc; }
+.teardrop-btn.off .drop { fill: #0f1115; stroke: #3f48cc; }
+
+/* Hero */
+.hero { display: grid; place-items: center; padding: min(12vh, var(--space-8)) 0; text-align: center; }
+.hero-title { color: #ffffff; font-size: clamp(1.8rem, 4vw + 1rem, 3rem); font-weight: 800; letter-spacing: 0.3px; line-height: 1.2; font-family: 'Orbitron', 'Share Tech Mono', sans-serif; }

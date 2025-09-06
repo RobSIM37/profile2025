@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rob Lewis</title>
+    <meta name="description" content="Personal site for Rob Lewis" />
+    <link rel="stylesheet" href="styling/reset.css" />
+    <link rel="stylesheet" href="styling/base.css" />
+    <link rel="stylesheet" href="styling/components.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/IconTiny.png" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Skip to content</a>
+
+    <header class="site-header container">
+      <h1 class="site-title" id="brand"></h1>
+      <nav aria-label="Primary">
+        <ul class="nav">
+          <li><a data-route href="#/">Home</a></li>
+          <li><a data-route href="#/gallery">Gallery</a></li>
+          <li><a data-route href="#/contact">Contact</a></li>
+          <li><a data-route href="#/rain">Rain</a></li>
+          <li>
+            <button id="rain-toggle" class="teardrop-btn off" aria-label="Toggle Code Rain" aria-pressed="false" title="Code Rain: off">
+              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                <path class="drop" d="M12 2C8 2 5 5.5 5 9.5c0 5.2 7 12.2 7 12.2s7-7 7-12.2C19 5.5 16 2 12 2z" />
+              </svg>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="app" class="container" tabindex="-1"></main>
+
+    <footer class="site-footer container">
+      <small>&copy; <span id="year"></span> Rob Lewis</small>
+    </footer>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
