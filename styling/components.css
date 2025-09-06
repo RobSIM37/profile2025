@@ -28,6 +28,12 @@
 .brand__name { font-weight: 700; letter-spacing: 0.2px; }
 
 /* Form grid for controls */
+.form-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, max-content));
+  gap: var(--space-6);
+  justify-content: center;
+}
 .form-grid {
   display: grid;
   grid-template-columns: max-content var(--control-w, 220px);

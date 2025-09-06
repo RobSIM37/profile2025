@@ -15,9 +15,10 @@ export function render() {
     <h2>Code Rain Controls</h2>
     <p>Changes apply immediately.</p>
     <form class="stack" id="rain-form">
-      <div class="form-grid" style="--control-w: 120px;">
-        <label for="glyphSize">Glyph Size</label>
-        <input class="control" type="number" id="glyphSize" min="12" max="64" step="1" value="${num(opts.glyphSize, 24)}" />
+      <div class="form-columns">
+        <div class="form-grid" style="--control-w: 120px;">
+          <label for="glyphSize">Glyph Size</label>
+          <input class="control" type="number" id="glyphSize" min="12" max="64" step="1" value="${num(opts.glyphSize, 24)}" />
 
         <label for="dropsPerColumn">Drops / Column</label>
         <input class="control" type="number" id="dropsPerColumn" min="1" max="8" step="1" value="${num(opts.dropsPerColumn, 1)}" />
@@ -32,28 +33,31 @@ export function render() {
         <input class="control" type="number" id="trailMin" min="1" max="100" step="1" value="${num(opts.trailMin, 10)}" />
 
         <label for="trailMax">Trail Max (rows)</label>
-        <input class="control" type="number" id="trailMax" min="1" max="100" step="1" value="${num(opts.trailMax, 28)}" />
+          <input class="control" type="number" id="trailMax" min="1" max="100" step="1" value="${num(opts.trailMax, 28)}" />
+        </div>
 
-        <label for="minFade">Min Fade</label>
-        <input class="control" type="number" id="minFade" min="0.1" max="4" step="0.05" value="${num(opts.minFade, 0.8)}" />
+        <div class="form-grid" style="--control-w: 120px;">
+          <label for="minFade">Min Fade</label>
+          <input class="control" type="number" id="minFade" min="0.1" max="4" step="0.05" value="${num(opts.minFade, 0.8)}" />
 
-        <label for="maxFade">Max Fade</label>
-        <input class="control" type="number" id="maxFade" min="0.1" max="4" step="0.05" value="${num(opts.maxFade, 1.8)}" />
+          <label for="maxFade">Max Fade</label>
+          <input class="control" type="number" id="maxFade" min="0.1" max="4" step="0.05" value="${num(opts.maxFade, 1.8)}" />
 
-        <label for="headSwitchRate">Head Change</label>
-        <input class="control" type="range" id="headSwitchRate" min="0" max="1" step="0.001" value="${num(opts.headSwitchRate, 0.06)}" />
+          <label for="headSwitchRate">Head Change</label>
+          <input class="control" type="range" id="headSwitchRate" min="0" max="1" step="0.001" value="${num(opts.headSwitchRate, 0.06)}" />
 
-        <label for="switchRate">Trail Change</label>
-        <input class="control" type="range" id="switchRate" min="0" max="1" step="0.001" value="${num(opts.switchRate, 0.05)}" />
+          <label for="switchRate">Trail Change</label>
+          <input class="control" type="range" id="switchRate" min="0" max="1" step="0.001" value="${num(opts.switchRate, 0.05)}" />
 
-        <label for="colorHead">Head Color</label>
-        <input class="control" type="color" id="colorHead" value="${hex6(opts.colorHead || '#3f48cc')}" />
+          <label for="colorHead">Head Color</label>
+          <input class="control" type="color" id="colorHead" value="${hex6(opts.colorHead || '#3f48cc')}" />
 
-        <label for="colorTrail">Trail Color</label>
-        <input class="control" type="color" id="colorTrail" value="${hex6(opts.colorTrail || '#3f48cc')}" />
+          <label for="colorTrail">Trail Color</label>
+          <input class="control" type="color" id="colorTrail" value="${hex6(opts.colorTrail || '#3f48cc')}" />
 
-        <label for="background">Background</label>
-        <input class="control" type="color" id="background" value="${hex6(typeof opts.background === 'string' ? opts.background : '#0f1115')}" />
+          <label for="background">Background</label>
+          <input class="control" type="color" id="background" value="${hex6(typeof opts.background === 'string' ? opts.background : '#0f1115')}" />
+        </div>
       </div>
       <div style="display:flex; justify-content:center; margin-top: var(--space-6);">
         <button type="button" id="restore-defaults" class="button button-secondary">Restore Defaults</button>
