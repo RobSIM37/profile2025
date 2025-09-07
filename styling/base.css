@@ -42,6 +42,18 @@ a:hover { text-decoration: underline; }
   padding: 0 var(--space-4);
 }
 
+/* Allow content to break out of the container width when needed */
+.fullbleed {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
 .site-header, .site-footer {
   display: flex;
   align-items: center;

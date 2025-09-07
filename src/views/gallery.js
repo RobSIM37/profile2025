@@ -15,9 +15,7 @@ const ph = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='80
 </svg>`);
 
 const items = [
-  { title: 'Project One', img: `data:image/svg+xml,${ph}`, alt: 'Project One', link: '#/' },
-  { title: 'Project Two', img: `data:image/svg+xml,${ph}`, alt: 'Project Two', link: '#/' },
-  { title: 'Project Three', img: `data:image/svg+xml,${ph}`, alt: 'Project Three', link: '#/' },
+  { title: 'Pips Solver (Legacy)', img: `data:image/svg+xml,${ph}`, alt: 'Pips Solver', link: '#/gallery/pips-solver' },
 ];
 
 export function render() {
