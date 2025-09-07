@@ -6,7 +6,7 @@ export const meta = {
 export function render() {
   return `
     <section class="hero">
-      <h1 class="hero-title">I love coding beautiful things. I hope we can collaborate.</h1>
+      <h1 class="hero-title">I love coding beautiful things.<br>I hope we can collaborate.</h1>
     </section>
   `;
 }
