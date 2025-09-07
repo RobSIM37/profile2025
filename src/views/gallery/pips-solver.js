@@ -56,7 +56,9 @@ export function render() {
   return frag;
 }
 
+// Keep this list in sync with the modules that power the demo
 const FILES = [
+  'runner.js',
   'app.js',
   'src/constants.js',
   'src/controller.js',
@@ -90,7 +92,7 @@ function renderSourceBrowser(host){
     item.addEventListener('toggle', async () => {
       if (!item.open) return;
       try {
-        const res = await fetch(`src/views/gallery/pipsSolver/${path}`);
+        const res = await fetch(`src/views/gallery/pipsSolver/${path}`, { cache: 'no-cache' });
         const txt = await res.text();
         code.textContent = txt;
       } catch (e) {
