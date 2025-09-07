@@ -1,0 +1,16 @@
+# Legacy code imports (kept out of version control)
+docs/legacy/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Env/config (if ever added)
+.env
+.env.*
