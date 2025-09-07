@@ -16,6 +16,9 @@ export function initRouter({ routes, baseTitle = document.title }) {
     const app = document.getElementById('app');
     if (!app) return;
 
+    // Reset any view-specific inline styles on the app container
+    app.removeAttribute('style');
+
     const out = typeof mod.render === 'function' ? mod.render() : '';
     if (typeof out === 'string') {
       app.innerHTML = out;
@@ -46,4 +49,3 @@ export function initRouter({ routes, baseTitle = document.title }) {
 
   return { render };
 }
-

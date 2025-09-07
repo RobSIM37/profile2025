@@ -15,9 +15,7 @@ const ph = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='80
 </svg>`);
 
 const items = [
-  { title: 'Project One', img: `data:image/svg+xml,${ph}`, alt: 'Project One', link: '#/' },
-  { title: 'Project Two', img: `data:image/svg+xml,${ph}`, alt: 'Project Two', link: '#/' },
-  { title: 'Project Three', img: `data:image/svg+xml,${ph}`, alt: 'Project Three', link: '#/' },
+  { title: 'Pips Solver', img: 'assets/pipsSolverThumbnail.webp', alt: 'Pips Solver', link: '#/gallery/pips-solver' },
 ];
 
 export function render() {
@@ -41,7 +39,7 @@ export function render() {
   return `
     <section class="stack">
       <h2>Gallery</h2>
-      <p>A few highlights. Replace placeholders with real projects.</p>
+      <p>A few highlights from my projects.</p>
       <div class="grid">${cards}</div>
     </section>
   `;

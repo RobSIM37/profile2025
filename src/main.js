@@ -10,6 +10,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 const routes = {
   '/': async () => Landing,
   '/gallery': () => import('./views/gallery.js'),
+  '/gallery/pips-solver': () => import('./views/gallery/pips-solver.js'),
   '/contact': () => import('./views/contact.js'),
   '/rain': () => import('./views/coderain.js'),
   '/404': async () => ({
