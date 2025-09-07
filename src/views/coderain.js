@@ -43,9 +43,6 @@ export function render() {
           <label for="maxFade">Max Fade</label>
           <input class="control" type="number" id="maxFade" min="0.1" max="4" step="0.05" value="${num(opts.maxFade, 1.8)}" />
 
-          <label for="headSwitchRate">Head Change</label>
-          <input class="control" type="range" id="headSwitchRate" min="0" max="1" step="0.001" value="${num(opts.headSwitchRate, 0.06)}" />
-
           <label for="switchRate">Trail Change</label>
           <input class="control" type="range" id="switchRate" min="0" max="1" step="0.001" value="${num(opts.switchRate, 0.05)}" />
 
@@ -69,7 +66,7 @@ export function render() {
   // Wire up auto-update handlers after nodes exist
   queueMicrotask(() => {
     const fields = [
-      'glyphSize','dropsPerColumn','speedMin','speedMax','trailMin','trailMax','switchRate','headSwitchRate','minFade','maxFade','colorHead','colorTrail','background'
+      'glyphSize','dropsPerColumn','speedMin','speedMax','trailMin','trailMax','switchRate','minFade','maxFade','colorHead','colorTrail','background'
     ];
     section.addEventListener('input', (e) => {
       const t = e.target;
