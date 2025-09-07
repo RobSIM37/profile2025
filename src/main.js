@@ -11,6 +11,8 @@ const routes = {
   '/': async () => Landing,
   '/gallery': () => import('./views/gallery.js'),
   '/gallery/pips-solver': () => import('./views/gallery/pips-solver.js'),
+  '/gallery/timesweeper': () => import('./views/timesweeper/index.js'),
+  '/about': () => import('./views/about.js'),
   '/contact': () => import('./views/contact.js'),
   '/rain': () => import('./views/coderain.js'),
   '/404': async () => ({
@@ -37,8 +39,6 @@ const RAIN_OPTIONS = {
   colorTrail: '#3f48cc',
   // Flicker chance per trail glyph draw (0..1). You can also use `flicker`.
   switchRate: 0.05,
-  // Chance per frame the head glyph changes (0..1)
-  headSwitchRate: 0.1,
   // Speed in rows per second
   speedMin: 7,
   speedMax: 20,
