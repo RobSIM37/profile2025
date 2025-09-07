@@ -10,7 +10,6 @@ export function createCanvasRenderer(userOptions = {}) {
     background: 'auto', // 'auto' uses computed body background; or any CSS color
     fontFamily: 'monospace',
     switchRate: 0.1, // chance a trail glyph changes when drawn
-    headSwitchRate: 0.06, // chance the head glyph changes per frame
     speedMin: 8,
     speedMax: 18,
     trailMin: 8,
@@ -41,6 +40,14 @@ export function createCanvasRenderer(userOptions = {}) {
   let geom = { width: 0, height: 0, glyphSize: opts.glyphSize };
   let grid = createColumns({ width: 1, height: 1, glyphSize: opts.glyphSize, speedMin: opts.speedMin, speedMax: opts.speedMax, trailMin: opts.trailMin, trailMax: opts.trailMax, dropsPerColumn: opts.dropsPerColumn, minFade: opts.minFade, maxFade: opts.maxFade });
   let bgColor = 'transparent';
+  const pickDifferent = (prev) => {
+    let ch = randomChar(charSet);
+    if (charSet.length <= 1) return ch;
+    // ensure visible change on each new drop
+    let guard = 0;
+    while (ch === prev && guard++ < 5) ch = randomChar(charSet);
+    return ch;
+  };
 
   function resize() {
     const pr = dpr();
@@ -101,14 +108,15 @@ export function createCanvasRenderer(userOptions = {}) {
       for (const drop of col.drops) {
         drop.headRow += drop.speed * dt;
         const headRowI = Math.floor(drop.headRow);
+        // Change head glyph when the head advances to a new row
         if (drop.prevHeadRowI !== headRowI) {
-          if (Math.random() < opts.headSwitchRate) drop.headChar = randomChar(charSet);
+          drop.headChar = pickDifferent(drop.headChar);
           drop.prevHeadRowI = headRowI;
         }
         if (drop.headRow - drop.trail > rows) {
           // reset this drop above the screen via state helper
           grid.resetDrop(drop);
-          drop.headChar = randomChar(charSet);
+          drop.headChar = pickDifferent(drop.headChar);
         }
       }
 
@@ -128,7 +136,7 @@ export function createCanvasRenderer(userOptions = {}) {
       // Top up to max drops
       while (col.drops.length < opts.dropsPerColumn) {
         const d = grid.newDrop();
-        d.headChar = randomChar(charSet);
+        d.headChar = pickDifferent(undefined);
         col.drops.push(d);
       }
 

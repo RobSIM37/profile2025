@@ -1,11 +1,28 @@
 import { createCanvasRenderer } from './canvasRenderer.js';
 
+const STORAGE_KEY = 'coderain:options';
+
 let controller = null;
 let state = {
   enabled: true,
   options: {},
   defaults: {},
 };
+
+function loadStoredOptions() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const obj = JSON.parse(raw);
+    return typeof obj === 'object' && obj ? obj : {};
+  } catch {
+    return {};
+  }
+}
+
+function persistOptions(opts) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(opts || {})); } catch {}
+}
 
 export function mountCodeRain(options = {}) {
   // Allow a friendlier alias: `flicker` -> `switchRate`
@@ -17,11 +34,15 @@ export function mountCodeRain(options = {}) {
   if (typeof opts.dropsPerCoulm === 'number' && !('dropsPerColumn' in opts)) {
     opts.dropsPerColumn = opts.dropsPerCoulm;
   }
-  controller = createCanvasRenderer(opts);
+  // Merge any stored preferences on top of provided defaults
+  const stored = loadStoredOptions();
+  const merged = { ...opts, ...stored };
+  controller = createCanvasRenderer(merged);
   controller.mount(document.body);
-  state.options = { ...state.options, ...opts };
+  state.options = { ...state.options, ...merged };
   state.defaults = { ...opts };
   state.enabled = true;
+  persistOptions(state.options);
   return controller;
 }
 
@@ -46,13 +67,13 @@ export function setOptions(partial) {
   if (typeof next.trailMax === 'number') next.trailMax = clamp(next.trailMax, 1, 120);
   if (next.trailMax < next.trailMin) next.trailMax = next.trailMin;
   if (typeof next.switchRate === 'number') next.switchRate = clamp(next.switchRate, 0, 1);
-  if (typeof next.headSwitchRate === 'number') next.headSwitchRate = clamp(next.headSwitchRate, 0, 1);
   if (typeof next.minFade === 'number') next.minFade = clamp(next.minFade, 0.1, 4);
   if (typeof next.maxFade === 'number') next.maxFade = clamp(next.maxFade, 0.1, 4);
   if (next.maxFade < next.minFade) next.maxFade = next.minFade;
 
   state.options = next;
   if (controller) controller.update(state.options);
+  persistOptions(state.options);
 }
 
 export function setEnabled(enabled) {
@@ -74,6 +95,7 @@ export function getEnabled() {
 export function resetOptions() {
   if (!state.defaults) return;
   setOptions({ ...state.defaults });
+  try { localStorage.removeItem(STORAGE_KEY); } catch {}
 }
 
 export function getDefaults() {

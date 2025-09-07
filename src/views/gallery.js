@@ -15,7 +15,18 @@ const ph = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='80
 </svg>`);
 
 const items = [
-  { title: 'Pips Solver', img: 'assets/pipsSolverThumbnail.webp', alt: 'Pips Solver', link: '#/gallery/pips-solver' },
+  {
+    title: 'Pips Solver',
+    tagline: 'A tool for solving the NYT Game "Pips"',
+    img: 'assets/pipsSolverThumbnail.webp',
+    link: '#/gallery/pips-solver',
+  },
+  {
+    title: 'Timesweeper',
+    tagline: 'Minesweeper with TIMED twist!',
+    img: 'assets/timesweeperThumbnail.webp',
+    link: '#/gallery/timesweeper',
+  },
 ];
 
 export function render() {
@@ -25,10 +36,11 @@ export function render() {
       <article class="card">
         <a href="${i.link}" class="card-link">
           <div class="card-media">
-            <img loading="lazy" src="${i.img}" alt="${i.alt}" />
+            <img loading="lazy" src="${i.img}" alt="${i.tagline || i.title}" onerror="this.onerror=null; this.src='data:image/svg+xml,${ph}';" />
           </div>
           <div class="card-body">
             <h3 class="card-title">${i.title}</h3>
+            ${i.tagline ? `<p class=\"card-tagline\">${i.tagline}</p>` : ''}
           </div>
         </a>
       </article>

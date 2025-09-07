@@ -12,6 +12,9 @@ export function render() {
     // Expand the blue frame to fit content width when needed
     appEl.style.maxWidth = 'none';
     appEl.style.width = 'max-content';
+    // Fill the entire blue-border area with a solid backdrop
+    appEl.style.background = 'var(--bg)';
+    appEl.style.color = 'var(--text)';
   }
 
   const wrap = document.createElement('section');
