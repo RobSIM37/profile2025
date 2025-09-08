@@ -34,6 +34,7 @@ export function render() {
       <h3 id="ts-modal-title">Game Over</h3>
       <div class="ts-modal-body">
         <div id="ts-stats-block">
+          <p>Solve Time: <span id="ts-solve">--:--</span></p>
           <p>Best Time: <span id="ts-best">--:--</span></p>
           <p>Wins: <span id="ts-wins">0</span> &nbsp; Losses: <span id="ts-losses">0</span> &nbsp; Win%: <span id="ts-winpct">0%</span></p>
         </div>
@@ -106,6 +107,7 @@ export function render() {
   const flagsEl = $('#ts-flags');
   const fuseEl = $('#ts-fuse');
   const bestEl = $('#ts-best');
+  const solveEl = $('#ts-solve');
   const winsEl = $('#ts-wins');
   const lossesEl = $('#ts-losses');
   const winpctEl = $('#ts-winpct');
@@ -282,9 +284,19 @@ export function render() {
       const s = readStats();
       s.wins = (s.wins|0) + (won?1:0);
       s.losses = (s.losses|0) + (!won?1:0);
-      if (won) s.best = Math.min(s.best||Infinity, elapsed);
+      if (solveEl) solveEl.textContent = fmt(elapsed);
+      const prevBest = s.best||Infinity;
+      if (won) s.best = Math.min(prevBest, elapsed);
       writeStats(s);
       bestEl.textContent = fmt(s.best||0);
+      // Highlight Best Time if new record for this preset
+      if (won && elapsed < prevBest) {
+        bestEl.style.color = '#3f48cc';
+        bestEl.style.fontWeight = '800';
+      } else {
+        bestEl.style.color = '';
+        bestEl.style.fontWeight = '';
+      }
       winsEl.textContent = String(s.wins||0);
       lossesEl.textContent = String(s.losses||0);
       const total = (s.wins|0) + (s.losses|0);

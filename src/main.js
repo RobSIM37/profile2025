@@ -12,6 +12,7 @@ const routes = {
   '/gallery': () => import('./views/gallery.js'),
   '/gallery/pips-solver': () => import('./views/gallery/pips-solver.js'),
   '/gallery/timesweeper': () => import('./views/timesweeper/index.js'),
+  '/gallery/knock-it-off': () => import('./views/knockitoff/index.js'),
   '/about': () => import('./views/about.js'),
   '/contact': () => import('./views/contact.js'),
   '/rain': () => import('./views/coderain.js'),

@@ -27,6 +27,12 @@ const items = [
     img: 'assets/timesweeperThumbnail.webp',
     link: '#/gallery/timesweeper',
   },
+  {
+    title: 'Knock It Off!',
+    tagline: 'Be the last checker standing',
+    img: 'assets/knockItOffThumbnail.png',
+    link: '#/gallery/knock-it-off',
+  },
 ];
 
 export function render() {
