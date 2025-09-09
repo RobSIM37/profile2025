@@ -1,5 +1,6 @@
-import { Modes } from "./constants.js";
+﻿import { Modes } from "./constants.js";
 import { el, btn, primaryBtn, makeHinter } from "./utils/ui.js";
+import { makeTabs } from "../../../../components/ui/tabs.js";
 
 export default class Sidebar {
   constructor({ onModeChange, onSolve, onReset } = {}){
@@ -12,31 +13,28 @@ export default class Sidebar {
     this._panelWrap = null;
     this._hint = null;
     this._ctx = null;
+    this._tabs = null;
   }
 
   mount(container){
     const root = el('aside', null, 'pips-sidebar');
-    const tabs = el('div', null, 'tabs');
     const wrap = el('div', null, 'panel');
     const footer = el('div', null, 'sidebar-footer');
-    // Hint element is now provided externally (next to controls).
-    // Keep footer for layout spacing, but do not render a hint here.
 
-    const mkTab = (label, mode) => {
-      const b = el('button', label, 'pips-tab');
-      if (this.mode === mode) b.classList.add('is-active');
-      b.addEventListener('click', ()=>{ this.setMode(mode); });
-      tabs.append(b);
-    };
-    mkTab(Modes.DefineBoard, Modes.DefineBoard);
-    mkTab(Modes.DefineArea, Modes.DefineArea);
-    mkTab(Modes.AddDomino, Modes.AddDomino);
+    // Shared Tabs header (extracted)
+    const items = [
+      { id: Modes.DefineBoard, label: Modes.DefineBoard },
+      { id: Modes.DefineArea,  label: Modes.DefineArea },
+      { id: Modes.AddDomino,   label: Modes.AddDomino },
+    ];
+    const tabs = makeTabs({ items, activeId: this.mode, onChange: (id) => this.setMode(id) });
 
-    root.append(tabs, wrap, footer);
+    root.append(tabs.root, wrap, footer);
     container.innerHTML = '';
     container.append(root);
     this.root = root;
     this._panelWrap = wrap;
+    this._tabs = tabs;
   }
 
   setHintEl(el){
@@ -45,11 +43,8 @@ export default class Sidebar {
 
   setMode(mode){
     this.mode = mode; this.onModeChange?.(mode);
-    // update tabs
-    const is = (label)=> label === mode;
-    this.root?.querySelectorAll('.pips-tab')?.forEach(b => {
-      b.classList.toggle('is-active', is(b.textContent));
-    });
+    // sync header tabs
+    this._tabs?.setActive?.(this.mode, false);
     this.renderPanels(this._ctx || {});
   }
 

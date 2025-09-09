@@ -1,4 +1,5 @@
-import { el, btn, input } from "../utils/ui.js";
+﻿import { el, btn } from "../utils/ui.js";
+import { numberField } from '../../../../../components/ui/inputs.js';
 
 export default class BoardToolsPanel {
   constructor({ onClearAll, onFillAll, onApplyGrid } = {}) {
@@ -15,9 +16,9 @@ export default class BoardToolsPanel {
   render({ puzzle, grid }){
     const c = this.root; c.innerHTML = "";
     const size = el("div", null, "section");
-    const wi = input("number","Width", String(grid?.width ?? 8));
-    const hi = input("number","Height", String(grid?.height ?? 8));
-    const ci = input("number","Cell px", String(grid?.cellSize ?? 48));
+    const wi = numberField({ id: 'pips-grid-w', label: 'Width', value: String(grid?.width ?? 8), min: 1, max: 24 });
+    const hi = numberField({ id: 'pips-grid-h', label: 'Height', value: String(grid?.height ?? 8), min: 1, max: 24 });
+    const ci = numberField({ id: 'pips-grid-cs', label: 'Cell px', value: String(grid?.cellSize ?? 48), min: 24, max: 96 });
     this._w = wi.input; this._h = hi.input; this._cs = ci.input;
     this._w.min="1"; this._h.min="1"; this._cs.min="24";
     this._w.max="24"; this._h.max="24"; this._cs.max="96";
@@ -51,3 +52,5 @@ function clampInt(v, min, max, fallback){
   if (Number.isFinite(n)) return Math.min(max, Math.max(min, n));
   return fallback;
 }
+
+

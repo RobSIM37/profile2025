@@ -301,3 +301,28 @@
 .ts-config-grid .button.small { padding: 4px 8px; font-size: 12px; }
 .ts-config-grid .ts-fuse { display: inline-grid; grid-template-columns: 1fr max-content 1fr; gap: 6px; align-items: center; }
 .ts-modal .hidden { display: none !important; }
+
+/* Generic gallery demo pane (no white padding) */
+.gallery-demo-pane { background: transparent; padding: 0; border-radius: 0; }
+
+/* Shared input field layout */
+.ui-field { display: grid; grid-template-columns: max-content var(--control-w, 220px); align-items: center; gap: var(--space-3) calc(var(--space-6)); }
+.ui-field > label { justify-self: start; color: var(--muted); font-size: 12px; }
+.ui-control { justify-self: end; width: var(--control-w, 220px); }
+.ui-control > .control { width: 100%; }
+/* Default number input appearance matching site theme */
+.ui-control input[type="number"].control { background: var(--primary); color: #ffffff; border: 1px solid var(--primary); border-radius: var(--radius); padding: var(--space-2); caret-color: #ffffff; color-scheme: dark; }
+.ui-control input[type="number"].control::selection { background: rgba(255,255,255,0.25); }
+.ui-control input[type="number"].control:focus-visible { outline: 2px solid #c8d7ff; outline-offset: 2px; }
+.ui-control input[type="number"].control::-webkit-outer-spin-button,
+.ui-control input[type="number"].control::-webkit-inner-spin-button { filter: invert(1) contrast(1.2); }
+
+/* Pips Solver: square number fields in Board panel */
+.pips-sidebar .ui-control input.control { border-radius: 6px; }
+/* Pips Sidebar: align input edges to container */
+.pips-sidebar .ui-field { grid-template-columns: 120px 1fr; gap: 6px 12px; }
+.pips-sidebar .ui-control { justify-self: stretch; width: 100%; }
+.pips-sidebar .ui-control > .control { width: 100%; box-sizing: border-box; }
+/* Ensure bullet dots for About Patch list */
+#patch-list ul { list-style: disc; padding-left: 18px; }
+#patch-list li { margin-left: 0; }

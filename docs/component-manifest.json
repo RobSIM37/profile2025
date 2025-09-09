@@ -1,0 +1,59 @@
+﻿{
+  "components": [
+    {
+      "name": "Button",
+      "path": "src/components/ui/button.js",
+      "kind": "html-string-factory",
+      "signature": "Button({ id?, label, variant?, size?, attrs?, type? }) -> string",
+      "returns": "HTML string for a styled <button>",
+      "notes": "variant: 'secondary' supported; size: 'small'|'sm' adds .small"
+    },
+    {
+      "name": "makeTabs",
+      "path": "src/components/ui/tabs.js",
+      "kind": "dom-factory",
+      "signature": "makeTabs({ items: [{id,label}], activeId?, onChange? }) -> { root, setActive(id,emit?), getActive() }",
+      "returns": "Tabs header element + control methods",
+      "styles": [".tabs", ".pips-tab", ".is-active"],
+      "notes": "Reusable across pages; items ids drive tab selection"
+    },
+    {
+      "name": "numberField",
+      "path": "src/components/ui/inputs.js",
+      "kind": "field-factory",
+      "signature": "numberField({ id?, label?, value?, min?, max?, step? }) -> { wrapper, input }",
+      "returns": "Labeled numeric input with .ui-field/.ui-control structure",
+      "styles": [".ui-field", ".ui-control", "input.control"],
+      "notes": "Attach listeners to returned input; append wrapper into layouts"
+    },
+    {
+      "name": "openModal",
+      "path": "src/components/ui/modal.js",
+      "kind": "dom-factory",
+      "signature": "openModal({ title, body (string|Element), actions: [{label,variant,onClick}]?, onClose? }) -> { close }",
+      "returns": "Overlay modal; call close() to dismiss",
+      "notes": "Actions auto-close after onClick; Escape closes"
+    },
+    {
+      "name": "FaceIcon",
+      "path": "src/components/ui/faceIcon.js",
+      "kind": "svg-factory",
+      "signature": "FaceIcon('smiley'|'frowny', { size?, strokeWidth? }) -> SVGElement",
+      "returns": "SVG element",
+      "notes": "Colors follow built-in palette"
+    },
+    {
+      "name": "Card",
+      "path": "src/components/ui/card.js",
+      "kind": "html-string-factory",
+      "signature": "Card({ title, tagline?, img, link, alt? }) -> string",
+      "returns": "HTML string for gallery card",
+      "notes": "Used in gallery grid"
+    }
+  ],
+  "conventions": {
+    "styling": [".button", ".button-secondary", ".ui-field", ".ui-control", "--radius", "--border"],
+    "routing": "src/consts/routes.js lazy imports",
+    "patchNotes": "Use PatchEntry(date, iter, bullets) in About page; newest first; only user-visible outcomes"
+  }
+}

@@ -1,0 +1,96 @@
+﻿import { meta as startMeta, render as renderStart } from './start.js';
+
+export const meta = {
+  title: 'Knock It Off!',
+  description: startMeta?.description || 'Be the last checker standing',
+};
+
+export function render() {
+  const frag = document.createDocumentFragment();
+
+  const chrome = document.createElement('section');
+  chrome.className = 'stack';
+  const tabs = document.createElement('div');
+  tabs.className = 'pips-tabs';
+  const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button';
+  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary';
+  tabs.append(demoBtn, srcBtn);
+
+  const demoPane = document.createElement('div');
+  demoPane.className = 'gallery-demo-pane';
+  const srcPane = document.createElement('div');
+  srcPane.className = 'pips-src-pane';
+  srcPane.style.display = 'none';
+
+  // Mount existing Start view
+  const startFrag = renderStart();
+  demoPane.append(startFrag);
+
+  chrome.append(tabs, demoPane, srcPane);
+  frag.append(chrome);
+
+  const showDemo = () => {
+    srcPane.style.display = 'none';
+    demoPane.style.display = '';
+    demoBtn.className = 'button';
+    srcBtn.className = 'button button-secondary';
+  };
+  const showSrc = () => {
+    demoPane.style.display = 'none';
+    srcPane.style.display = '';
+    demoBtn.className = 'button button-secondary';
+    srcBtn.className = 'button';
+    renderKioSourceBrowser(srcPane);
+  };
+  demoBtn.addEventListener('click', function(e){ e.preventDefault(); showDemo(); });
+  srcBtn.addEventListener('click', function(e){ e.preventDefault(); showSrc(); });
+  showDemo();
+
+  return frag;
+}
+
+const KIO_FILES = [
+  // top-level
+  'index.js','start.js','game.js','howto.js','masks.js','rules.js','state.js',
+  // subfolders
+  'ai/evaluate.js','ai/memory.js','ai/profiles.js','ai/turns.js',
+  'engine/directions.js','engine/moves.js',
+  'flow/autostart.js','flow/startGame.js',
+  'play/perform.js',
+  'setup/phase.js','setup/planner.js',
+  'ui/inputs.js','ui/racks.js','ui/renderers.js','ui/setupBoard.js',
+  'util/players.js',
+];
+
+function renderKioSourceBrowser(host){
+  host.innerHTML = '';
+  const list = document.createElement('div');
+  list.className = 'stack';
+  const note = document.createElement('p');
+  note.textContent = 'Source files under src/views/gallery/knockitoff/';
+  list.append(note);
+  KIO_FILES.forEach(function(path){
+    const item = document.createElement('details');
+    const sum = document.createElement('summary');
+    sum.textContent = path;
+    item.append(sum);
+    const pre = document.createElement('pre');
+    const code = document.createElement('code');
+    code.textContent = 'Loading…';
+    pre.append(code);
+    item.append(pre);
+    item.addEventListener('toggle', async function(){
+      if (!item.open) return;
+      try {
+        const res = await fetch('src/views/gallery/knockitoff/' + path, { cache: 'no-cache' });
+        const txt = await res.text();
+        code.textContent = txt;
+      } catch (e) {
+        code.textContent = 'Unable to load file in this context.';
+      }
+    }, { once: true });
+    list.append(item);
+  });
+  host.append(list);
+}
+

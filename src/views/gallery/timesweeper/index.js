@@ -1,4 +1,4 @@
-import { initBoard, reveal, chord, toggleFlag, isWin, isLoss, flagsLeft, revealAllMines } from './engine.js';
+﻿import { initBoard, reveal, chord, toggleFlag, isWin, isLoss, flagsLeft, revealAllMines } from './engine.js';
 import { Button } from '../../../components/ui/button.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 import { readStats as tsReadStats, writeStats as tsWriteStats } from '../../../features/timesweeper/stats.js';
@@ -61,19 +61,19 @@ export function render() {
       <div class="ts-modal-body">
         <div class="ts-config-grid">
           <label for="cfg-w">Width</label>
-          <input id="cfg-w" type="number" min="5" max="40" value="30" />
+          <input id="cfg-w" class="control" type="number" min="5" max="40" value="30" />
           <label for="cfg-h">Height</label>
-          <input id="cfg-h" type="number" min="5" max="24" value="16" />
+          <input id="cfg-h" class="control" type="number" min="5" max="24" value="16" />
           <label for="cfg-m">Mines</label>
           <div class="ts-mines-row">
-            <input id="cfg-m" type="number" min="1" max="200" value="99" />
+            <input id="cfg-m" class="control" type="number" min="1" max="200" value="99" />
             <button type="button" id="cfg-m-max" class="button button-secondary small">Max: <span id="cfg-m-maxv">--</span></button>
           </div>
           <label for="cfg-mm">Time Bomb Time</label>
           <div class="ts-fuse">
-            <input id="cfg-mm" type="number" min="0" max="59" value="1" />
+            <input id="cfg-mm" class="control" type="number" min="0" max="59" value="1" />
             <span>:</span>
-            <input id="cfg-ss" type="number" min="0" max="59" value="00" />
+            <input id="cfg-ss" class="control" type="number" min="0" max="59" value="00" />
           </div>
         </div>
       </div>
@@ -379,3 +379,4 @@ export function render() {
   newGame();
   return frag;
 }
+
