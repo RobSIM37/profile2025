@@ -1,4 +1,5 @@
 import { setAppTransparent } from '../lib/appShell.js';
+import { GALLERY_ITEMS } from '../consts/galleryItems.js';
 import { Card } from '../components/ui/card.js';
 
 export const meta = {
@@ -17,26 +18,7 @@ const ph = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='80
   <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#7cb3ff' font-size='32' font-family='Segoe UI, Roboto, Arial'>Placeholder</text>
 </svg>`);
 
-const items = [
-  {
-    title: 'Pips Solver',
-    tagline: 'A tool for solving the NYT Game "Pips"',
-    img: 'assets/pipsSolverThumbnail.webp',
-    link: '#/gallery/pips-solver',
-  },
-  {
-    title: 'Timesweeper',
-    tagline: 'Minesweeper with TIMED twist!',
-    img: 'assets/timesweeperThumbnail.webp',
-    link: '#/gallery/timesweeper',
-  },
-  {
-    title: 'Knock It Off!',
-    tagline: 'Be the last checker standing',
-    img: 'assets/knockItOffThumbnail.png',
-    link: '#/gallery/knock-it-off',
-  },
-];
+const items = GALLERY_ITEMS;
 
 export function render() {
   setAppTransparent();

@@ -1,7 +1,10 @@
 import { initBoard, reveal, chord, toggleFlag, isWin, isLoss, flagsLeft, revealAllMines } from './engine.js';
 import { Button } from '../../components/ui/button.js';
 import { setAppSolid } from '../../lib/appShell.js';
-import { getJSON, setJSON } from '../../lib/storage.js';
+import { readStats as tsReadStats, writeStats as tsWriteStats } from '../../features/timesweeper/stats.js';
+import { readFuse as tsReadFuse, writeFuse as tsWriteFuse, startingFuseMs } from '../../features/timesweeper/fuse.js';
+import { PRESETS } from '../../consts/timesweeper.js';
+import { formatTenths } from '../../lib/format.js';
 
 export const meta = {
   title: 'Timesweeper',
@@ -112,9 +115,8 @@ export function render() {
   const winpctEl = $('#ts-winpct');
 
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v|0));
-  const statsKey = () => `timesweeper:stats:${W}x${H}x${M}`;
-  const readStats = () => getJSON(statsKey(), {}) || {};
-  const writeStats = (s) => setJSON(statsKey(), s);
+  const readStats = () => tsReadStats(W, H, M);
+  const writeStats = (s) => tsWriteStats(W, H, M, s);
   const fmt = (ms) => {
     if (!ms || ms <= 0) return '--:--.-';
     const tenths = Math.floor(ms / 100);
@@ -124,9 +126,8 @@ export function render() {
     const ss = String(s % 60).padStart(2, '0');
     return `${m}:${ss}.${t}`;
   };
-  const fuseKey = 'timesweeper:customFuse';
-  function readFuse(){ return getJSON(fuseKey, {}) || {}; }
-  function writeFuse(obj){ setJSON(fuseKey, obj); }
+  function readFuse(){ return tsReadFuse(); }
+  function writeFuse(obj){ tsWriteFuse(obj); }
 
   function syncStats() {
     flagsEl.textContent = String(flagsLeft(board, M));
@@ -144,18 +145,10 @@ export function render() {
     fuseEl.classList.toggle('running', !defused);
   }
 
-  function startingFuseMs() {
-    if (difficulty === 'Custom') {
-      const f = readFuse();
-      const mm = Math.max(0, (f.mm|0));
-      const ss = Math.max(0, Math.min(59, (f.ss|0)));
-      return Math.max(1000, (mm*60+ss)*1000);
-    }
+  function startingFuseMsLocal() {
     const s = readStats();
-    const defaults = { Easy: 60000, Intermediate: 180000, Hard: 300000 };
-    const fallback = defaults[difficulty] ?? 60000;
-    const best = s.best && isFinite(s.best) && s.best>0 ? s.best : fallback;
-    return best;
+    const best = s.best && isFinite(s.best) && s.best>0 ? s.best : undefined;
+    return startingFuseMs(difficulty, best);
   }
 
   function updateDifficultyUI() {
@@ -200,7 +193,7 @@ export function render() {
     if (timerId) { clearInterval(timerId); timerId = 0; }
     board = initBoard(W, H);
     modal.classList.add('hidden');
-    fuseTotalMs = startingFuseMs();
+    fuseTotalMs = startingFuseMsLocal();
     fuseRemainingMs = fuseTotalMs;
     fuseDefused = false;
     setFuseDisplay(fuseRemainingMs, fuseDefused);
@@ -283,11 +276,11 @@ export function render() {
       const s = readStats();
       s.wins = (s.wins|0) + (won?1:0);
       s.losses = (s.losses|0) + (!won?1:0);
-      if (solveEl) solveEl.textContent = fmt(elapsed);
+      if (solveEl) solveEl.textContent = formatTenths(elapsed);
       const prevBest = s.best||Infinity;
       if (won) s.best = Math.min(prevBest, elapsed);
       writeStats(s);
-      bestEl.textContent = fmt(s.best||0);
+      bestEl.textContent = formatTenths(s.best||0);
       // Highlight Best Time if new record for this preset
       if (won && elapsed < prevBest) {
         bestEl.style.color = 'var(--primary)';

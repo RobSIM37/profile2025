@@ -3,7 +3,14 @@ import { createGame, nextTurn } from './state.js';
 import { Button } from '../../components/ui/button.js';
 import { FaceIcon } from '../../components/ui/faceIcon.js';
 import { openModal } from '../../components/ui/modal.js';
+import { AI_PROFILES } from './ai/profiles.js';
+import { ensureAIMemory as ensureAIMemoryMod, rememberOwn as rememberOwnMod, forgetExpired as forgetExpiredMod } from './ai/memory.js';
 import { setAppSolid } from '../../lib/appShell.js';
+import { idxToXY, xyToIdx, inBounds, collectOccupiedAlong, simulateMove as simMoveCore, listLegalMovesForColor as listMovesCore } from './engine/moves.js';
+import { planAIPlacements as planAIPlacementsCore, revealAIPlacements as revealAIPlacementsCore, maybeAutoFillBlanks as maybeAutoFillBlanksCore, isBoardPopulated as isBoardPopulatedUI, isBoardReady } from './setup/planner.js';
+import { chooseAIMove as chooseAIMoveCore, getAIProfileForColor as getAIProfileForColorCore } from './ai/evaluate.js';
+import { drawBoardFromMask, paintBoard as paintBoardUI, clearDirMarkers as clearDirMarkersUI, showMoveArrow as showMoveArrowUI, removeMoveArrow as removeMoveArrowUI, renderSideRacks as renderSideRacksUI, renderLog as renderLogUI, ensurePlayLayout as ensurePlayLayoutUI, teardownPlayLayout as teardownPlayLayoutUI, syncLogHeight as syncLogHeightUI } from './ui/renderers.js';
+import { enableHumanSelect as enableHumanSelectUI, enableSetupDnD as enableSetupDnDUI } from './ui/inputs.js';
 
 export const meta = {
   title: 'Knock It Off!',
@@ -186,151 +193,40 @@ export function render() {
     gameState = st;
     gameState.phase = 'setup';
     const humanColors = gameState.players.filter(p=>p.type==='human').map(p=>p.color);
-    gameState.setup = { humanColors, index: 0 };
+    // Track setup prerequisites so we can transition to play only when both are done
+    gameState.setup = { humanColors, index: 0, humanPlacementDone: false, aiRevealDone: false };
     renderRacks(gameState);
     planAIPlacements();
     revealAIPlacements();
   }
 
-  // ---------- AI difficulty profiles (first pass) ----------
-  const AI_PROFILES = {
-    easy: {
-      knockWeights: { frowny: 8, smiley: 0, blank: 1 },
-      smileyPenalty: 6,
-      targetWeakestWeight: 1.0, // penalize hitting opponents with fewer smileys
-      originEdgePenalty: 0.2,
-      endEdgePenalty: 0.4,
-      centerControl: 0.5,
-      lookaheadDepth: 0,
-      lookaheadFactor: 0.0,
-      noise: 0.8,
-      recallMoves: 2,
-      moveFrownyPenalty: 8,
-      moveSmileyPenalty: 3,
-      placeCenterExp: 0.8,
-      placeEdgeExp: 0.8,
-    },
-    medium: {
-      knockWeights: { frowny: 12, smiley: 0, blank: 1.5 },
-      smileyPenalty: 10,
-      targetWeakestWeight: 1.8,
-      originEdgePenalty: 0.4,
-      endEdgePenalty: 0.8,
-      centerControl: 1.0,
-      lookaheadDepth: 1,
-      lookaheadFactor: 0.5,
-      noise: 0.35,
-      recallMoves: 6,
-      moveFrownyPenalty: 12,
-      moveSmileyPenalty: 5,
-      placeCenterExp: 1.2,
-      placeEdgeExp: 1.2,
-    },
-    hard: {
-      knockWeights: { frowny: 16, smiley: 0, blank: 2 },
-      smileyPenalty: 14,
-      targetWeakestWeight: 2.4,
-      originEdgePenalty: 0.8,
-      endEdgePenalty: 1.2,
-      centerControl: 1.6,
-      lookaheadDepth: 2,
-      lookaheadFactor: 0.8,
-      noise: 0.1,
-      recallMoves: 999,
-      moveFrownyPenalty: 16,
-      moveSmileyPenalty: 7,
-      placeCenterExp: 1.6,
-      placeEdgeExp: 1.6,
-    },
-  };
+  // AI profiles are imported from ./ai/profiles.js
 
   // AI memory of own specials by color
-  function ensureAIMemory() {
-    if (!gameState.aiMemory) gameState.aiMemory = {};
-  }
-  function rememberOwn(color, idx, kind) {
-    ensureAIMemory();
-    if (!gameState.aiMemory[color]) gameState.aiMemory[color] = new Map();
-    gameState.aiMemory[color].set(idx, { kind, turn: gameState.turn.turns });
-  }
-  function forgetExpired(color, profile) {
-    ensureAIMemory();
-    const m = gameState.aiMemory[color]; if (!m) return;
-    const maxAge = profile.recallMoves ?? 0;
-    if (maxAge <= 0) { m.clear(); return; }
-    for (const [idx, rec] of m.entries()) {
-      if ((gameState.turn.turns - (rec.turn||0)) > maxAge) m.delete(idx);
-    }
-  }
+  const ensureAIMemory = () => ensureAIMemoryMod(gameState);
+  const rememberOwn = (color, idx, kind) => rememberOwnMod(gameState, color, idx, kind);
+  const forgetExpired = (color, profile) => forgetExpiredMod(gameState, color, profile);
 
-  // Small checker icon for logs and UI: returns a span with chip color and optional face SVG
-  function createCheckerIcon(kind, color, size = 18) {
-    const wrap = document.createElement('span');
-    wrap.className = `kio-piece face-down kio-${color}`;
-    wrap.style.width = `${size}px`;
-    wrap.style.height = `${size}px`;
-    if (kind === 'smiley' || kind === 'frowny') {
-      const innerSize = Math.max(12, size - 6);
-      wrap.appendChild(FaceIcon(kind, { size: innerSize, strokeWidth: 2.2 }));
-    }
-    return wrap;
-  }
+  // (removed unused createCheckerIcon; renderers handle icons)
 
   function draw(mask) {
-    const grid = maskToGrid(mask);
-    boardEl.innerHTML = '';
-    grid.forEach((cell, idx) => {
-      const sq = document.createElement('div');
-      sq.className = 'kio-cell';
-      // checkerboard background for readability
-      const x = idx % 8, y = Math.floor(idx / 8);
-      sq.classList.add(((x + y) % 2 === 0) ? 'light' : 'dark');
-      if (cell && cell !== '.') {
-        const dot = document.createElement('span');
-        dot.className = `kio-dot kio-${cell}`;
-        dot.title = COLORS[cell];
-        // mark allowed color for drag validation
-        sq.dataset.color = cell;
-        sq.append(dot);
-      }
-      sq.dataset.index = String(idx);
-      boardEl.append(sq);
-    });
+    // Render mask using shared renderer
+    drawBoardFromMask(boardEl, mask);
 
-    // Wire board-level DnD delegation once (used only during setup phase)
-    if (!boardEl.__kioDnDWired) {
-      boardEl.__kioDnDWired = true;
-      const getCellFromEvent = (e) => (e.target instanceof Element) ? e.target.closest('.kio-cell') : null;
-      const getIndex = (cellEl) => Number(cellEl?.dataset.index ?? '-1');
-      const isAllowed = (cellEl) => {
-        if (!gameState || !cellEl) return false;
-        if (gameState.phase !== 'setup') return false;
-        const idx2 = getIndex(cellEl);
-        const human = getActiveSetupHuman();
-        return Boolean(human && cellEl.dataset.color === human.color && !gameState.board.cells[idx2]);
-      };
-      boardEl.addEventListener('dragover', (e) => {
-        if (gameState?.phase !== 'setup') return;
-        const cellEl = getCellFromEvent(e);
-        if (isAllowed(cellEl)) {
-          e.preventDefault();
-          if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-          cellEl.classList.add('kio-drop-hover');
-        }
-      }, true);
-      boardEl.addEventListener('dragleave', (e) => {
-        if (gameState?.phase !== 'setup') return;
-        const cellEl = getCellFromEvent(e);
-        cellEl?.classList.remove('kio-drop-hover');
-      });
-      boardEl.addEventListener('drop', (e) => {
-        if (!gameState || gameState.phase !== 'setup') return;
-        const cellEl = getCellFromEvent(e);
-        if (!cellEl) return;
-        const allowed = isAllowed(cellEl);
-        if (!allowed) return;
-        e.preventDefault();
-        const payload = e.dataTransfer?.getData('text/plain') || '';
+    // Wire setup-phase DnD via inputs module
+    const getIndex = (cellEl) => Number(cellEl?.dataset.index ?? '-1');
+    const isAllowed = (cellEl) => {
+      if (!gameState || !cellEl) return false;
+      if (gameState.phase !== 'setup') return false;
+      const idx2 = getIndex(cellEl);
+      const human = getActiveSetupHuman();
+      return Boolean(human && cellEl.dataset.color === human.color && !gameState.board.cells[idx2]);
+    };
+    enableSetupDnDUI({
+      boardEl,
+      getIsSetupActive: () => gameState?.phase === 'setup',
+      isAllowedCell: isAllowed,
+      onDrop: ({ cellEl, payload }) => {
         const [kind, idxStr] = payload.includes(':') ? payload.split(':') : [payload, ''];
         const idx2 = getIndex(cellEl);
         const human = getActiveSetupHuman();
@@ -360,345 +256,56 @@ export function render() {
         // mark accepted for dragend cleanup
         const ev = new Event('kio-drop-accepted', { bubbles: true });
         boardEl.dispatchEvent(ev);
-      });
-    }
+      },
+    });
   }
   // Play layout + panels
   function ensurePlayLayout() {
     if (playWrap && playWrap.isConnected) return;
-    playWrap = document.createElement('div');
-    playWrap.className = 'kio-play-wrap';
-    const left = document.createElement('aside'); left.className = 'kio-left';
-    const center = document.createElement('div'); center.className = 'kio-center';
-    const right = document.createElement('aside'); right.className = 'kio-right';
-    // Insert before board and move board inside center
-    boardEl.parentElement.insertBefore(playWrap, boardEl);
-    center.appendChild(boardEl);
-    playWrap.append(left, center, right);
-    // keep log height in sync with board
-    const onResize = () => { syncLogHeight(); syncLeftTop(); };
-    window.addEventListener('resize', onResize);
-    cleanupResize = () => window.removeEventListener('resize', onResize);
+    const res = ensurePlayLayoutUI(boardEl);
+    playWrap = res.playWrap; cleanupResize = res.cleanupResize;
   }
 
   function teardownPlayLayout() {
     if (!playWrap) return;
-    try {
-      const parent = playWrap.parentElement;
-      if (parent) {
-        const center = playWrap.querySelector('.kio-center');
-        if (center && boardEl.parentElement === center) {
-          parent.insertBefore(boardEl, playWrap);
-        }
-        parent.removeChild(playWrap);
-      }
-    } catch {}
-    playWrap = null;
-    if (cleanupResize) { cleanupResize(); cleanupResize = null; }
+    teardownPlayLayoutUI(boardEl, playWrap, cleanupResize);
+    playWrap = null; cleanupResize = null;
   }
 
-  function paintBoard(cells) {
-    const sqs = boardEl.querySelectorAll('.kio-cell');
-    sqs.forEach((sq, i) => {
-      sq.querySelectorAll('.kio-piece').forEach(el => el.remove());
-      const piece = cells[i];
-      if (piece) {
-        const chip = document.createElement('span');
-        chip.className = `kio-piece face-down kio-${piece.color}`;
-        sq.append(chip);
-      }
-    });
-  }
+  function paintBoard(cells) { paintBoardUI(boardEl, cells); syncLogHeight(); }
 
   // removed turn banner; we use arrow indicator next to active rack
 
-  function renderSideRacks(state) {
-    const left = playWrap?.querySelector('.kio-left');
-    if (!left) return;
-    left.innerHTML = '';
-    const title = document.createElement('div'); title.className = 'kio-side-title'; title.textContent = 'Players'; left.appendChild(title);
-    const rows = document.createElement('div'); rows.className = 'kio-left-rows'; left.appendChild(rows);
-    const order = state.turn.order.slice();
-    const turnColor = state.turn.order[state.turn.index];
-    order.forEach(color => {
-      const p = state.players.find(pp=>pp.color===color);
-      const row = document.createElement('div'); row.className = 'kio-rack-row';
-      row.classList.toggle('is-active', color === turnColor);
-      // arrow
-      const arrow = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      arrow.setAttribute('viewBox','0 0 24 24');
-      arrow.classList.add('kio-turn-arrow');
-      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d','M6 4l10 8-10 8z');
-      path.setAttribute('fill','currentColor');
-      arrow.appendChild(path);
-      // rack box
-      const wrap = document.createElement('div'); wrap.className = 'kio-player-rack';
-      const head = document.createElement('div'); head.className = 'kio-player-head';
-      const dot = document.createElement('span'); dot.className = `kio-dot kio-${color}`;
-      const name = document.createElement('span'); name.textContent = p?.name || color;
-      head.append(dot, name);
-      if (p && p.type === 'ai') {
-        const lvl = (p.aiLevel || 'medium').toString();
-        const badge = document.createElement('span');
-        badge.className = 'kio-ai-badge';
-        badge.textContent = lvl.charAt(0).toUpperCase() + lvl.slice(1);
-        head.append(badge);
-      }
-      const captured = state.captured?.[color] || [];
-      const smileyCaptured = captured.filter(k=>k==='smiley').length;
-      const frownyCaptured = captured.includes('frowny');
-
-      // status classes
-      if (frownyCaptured) wrap.classList.add('is-eliminated');
-      if (smileyCaptured === 3) wrap.classList.add('is-winner');
-
-      // four fixed slots: [frowny][smiley][smiley][smiley]
-      const slots = document.createElement('div'); slots.className = 'kio-mini-slots';
-      const makeFace = (kind) => {
-        const sp = document.createElement('span'); sp.className = `kio-piece face-down kio-${color}`; sp.style.width='28px'; sp.style.height='28px';
-        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.setAttribute('viewBox','0 0 24 24'); svg.classList.add('kio-icon');
-        const dark = '#111827', yellow='#fde047';
-        const bg = document.createElementNS('http://www.w3.org/2000/svg','circle'); bg.setAttribute('cx','12'); bg.setAttribute('cy','12'); bg.setAttribute('r','9'); bg.setAttribute('fill',yellow); bg.setAttribute('stroke',dark); bg.setAttribute('stroke-width','1.5'); svg.appendChild(bg);
-        if (kind==='smiley') { const l=document.createElementNS('http://www.w3.org/2000/svg','circle'); l.setAttribute('cx','8.5'); l.setAttribute('cy','10'); l.setAttribute('r','1.4'); l.setAttribute('fill',dark); const r=document.createElementNS('http://www.w3.org/2000/svg','circle'); r.setAttribute('cx','15.5'); r.setAttribute('cy','10'); r.setAttribute('r','1.4'); r.setAttribute('fill',dark); const m=document.createElementNS('http://www.w3.org/2000/svg','path'); m.setAttribute('d','M7.2 14.2c1.9 2.2 3.8 3 4.8 3s2.9-.8 4.8-3'); m.setAttribute('fill','none'); m.setAttribute('stroke',dark); m.setAttribute('stroke-width','2.6'); m.setAttribute('stroke-linecap','round'); svg.append(l,r,m); }
-        else { const lx1=document.createElementNS('http://www.w3.org/2000/svg','path'); lx1.setAttribute('d','M7.4 9.2l2.4 2.4'); lx1.setAttribute('stroke',dark); lx1.setAttribute('stroke-width','2.2'); lx1.setAttribute('stroke-linecap','round'); const lx2=document.createElementNS('http://www.w3.org/2000/svg','path'); lx2.setAttribute('d','M9.8 9.2l-2.4 2.4'); lx2.setAttribute('stroke',dark); lx2.setAttribute('stroke-width','2.2'); lx2.setAttribute('stroke-linecap','round'); const rx1=document.createElementNS('http://www.w3.org/2000/svg','path'); rx1.setAttribute('d','M14.0 9.2l2.4 2.4'); rx1.setAttribute('stroke',dark); rx1.setAttribute('stroke-width','2.2'); rx1.setAttribute('stroke-linecap','round'); const rx2=document.createElementNS('http://www.w3.org/2000/svg','path'); rx2.setAttribute('d','M16.4 9.2l-2.4 2.4'); rx2.setAttribute('stroke',dark); rx2.setAttribute('stroke-width','2.2'); rx2.setAttribute('stroke-linecap','round'); const m=document.createElementNS('http://www.w3.org/2000/svg','path'); m.setAttribute('d','M7.2 17.5c1.9-2.2 3.8-3 4.8-3s2.9.8 4.8 3'); m.setAttribute('fill','none'); m.setAttribute('stroke',dark); m.setAttribute('stroke-width','2.6'); m.setAttribute('stroke-linecap','round'); svg.append(lx1,lx2,rx1,rx2,m); }
-        sp.append(svg); return sp;
-      };
-      // Frowny slot
-      const fSlot = document.createElement('div'); fSlot.className = 'kio-mini-slot'; if (frownyCaptured) fSlot.append(makeFace('frowny')); slots.append(fSlot);
-      // Smiley slots
-      for (let i=0;i<3;i++){ const s = document.createElement('div'); s.className = 'kio-mini-slot'; if (i < smileyCaptured) s.append(makeFace('smiley')); slots.append(s); }
-
-      wrap.append(head, slots);
-      row.append(arrow, wrap);
-      rows.append(row);
-    });
-    syncLeftTop();
-  }
+  function renderSideRacks(state) { renderSideRacksUI(state, playWrap); }
 
   function renderLog(state) {
-    const right = playWrap?.querySelector('.kio-right');
-    if (!right) return;
-    right.innerHTML = '';
-    const title = document.createElement('div'); title.className = 'kio-side-title kio-log-title'; title.textContent = 'Game Log'; right.appendChild(title);
-    const box = document.createElement('div'); box.className = 'kio-log';
-    state.logs.forEach((entry, idx) => {
-      const item = document.createElement('div'); item.className = 'kio-log-item';
-      const textL = document.createElement('span'); textL.textContent = (entry.textPrefix) ? entry.textPrefix : (entry.text || `Move ${idx+1}`);
-      item.appendChild(textL);
-      if (entry.knockedKind && entry.knockedColor) {
-        const icon = createCheckerIcon(entry.knockedKind, entry.knockedColor, 32);
-        icon.style.marginLeft = '6px';
-        item.appendChild(icon);
-      }
-      item.addEventListener('mouseenter', ()=> { isPreview = true; clearDirMarkers(); removeMoveArrow(); paintBoard(entry.before); if (entry.from != null && entry.dirKey) showMoveArrow(entry.from, entry.dirKey); });
-      item.addEventListener('mouseleave', ()=> { isPreview = false; removeMoveArrow(); paintBoard(state.board.cells); enableHumanSelect(); });
-      box.appendChild(item);
+    renderLogUI(state, playWrap, {
+      onPreviewEnter: (entry) => { isPreview = true; clearDirMarkers(); removeMoveArrow(); paintBoard(entry.before); if (entry.from != null && entry.dirKey) showMoveArrow(entry.from, entry.dirKey); },
+      onPreviewExit: () => { isPreview = false; removeMoveArrow(); paintBoard(state.board.cells); enableHumanSelect(); },
     });
-    right.appendChild(box);
     syncLogHeight();
-    // autoscroll to bottom
-    box.scrollTop = box.scrollHeight;
   }
 
-  function syncLogHeight() {
-    const right = playWrap?.querySelector('.kio-right');
-    const box = right?.querySelector('.kio-log');
-    if (!box) return;
-    const h = boardEl.offsetHeight;
-    if (h > 0) box.style.height = `${h}px`;
-    // Align top of log box with top of board
-    const boardTop = boardEl.getBoundingClientRect().top;
-    const rightTop = right.getBoundingClientRect().top;
-    const title = right.querySelector('.kio-log-title');
-    const titleH = title ? title.getBoundingClientRect().height : 0;
-    const mt = Math.max(0, Math.round(boardTop - rightTop - titleH));
-    box.style.marginTop = `${mt}px`;
-  }
+  function syncLogHeight() { syncLogHeightUI(playWrap, boardEl); }
 
   // ---------- Movement engine ----------
-  const idxToXY = (i) => [i % 8, Math.floor(i / 8)];
-  const xyToIdx = (x,y) => (x < 0 || x > 7 || y < 0 || y > 7) ? -1 : (y * 8 + x);
-  const inBounds = (x,y) => x>=0 && x<8 && y>=0 && y<8;
+  // geometry helpers now come from engine/moves.js
 
-  function firstOccupiedAlong(cells, startIdx, dx, dy) {
-    let [x,y] = idxToXY(startIdx);
-    while (true) {
-      x += dx; y += dy;
-      if (!inBounds(x,y)) return -1;
-      const ni = xyToIdx(x,y);
-      if (cells[ni]) return ni;
-    }
-  }
+  const simulateMove = simMoveCore;
 
-  function collectOccupiedAlong(cells, startIdx, dx, dy) {
-    const out = [];
-    let [x,y] = idxToXY(startIdx);
-    while (true) {
-      x += dx; y += dy;
-      if (!inBounds(x,y)) break;
-      const ni = xyToIdx(x,y);
-      if (cells[ni]) out.push(ni);
-    }
-    return out;
-  }
+  function listLegalMovesForColor(state, color) { return listMovesCore(state, color, DIRS); }
 
-  function simulateMove(state, fromIdx, dir) {
-    const cells = state.board.cells;
-    const mover = cells[fromIdx];
-    if (!mover) return { valid: false };
-    // Find the first piece in the path; if none, the mover would fall off (illegal)
-    const occ = collectOccupiedAlong(cells, fromIdx, dir.dx, dir.dy);
-    if (occ.length === 0) return { valid: false };
-    const last = occ[occ.length - 1];
-    const knocked = cells[last];
-    if (!knocked) return { valid: false };
-    if (knocked.color === mover.color) return { valid: false }; // cannot eliminate own piece
-    // Build new board by pushing chain forward and placing mover on first occupied square
-    const newCells = state.board.cells.map(c => (c ? { ...c } : null));
-    newCells[fromIdx] = null; // mover leaves its cell
-    // Push each occupied piece forward one step toward the edge
-    for (let j = occ.length - 1; j >= 0; j--) {
-      if (j === occ.length - 1) {
-        // last piece goes off the board
-        newCells[occ[j]] = null;
-      } else {
-        const dest = occ[j + 1];
-        newCells[dest] = { ...cells[occ[j]] };
-        newCells[occ[j]] = null;
-      }
-    }
-    // Place mover onto the first occupied square
-    const dest = occ[0];
-    newCells[dest] = { ...mover };
-    return { valid: true, cells: newCells, knocked, from: fromIdx, dest, mover, dir };
-  }
 
-  function listLegalMovesForColor(state, color) {
-    const moves = [];
-    for (let i=0;i<64;i++) {
-      const p = state.board.cells[i];
-      if (!p || p.color !== color) continue;
-      for (const d of DIRS) {
-        const m = simulateMove(state, i, d);
-        if (m.valid) moves.push(m);
-      }
-    }
-    return moves;
-  }
 
-  function weightKnock(kind) {
-    if (kind === 'frowny') return 10;
-    if (kind === 'smiley') return 6;
-    return 2; // blank
-  }
 
-  function getAIProfileForColor(color) {
-    const p = gameState.players.find(pp=>pp.color===color);
-    if (!p || p.type !== 'ai') return AI_PROFILES.medium;
-    const lvl = (p.aiLevel||'medium').toLowerCase();
-    return AI_PROFILES[lvl] || AI_PROFILES.medium;
-  }
-
-  function smileysCaptured(color) {
-    return (gameState.captured?.[color] || []).filter(k=>k==='smiley').length;
-  }
-
-  function isEdge(idx){ const x=idx%8, y=Math.floor(idx/8); return (x===0||y===0||x===7||y===7); }
-
-  function evaluateMove(state, move, profile) {
-    // Base: value of knocked piece
-    let score = (profile.knockWeights?.[move.knocked.kind] ?? 0);
-    // Avoid helping opponent: penalize knocking smileys in general
-    if (move.knocked.kind === 'smiley') score -= (profile.smileyPenalty ?? 0);
-    // Also penalize targeting opponents already low on smileys (closer to winning)
-    const victimSmileysCaptured = smileysCaptured(move.knocked.color);
-    score -= profile.targetWeakestWeight * victimSmileysCaptured;
-    // Penalize moving from edge or ending on edge
-    if (isEdge(move.from)) score -= profile.originEdgePenalty;
-    if (isEdge(move.dest)) score -= profile.endEdgePenalty;
-    // Try not to move own specials if remembered
-    const aiColor = state.turn.order[state.turn.index];
-    if (aiColor) {
-      forgetExpired(aiColor, profile);
-      const mem = (gameState.aiMemory?.[aiColor]) || null;
-      const rec = mem ? mem.get(move.from) : null;
-      if (rec) {
-        if (rec.kind === 'frowny') score -= (profile.moveFrownyPenalty ?? 0);
-        else if (rec.kind === 'smiley') score -= (profile.moveSmileyPenalty ?? 0);
-      } else {
-        // Unknown memory: small caution not to move potential special
-        score -= (profile.moveSmileyPenalty ?? 0) * 0.2;
-      }
-    }
-    // Prefer knocking pieces near the center
-    const dCenter = distToCenter(move.from); // origin proximity contributes
-    const dKnock = distToCenter(listOccupiedAlongIndexes(state, move).lastIdx ?? move.dest);
-    score += profile.centerControl * (1/(1+dKnock));
-    // Add small noise
-    score += (Math.random()-0.5) * profile.noise;
-    return score;
-  }
-
-  // helper to expose last index of chain for evaluation
-  function listOccupiedAlongIndexes(state, move) {
-    // reconstruct occ for evaluation
-    const occ = collectOccupiedAlong(state.board.cells, move.from, move.dir.dx, move.dir.dy);
-    return { lastIdx: occ[occ.length-1] };
-  }
-
-  function bestMoveScoreForColor(state, color, profile) {
-    const mvz = listLegalMovesForColor(state, color);
-    if (mvz.length === 0) return -Infinity;
-    let best = -Infinity;
-    for (const m of mvz) {
-      const v = evaluateMove(state, m, profile);
-      if (v > best) best = v;
-    }
-    return best;
-  }
-
-  function nextActiveColorAfter(color) {
-    const order = gameState.turn.order;
-    const idx = order.indexOf(color);
-    const n = order.length;
-    for (let k=1;k<=n;k++) {
-      const c = order[(idx+k)%n];
-      const elim = (gameState.captured?.[c] || []).includes('frowny');
-      if (!elim) return c;
-    }
-    return color;
-  }
 
   function chooseAIMove(state, color) {
-    const moves = listLegalMovesForColor(state, color);
-    if (moves.length === 0) return null;
-    const profile = getAIProfileForColor(color);
-    // decay memory for this AI color before evaluating
-    forgetExpired(color, profile);
-    // Score each move
-    let best = null, bestScore = -Infinity;
-    for (const m of moves) {
-      let s = evaluateMove(state, m, profile);
-      // Optional lookahead: approximate opponent's best reply and subtract
-      if (profile.lookaheadDepth > 0) {
-        const copy = { ...state, board: { ...state.board, cells: deepCopyCells(m.cells) } };
-        const opp = nextActiveColorAfter(color);
-        const oppProfile = getAIProfileForColor(opp);
-        const oppBest = bestMoveScoreForColor(copy, opp, oppProfile);
-        if (Number.isFinite(oppBest)) s -= profile.lookaheadFactor * oppBest;
-      }
-      if (s > bestScore) { bestScore = s; best = m; }
-    }
-    return best;
+    return chooseAIMoveCore(state, color, AI_PROFILES, DIRS, forgetExpired);
   }
 
   function deepCopyCells(cells) { return cells.map(c=> c ? { ...c } : null); }
 
-  function appendLog(state, text, before, after) {
-    state.logs.push({ id: `L${state.logs.length+1}`, text, before, after, turnColor: state.turn.order[state.turn.index] });
-    renderLog(state);
-  }
+  // (removed unused appendLog)
 
   function onKnock(state, piece) {
     if (!piece) return;
@@ -743,7 +350,7 @@ export function render() {
     onKnock(state, move.knocked);
     // Update AI memory for mover color: shift remembered index to dest
     const moverColor = move.mover.color;
-    const prof = getAIProfileForColor(moverColor);
+    const prof = getAIProfileForColorCore(gameState, AI_PROFILES, moverColor);
     forgetExpired(moverColor, prof);
     const mem = gameState.aiMemory?.[moverColor];
     if (mem && mem.has(move.from)) {
@@ -798,168 +405,25 @@ export function render() {
     setTimeout(()=> { removeMoveArrow(); performMove(gameState, mv); aiStepIfNeeded(); }, 650);
   }
 
-  function clearDirMarkers() { boardEl.querySelectorAll('.kio-dir').forEach(el=>el.remove()); }
+  function clearDirMarkers() { clearDirMarkersUI(boardEl); }
 
-  function enableHumanDrag() {
-    clearDirMarkers();
-    const human = getHuman();
-    if (!human) return;
-    const turnColor = gameState.turn.order[gameState.turn.index];
-    if (turnColor !== human.color) return;
-    // Make only human pieces draggable and add direction markers on dragstart
-    boardEl.querySelectorAll('.kio-cell').forEach((sqEl, i) => {
-      const pc = gameState.board.cells[i];
-      const chip = sqEl.querySelector('.kio-piece');
-      if (!pc || pc.color !== human.color || !chip) { if (chip) chip.draggable=false; return; }
-      chip.draggable = true;
-      if (chip.__kioWired) return; chip.__kioWired = true;
-      chip.addEventListener('dragstart', (e)=>{
-        clearDirMarkers();
-        e.dataTransfer?.setData('text/plain', String(i));
-        // add full-square markers for legal directions
-        DIRS.forEach(d => {
-          const m = simulateMove(gameState, i, d);
-          if (!m.valid) return;
-          const [x,y]=idxToXY(i); const nx=x+d.dx, ny=y+d.dy; if (!inBounds(nx,ny)) return;
-          const ni=xyToIdx(nx,ny); const target = boardEl.querySelector(`.kio-cell[data-index="${ni}"]`);
-          if (!target) return;
-          const marker=document.createElement('div');
-          marker.className='kio-dir';
-          marker.dataset.dir = d.key;
-          marker.style.position='absolute';
-          marker.style.left='0';
-          marker.style.top='0';
-          marker.style.width='100%';
-          marker.style.height='100%';
-          const PRIMARY = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3f48cc';
-          marker.style.border=`2px dashed ${PRIMARY}`;
-          marker.style.background=rgbaFromHex(PRIMARY, 0.12);
-          marker.style.pointerEvents='auto';
-          marker.style.zIndex='8';
-          marker.style.borderRadius='8px';
-          marker.addEventListener('dragover',(ev)=>{ ev.preventDefault(); });
-          marker.addEventListener('drop',(ev)=>{
-            ev.preventDefault();
-            const from = Number(e.dataTransfer?.getData('text/plain')||i);
-            const dir = DIRS.find(dd=>dd.key===marker.dataset.dir);
-            clearDirMarkers();
-            if (dir) {
-              const mv = simulateMove(gameState, from, dir);
-              if (mv.valid) { performMove(gameState, mv); aiStepIfNeeded(); }
-            }
-          });
-          target.style.position='relative';
-          target.appendChild(marker);
-        });
-      });
-      chip.addEventListener('dragend', ()=> clearDirMarkers());
-    });
-  }
+  // enableHumanDrag was an older interaction mode; removed as unused
 
-  function rgbaFromHex(hex, alpha) {
-    const h = String(hex || '').replace('#','');
-    const full = h.length === 3 ? h.split('').map(c=>c+c).join('') : h;
-    const n = parseInt(full.slice(0,6), 16);
-    const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
+  // rgbaFromHex moved to shared color utils; not needed here
 
   // Click-to-select alternative, more reliable across browsers
   function enableHumanSelect() {
-    if (isPreview) return; // do not wire during preview
-    clearDirMarkers();
-    const human = getHuman();
-    if (!human) return;
-    const turnColor = gameState.turn.order[gameState.turn.index];
-    if (turnColor !== human.color) return;
-    boardEl.querySelectorAll('.kio-cell').forEach((sqEl, i) => {
-      const pc = gameState.board.cells[i];
-      const chip = sqEl.querySelector('.kio-piece');
-      if (!pc || pc.color !== human.color || !chip) { if (chip) chip.classList.remove('kio-can-move'); return; }
-      const hasMove = DIRS.some(d => simulateMove(gameState, i, d).valid);
-      chip.classList.toggle('kio-can-move', hasMove);
-      if (!hasMove) return;
-      chip.draggable = true;
-      if (!sqEl.__kioCellWired) {
-        sqEl.__kioCellWired = true;
-        sqEl.addEventListener('mouseenter', () => {
-          // Only show markers if it's still the human's turn and not previewing
-          const humanNow = getHuman();
-          if (!humanNow) return;
-          const tc = gameState.turn.order[gameState.turn.index];
-          if (gameState.phase !== 'play' || tc !== humanNow.color || isPreview) return;
-          const pcNow = gameState.board.cells[i];
-          if (!pcNow || pcNow.color !== humanNow.color) return; // do not show for opponent pieces
-          showMarkers('hover');
-        });
-        // When leaving a cell, remove markers unless entering a marker or another of our pieces
-        sqEl.addEventListener('mouseleave', (ev) => {
-          if (isDragging) return;
-          const humanNow = getHuman();
-          if (!humanNow) { clearDirMarkers(); return; }
-          const toEl = ev.relatedTarget;
-          if (!(toEl instanceof Element)) { clearDirMarkers(); return; }
-          if (toEl.closest('.kio-dir')) return; // keep while going into a target
-          const tc = gameState.turn.order[gameState.turn.index];
-          if (gameState.phase !== 'play' || tc !== humanNow.color || isPreview) { clearDirMarkers(); return; }
-          const nextCell = toEl.closest('.kio-cell');
-          if (!nextCell) { clearDirMarkers(); return; }
-          const idxNext = Number(nextCell.dataset.index || '-1');
-          const nextPiece = Number.isFinite(idxNext) ? gameState.board.cells[idxNext] : null;
-          if (!nextPiece || nextPiece.color !== humanNow.color) clearDirMarkers();
-        });
-      }
-      if (chip.__kioClickWired) return; chip.__kioClickWired = true;
-      const showMarkers = (mode='hover') => {
-        clearDirMarkers();
-        DIRS.forEach(d => {
-          const m = simulateMove(gameState, i, d); if (!m.valid) return;
-          const [x,y]=idxToXY(i); const nx=x+d.dx, ny=y+d.dy; if (!inBounds(nx,ny)) return;
-          const ni=xyToIdx(nx,ny); const target = boardEl.querySelector(`.kio-cell[data-index="${ni}"]`); if (!target) return;
-          const marker = document.createElement('div'); marker.className='kio-dir'; marker.dataset.dir=d.key;
-          const PRIMARY2 = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3f48cc';
-          marker.style.position='absolute'; marker.style.left='0'; marker.style.top='0'; marker.style.width='100%'; marker.style.height='100%'; marker.style.border=`2px dashed ${PRIMARY2}`; marker.style.background=rgbaFromHex(PRIMARY2, 0.12); marker.style.borderRadius='8px'; marker.style.zIndex='8'; marker.style.cursor='pointer';
-          marker.style.pointerEvents = (mode==='drag' || mode==='click' || isDragging) ? 'auto' : 'none';
-          marker.addEventListener('click', () => { clearDirMarkers(); const dir = DIRS.find(dd=>dd.key===marker.dataset.dir); if (!dir) return; const mv = simulateMove(gameState, i, dir); if (mv.valid) { performMove(gameState, mv); aiStepIfNeeded(); } });
-          marker.addEventListener('dragover', (ev)=> { ev.preventDefault(); });
-          marker.addEventListener('drop', (ev)=> { ev.preventDefault(); const from = Number(ev.dataTransfer?.getData('text/plain')||i); const dir = DIRS.find(dd=>dd.key===marker.dataset.dir); clearDirMarkers(); if (dir) { const mv = simulateMove(gameState, from, dir); if (mv.valid) { performMove(gameState, mv); aiStepIfNeeded(); } } });
-          target.style.position='relative'; target.appendChild(marker);
-        });
-      };
-      chip.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const humanNow = getHuman();
-        if (!humanNow) return;
-        const tc = gameState.turn.order[gameState.turn.index];
-        if (gameState.phase !== 'play' || tc !== humanNow.color || isPreview) return;
-        const pcNow = gameState.board.cells[i];
-        if (!pcNow || pcNow.color !== humanNow.color) return;
-        chip.draggable = true; showMarkers('click');
-      });
-      chip.addEventListener('mouseenter', () => {
-        const humanNow = getHuman();
-        if (!humanNow) return;
-        const tc = gameState.turn.order[gameState.turn.index];
-        if (gameState.phase !== 'play' || tc !== humanNow.color || isPreview) return;
-        const pcNow = gameState.board.cells[i];
-        if (!pcNow || pcNow.color !== humanNow.color) return;
-        chip.draggable = true; showMarkers('hover');
-      });
-      chip.addEventListener('dragstart', (e) => {
-        const humanNow = getHuman();
-        if (!humanNow) return;
-        const tc = gameState.turn.order[gameState.turn.index];
-        const pcNow = gameState.board.cells[i];
-        if (gameState.phase !== 'play' || tc !== humanNow.color || isPreview || !pcNow || pcNow.color !== humanNow.color) { e.preventDefault?.(); return; }
-        isDragging = true; e.dataTransfer?.setData('text/plain', String(i)); showMarkers('drag');
-      });
-      chip.addEventListener('dragend', () => { isDragging = false; clearDirMarkers(); });
+    if (isPreview) return;
+    enableHumanSelectUI({
+      boardEl,
+      state: gameState,
+      DIRS,
+      simulateMove,
+      performMove,
+      aiStepIfNeeded,
+      helpers: { clearDirMarkers, showMoveArrow, removeMoveArrow },
+      getIsPreview: () => isPreview,
     });
-    // clicking outside markers clears them
-    boardEl.addEventListener('click', (ev) => { if (!(ev.target instanceof Element)) return; if (!ev.target.closest('.kio-dir')) clearDirMarkers(); }, { once: true });
-    // leaving the board clears markers if not dragging
-    const onLeaveBoard = (ev) => { if (!isDragging) clearDirMarkers(); };
-    boardEl.addEventListener('mouseleave', onLeaveBoard, { once: true });
   }
 
   function colorLabel(c) {
@@ -967,177 +431,30 @@ export function render() {
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
 
-  function showMoveArrow(fromIdx, dirKey) {
-    removeMoveArrow();
-    const cell = boardEl.querySelector(`.kio-cell[data-index="${fromIdx}"]`);
-    if (!cell) return;
-    const ang = { n:-90, ne:-45, e:0, se:45, s:90, sw:135, w:180, nw:-135 }[dirKey] || 0;
-    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-    svg.classList.add('kio-move-arrow');
-    svg.setAttribute('viewBox','0 0 24 24');
-    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.setAttribute('d','M6 4l10 8-10 8z');
-    path.setAttribute('fill','#fde047');
-    svg.appendChild(path);
-    svg.style.position='absolute'; svg.style.width='24px'; svg.style.height='24px'; svg.style.left='50%'; svg.style.top='50%'; svg.style.transform=`translate(-50%, -50%) rotate(${ang}deg)`; svg.style.zIndex='10'; svg.style.pointerEvents='none';
-    cell.style.position = 'relative';
-    cell.appendChild(svg);
-    moveArrowEl = svg;
-  }
+  function showMoveArrow(fromIdx, dirKey) { showMoveArrowUI(boardEl, fromIdx, dirKey); }
+  function removeMoveArrow() { removeMoveArrowUI(); }
 
-  function removeMoveArrow() { if (moveArrowEl && moveArrowEl.parentElement) moveArrowEl.parentElement.removeChild(moveArrowEl); moveArrowEl = null; }
-
-  function syncLeftTop() {
-    const left = playWrap?.querySelector('.kio-left');
-    const rows = left?.querySelector('.kio-left-rows');
-    if (!rows) return;
-    const boardTop = boardEl.getBoundingClientRect().top;
-    const leftTop = left.getBoundingClientRect().top;
-    const title = left.querySelector('.kio-side-title');
-    const titleH = title ? title.getBoundingClientRect().height : 0;
-    const mt = Math.max(0, Math.round(boardTop - leftTop - titleH));
-    rows.style.marginTop = `${mt}px`;
-  }
+  // syncLeftTop handled by renderers sync; removed local implementation
 
   // ——— AI placement planning and reveal ———
-  function indexToXY(i){ return [i % 8, Math.floor(i/8)]; }
-  function distToCenter(i){ const [x,y]=indexToXY(i); const cx=3.5, cy=3.5; return Math.hypot(x-cx,y-cy); }
-  function getColorSquares(color){
-    const grid = maskToGrid(gameState.board.mask);
-    const out = [];
-    for (let i=0;i<64;i++) if (grid[i]===color) out.push(i);
-    return out;
-  }
-  function weightedPickN(items, weightFn, n){
-    const pool = items.slice();
-    const picks = [];
-    for (let k=0;k<n && pool.length>0;k++){
-      const weights = pool.map(weightFn);
-      const sum = weights.reduce((a,b)=>a+b,0) || 1;
-      let r = Math.random()*sum;
-      let idx = 0;
-      while (idx<pool.length && r>0){ r -= weights[idx]; if (r>0) idx++; }
-      if (idx>=pool.length) idx = pool.length-1;
-      picks.push(pool[idx]);
-      pool.splice(idx,1);
-    }
-    return picks;
-  }
-  function planAIPlacements(){
-    if (!gameState) return;
-    const centerBiasBase = (i)=>{ const d=distToCenter(i); return 1/Math.max(0.2,(d+0.2))**2; };
-    const edgeBiasBase   = (i)=>{ const d=distToCenter(i); return (d+0.2)**2; };
-    const activeColors = new Set(gameState.players.map(p=>p.color));
-    const allColors = ['b','r','g','u'];
-    const neutralColors = allColors.filter(c => !activeColors.has(c));
-    const aiOrNeutral = [];
-    for (const p of gameState.players){
-      if (p.type !== 'ai') continue;
-      aiOrNeutral.push({ ownerId: p.id, color: p.color, reduceCounts: true, profile: getAIProfileForColor(p.color) });
-    }
-    // Add neutral colors (e.g., eliminated blue in 3P) — not in players/turn order
-    for (const color of neutralColors){
-      aiOrNeutral.push({ ownerId: `NP-${color}`, color, reduceCounts: false, profile: AI_PROFILES.medium });
-    }
-
-    for (const entry of aiOrNeutral){
-      const { ownerId, color, reduceCounts, profile } = entry;
-      const slots = getColorSquares(color);
-      // choose 1 frowny near center
-      const [fIdx] = weightedPickN(slots, (i)=> Math.pow(centerBiasBase(i), profile.placeCenterExp || 1), 1);
-      const rem1 = slots.filter(i=>i!==fIdx);
-      // choose 3 smileys toward edge
-      const sIdx = weightedPickN(rem1, (i)=> Math.pow(edgeBiasBase(i), profile.placeEdgeExp || 1), 3);
-      const used = new Set([fIdx, ...sIdx]);
-      // place into state
-      const put = (i, kind)=>{ gameState.board.cells[i] = { ownerId, color, kind, faceDown: true }; };
-      if (typeof fIdx === 'number') put(fIdx,'frowny');
-      for (const si of sIdx) put(si,'smiley');
-      // fill rest with blanks
-      for (const i of rem1) if (!used.has(i)) put(i,'blank');
-      // Remember AI's own specials for memory tracking
-      const player = gameState.players.find(p=>p.color===color && p.type==='ai');
-      if (player) {
-        if (typeof fIdx === 'number') rememberOwn(color, fIdx, 'frowny');
-        for (const si of sIdx) rememberOwn(color, si, 'smiley');
-      }
-      // reduce special counters for AI
-      if (reduceCounts && gameState.counts?.specialsRemaining?.[color]){
-        gameState.counts.specialsRemaining[color] = { frowny: 0, smiley: 0 };
-      }
-    }
-  }
+  function planAIPlacements(){ planAIPlacementsCore(gameState, AI_PROFILES, rememberOwn); }
   function clearAITimers(){ aiTimers.forEach(id=>clearTimeout(id)); aiTimers = []; }
-  function revealAIPlacements(){
-    if (!gameState) return;
-    clearAITimers();
-    // collect indices with AI or neutral pieces
-    const aiCells = [];
-    for (let i=0;i<64;i++){
-      const pc = gameState.board.cells[i];
-      if (!pc) continue;
-      const owner = gameState.players.find(p=>p.id===pc.ownerId);
-      const isAI = owner?.type === 'ai';
-      const isNeutral = !owner; // ownerId not found means neutral color we placed
-      if (isAI || isNeutral) aiCells.push(i);
-    }
-    // random order
-    for (let i=aiCells.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [aiCells[i],aiCells[j]]=[aiCells[j],aiCells[i]]; }
-    // staggered reveal
-    aiCells.forEach((idx, k)=>{
-      const t = setTimeout(()=>{
-        const sq = boardEl.querySelector(`.kio-cell[data-index="${idx}"]`);
-        const pc = gameState.board.cells[idx];
-        if (sq && pc){
-          const dot = sq.querySelector('.kio-dot'); if (dot) dot.remove();
-          if (!sq.querySelector('.kio-piece')){
-            const chip = document.createElement('span');
-            chip.className = `kio-piece face-down kio-${pc.color}`;
-            sq.append(chip);
-          }
-          // After each AI placement, check if setup is fully populated
-          maybeEnterPlayPhase();
-        }
-      }, 200*k + 1500);
-      aiTimers.push(t);
-    });
-  }
+  function revealAIPlacements(){ clearAITimers(); revealAIPlacementsCore(boardEl, gameState, (t)=> aiTimers.push(t), maybeEnterPlayPhase); }
 
-  function maybeAutoFillBlanks() {
-    const human = getActiveSetupHuman();
-    if (!human) return;
-    const left = gameState.counts.specialsRemaining[human.color];
-    if (left.frowny === 0 && left.smiley === 0) {
-      const grid = maskToGrid(gameState.board.mask);
-      grid.forEach((cellColor, i) => {
-        if (cellColor === human.color && !gameState.board.cells[i]) {
-          // place blank piece
-          gameState.board.cells[i] = { ownerId: human.id, color: human.color, kind: 'blank', faceDown: true };
-          // update DOM square
-          const sq = boardEl.querySelector(`.kio-cell[data-index="${i}"]`);
-          if (sq) {
-            const dot = sq.querySelector('.kio-dot'); if (dot) dot.remove();
-            const chip = document.createElement('span');
-            chip.className = `kio-piece face-down kio-${human.color}`;
-            sq.append(chip);
-          }
-        }
-      });
-      // Advance to next human in setup
-      if (gameState.setup) gameState.setup.index += 1;
-      renderRacks(gameState);
-      maybeEnterPlayPhase();
-    }
-  }
+  function maybeAutoFillBlanks() { maybeAutoFillBlanksCore(boardEl, gameState, getActiveSetupHuman, renderRacks, maybeEnterPlayPhase); }
 
-  function isBoardPopulated() {
-    // Board is visually populated when no placement dots remain on the BOARD
-    return boardEl.querySelectorAll('.kio-dot').length === 0;
-  }
+  function isBoardPopulated() { return isBoardPopulatedUI(boardEl); }
 
   function maybeEnterPlayPhase() {
     if (!gameState || gameState.phase === 'play') return;
-    if (isBoardPopulated()) {
+    // Transition only after: all human placements complete AND AI reveal loop finished
+    const setup = gameState.setup || {};
+    const humanTotal = Array.isArray(setup.humanColors) ? setup.humanColors.length : 0;
+    const humansDone = humanTotal === 0 || (setup.index >= humanTotal) || setup.humanPlacementDone === true;
+    if (humansDone && !setup.humanPlacementDone) setup.humanPlacementDone = true;
+    const aiDone = setup.aiRevealDone === true;
+    // Also require the board to be logically ready
+    if (humansDone && aiDone && isBoardReady(gameState)) {
       gameState.phase = 'play';
       renderRacks(gameState);
       // After entering play, ensure interactions and possibly AI move
