@@ -1,4 +1,4 @@
-import { FaceIcon } from '../../../components/ui/faceIcon.js';
+import { FaceIcon } from '../../../../components/ui/faceIcon.js';
 
 // Renders the setup-phase rack for the active human and wires DnD on pieces
 export function renderSetupRack(state, { racksEl, boardEl, getActiveSetupHuman }) {
@@ -103,4 +103,3 @@ export function renderSetupRack(state, { racksEl, boardEl, getActiveSetupHuman }
     });
   });
 }
-

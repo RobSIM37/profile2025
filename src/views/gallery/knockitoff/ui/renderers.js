@@ -1,6 +1,6 @@
 import { COLORS, maskToGrid } from '../masks.js';
-import { FaceIcon } from '../../../components/ui/faceIcon.js';
-import { openModal } from '../../../components/ui/modal.js';
+import { FaceIcon } from '../../../../components/ui/faceIcon.js';
+import { openModal } from '../../../../components/ui/modal.js';
 
 let moveArrowEl = null;
 
@@ -106,10 +106,6 @@ export function removeMoveArrow() {
   moveArrowEl = null;
 }
 
-function colorLabel(c) {
-  return ({ b: 'Blue', r: 'Red', g: 'Green', u: 'Blue2' }[c]) || c;
-}
-
 export function renderSideRacks(state, playWrap) {
   const left = playWrap?.querySelector('.kio-left');
   if (!left) return;
@@ -193,18 +189,6 @@ export function ensurePlayLayout(boardEl) {
   const onResize = () => syncLogHeight(playWrap, boardEl);
   window.addEventListener('resize', onResize);
   return { playWrap, cleanupResize: () => window.removeEventListener('resize', onResize) };
-}
-
-export function teardownPlayLayout(boardEl, playWrap, cleanupResize) {
-  try {
-    const parent = playWrap?.parentElement;
-    if (parent) {
-      const center = playWrap.querySelector('.kio-center');
-      if (center && boardEl.parentElement === center) parent.insertBefore(boardEl, playWrap);
-      parent.removeChild(playWrap);
-    }
-  } catch {}
-  cleanupResize?.();
 }
 
 export function syncLogHeight(playWrap, boardEl) {

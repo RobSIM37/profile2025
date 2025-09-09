@@ -1,5 +1,5 @@
-import { Button } from '../../components/ui/button.js';
-import { setAppSolid } from '../../lib/appShell.js';
+import { Button } from '../../../components/ui/button.js';
+import { setAppSolid } from '../../../lib/appShell.js';
 
 export const meta = {
   title: 'Knock It Off! — Start',

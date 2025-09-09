@@ -19,3 +19,10 @@ export function forgetExpired(state, color, profile) {
   }
 }
 
+// Convenience helpers to bind memory ops to a specific state
+export function bindMemory(state) {
+  return {
+    rememberOwn: (color, idx, kind) => rememberOwn(state, color, idx, kind),
+    forgetExpired: (color, profile) => forgetExpired(state, color, profile),
+  };
+}

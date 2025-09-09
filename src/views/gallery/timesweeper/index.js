@@ -1,10 +1,10 @@
 import { initBoard, reveal, chord, toggleFlag, isWin, isLoss, flagsLeft, revealAllMines } from './engine.js';
-import { Button } from '../../components/ui/button.js';
-import { setAppSolid } from '../../lib/appShell.js';
-import { readStats as tsReadStats, writeStats as tsWriteStats } from '../../features/timesweeper/stats.js';
-import { readFuse as tsReadFuse, writeFuse as tsWriteFuse, startingFuseMs } from '../../features/timesweeper/fuse.js';
-import { PRESETS } from '../../consts/timesweeper.js';
-import { formatTenths } from '../../lib/format.js';
+import { Button } from '../../../components/ui/button.js';
+import { setAppSolid } from '../../../lib/appShell.js';
+import { readStats as tsReadStats, writeStats as tsWriteStats } from '../../../features/timesweeper/stats.js';
+import { readFuse as tsReadFuse, writeFuse as tsWriteFuse, startingFuseMs } from '../../../features/timesweeper/fuse.js';
+import { PRESETS } from '../../../consts/timesweeper.js';
+import { formatTenths } from '../../../lib/format.js';
 
 export const meta = {
   title: 'Timesweeper',
