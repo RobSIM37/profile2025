@@ -52,7 +52,7 @@ export function render() {
   return frag;
 }
 
-function exampleSVG(kind, stage='before') {
+export function exampleSVG(kind, stage='before') {
   const cell = 44, size = cell*5;
   const board = (x,y)=>`<rect x="${x*cell}" y="${y*cell}" width="${cell}" height="${cell}" fill="${(x+y)%2? '#e2e8f0':'#f1f5f9'}"/>`;
   const disc = (x,y,fill)=>`<circle cx="${x*cell+cell/2}" cy="${y*cell+cell/2}" r="${cell*0.42}" fill="${fill}" stroke="#1f2937" stroke-width="2.5"/>`;

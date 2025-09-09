@@ -9,6 +9,8 @@ export function enableHumanSelect({ boardEl, state, DIRS, simulateMove, performM
   const turnColor = state.turn.order[state.turn.index];
   if (turnColor !== human.color) return;
 
+  let isDragging = false;
+
   const showMarkers = (fromIdx) => {
     clearDirMarkers(boardEl);
     DIRS.forEach((d) => {
@@ -21,7 +23,9 @@ export function enableHumanSelect({ boardEl, state, DIRS, simulateMove, performM
       const marker = document.createElement('div');
       marker.className = 'kio-dir';
       marker.dataset.dir = d.key;
-      Object.assign(marker.style, { position: 'absolute', left: '0', top: '0', width: '100%', height: '100%', pointerEvents: 'auto', zIndex: '8', borderRadius: '8px' });
+      // Default to pointerEvents: none so hover can pass through to neighbor chips
+      // We re-enable pointer events during an actual drag (see dragstart handler below)
+      Object.assign(marker.style, { position: 'absolute', left: '0', top: '0', width: '100%', height: '100%', pointerEvents: 'none', zIndex: '8', borderRadius: '8px' });
       const PRIMARY = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3f48cc';
       marker.style.border = `2px dashed ${PRIMARY}`;
       marker.style.background = `rgba(63,72,204,0.12)`;
@@ -51,9 +55,23 @@ export function enableHumanSelect({ boardEl, state, DIRS, simulateMove, performM
       if (getIsPreview?.()) { e.preventDefault?.(); return; }
       e.dataTransfer?.setData('text/plain', String(i));
       showMarkers(i);
+      // Enable dropping on markers only while dragging
+      boardEl.querySelectorAll('.kio-dir').forEach((el) => { el.style.pointerEvents = 'auto'; });
+      isDragging = true;
     });
-    chip.addEventListener('dragend', () => { clearDirMarkers(boardEl); });
+    chip.addEventListener('dragend', () => { isDragging = false; clearDirMarkers(boardEl); });
+    chip.addEventListener('mouseleave', () => { if (!isDragging) clearDirMarkers(boardEl); });
   });
+
+  // When hovering non-owned cells, clear any lingering markers
+  boardEl.querySelectorAll('.kio-cell').forEach((sqEl, i) => {
+    const pc = state.board.cells[i];
+    if (pc && pc.color === human.color) return; // handled by chip listeners
+    sqEl.addEventListener('mouseenter', () => { if (!isDragging && !getIsPreview?.()) clearDirMarkers(boardEl); });
+  });
+
+  // Leaving the board entirely should also clear
+  boardEl.addEventListener('mouseleave', () => { if (!isDragging) clearDirMarkers(boardEl); });
 }
 
 function getHuman(state) {

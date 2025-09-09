@@ -1,5 +1,6 @@
 import { COLORS, maskToGrid } from '../masks.js';
 import { FaceIcon } from '../../../components/ui/faceIcon.js';
+import { openModal } from '../../../components/ui/modal.js';
 
 let moveArrowEl = null;
 
@@ -127,13 +128,22 @@ export function renderSideRacks(state, playWrap) {
     if (p.type === 'ai') { const badge = document.createElement('span'); badge.className = 'kio-ai-badge'; badge.textContent = p.aiLevel || 'ai'; head.append(dot, name, badge); } else { head.append(dot, name); }
     row.append(arrow, head);
     const slots = document.createElement('div'); slots.className = 'kio-mini-slots';
-    const makeFace = (kind) => { const svg = FaceIcon(kind, { size: 20, strokeWidth: 2.2 }); svg.classList.add('kio-icon'); return svg; };
+    const makeChipFace = (kind, color) => {
+      const wrap = document.createElement('span');
+      wrap.className = `kio-piece face-down kio-${color}`;
+      wrap.style.width = '26px';
+      wrap.style.height = '26px';
+      const svg = FaceIcon(kind, { size: 20, strokeWidth: 2.2 });
+      svg.classList.add('kio-icon');
+      wrap.append(svg);
+      return wrap;
+    };
     const caps = state.captured[p.color] || [];
     const sCount = caps.filter((k) => k === 'smiley').length;
     const fCap = caps.includes('frowny');
-    const fSlot = document.createElement('div'); fSlot.className = 'kio-mini-slot'; if (fCap) fSlot.append(makeFace('frowny'));
+    const fSlot = document.createElement('div'); fSlot.className = 'kio-mini-slot'; if (fCap) fSlot.append(makeChipFace('frowny', p.color));
     slots.append(fSlot);
-    for (let i = 0; i < 3; i++) { const s = document.createElement('div'); s.className = 'kio-mini-slot'; if (i < sCount) s.append(makeFace('smiley')); slots.append(s); }
+    for (let i = 0; i < 3; i++) { const s = document.createElement('div'); s.className = 'kio-mini-slot'; if (i < sCount) s.append(makeChipFace('smiley', p.color)); slots.append(s); }
     wrap.append(row, slots);
     if (fCap) wrap.classList.add('is-eliminated');
     if (sCount >= 3) wrap.classList.add('is-winner');
@@ -209,6 +219,20 @@ export function syncLogHeight(playWrap, boardEl) {
   const titleH = title ? title.getBoundingClientRect().height : 0;
   const mt = Math.max(0, Math.round(boardTop - rightTop - titleH));
   box.style.marginTop = `${mt}px`;
-  // Keep the log pinned to the latest entry after layout changes
-  box.scrollTop = box.scrollHeight;
+}
+
+export function showWinModal(winner) {
+  const body = document.createElement('div');
+  const titleBottom = document.createElement('div'); titleBottom.className = 'kio-rack-title';
+  const dot = document.createElement('span'); dot.className = `kio-dot kio-${winner.color}`;
+  const span = document.createElement('span'); span.textContent = `${winner.name} Wins!`;
+  titleBottom.append(dot, document.createTextNode(' '), span);
+  const hint = document.createElement('div');
+  hint.style.marginTop = '8px';
+  hint.style.fontWeight = '600';
+  hint.style.fontSize = '14px';
+  hint.style.color = '#e5e7eb';
+  hint.textContent = 'Click outside to dismiss';
+  body.append(titleBottom, hint);
+  openModal({ title: 'Game Over', body });
 }
