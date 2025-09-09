@@ -53,9 +53,9 @@
 
 /* Styled numeric inputs for Rain Controls */
 .form-grid input[type="number"].control {
-  background: #3f48cc;
+  background: var(--primary);
   color: #ffffff;
-  border: 1px solid #3f48cc;
+  border: 1px solid var(--primary);
   border-radius: var(--radius);
   padding: var(--space-2);
   caret-color: #ffffff;
@@ -87,9 +87,9 @@
 .teardrop-btn:hover { background: var(--bg-elev); }
 .teardrop-btn:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 .teardrop-btn svg { transform: rotate(180deg); transform-origin: 50% 50%; }
-.teardrop-btn .drop { fill: #0f1115; stroke: #3f48cc; stroke-width: 2px; }
-.teardrop-btn.on .drop { fill: #3f48cc; stroke: #3f48cc; }
-.teardrop-btn.off .drop { fill: #0f1115; stroke: #3f48cc; }
+.teardrop-btn .drop { fill: #0f1115; stroke: var(--primary); stroke-width: 2px; }
+.teardrop-btn.on .drop { fill: var(--primary); stroke: var(--primary); }
+.teardrop-btn.off .drop { fill: #0f1115; stroke: var(--primary); }
 
 /* Hero */
 .hero { display: grid; place-items: center; padding: min(12vh, var(--space-8)) 0; text-align: center; }
@@ -117,7 +117,7 @@
 .section { display: grid; gap: 6px; }
 .pips-button { padding: 6px 10px; border: 1px solid var(--border); color: var(--text); background: var(--bg); border-radius: 6px; cursor: pointer; }
 .pips-button:not(.pips-primary):hover { background: var(--bg-elev); }
-.pips-primary { border: 1px solid #3f48cc; background: #3f48cc; color: #fff; border-radius: 8px; font-weight: 700; }
+.pips-primary { border: 1px solid var(--primary); background: var(--primary); color: #fff; border-radius: 8px; font-weight: 700; }
 .pips-primary:hover, .pips-primary:focus { filter: brightness(1.05); }
 .pips-primary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 .pips-input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; flex: 1; background: var(--bg); color: var(--text); }
@@ -148,7 +148,7 @@
 
 /* Pips tabs buttons override to use primary theme */
 .pips-tabs { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); justify-content: center; }
-.pips-tabs .button { background: #3f48cc; color: #fff; border: 1px solid #3f48cc; }
+.pips-tabs .button { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
 .pips-tabs .button:hover { filter: brightness(1.05); text-decoration: none; }
 .pips-tabs .button.button-secondary { background: var(--bg-elev); color: var(--text); border: 1px solid var(--border); }
 
@@ -159,7 +159,7 @@
 .kio-wrap { padding: var(--space-4); background: var(--bg); color: var(--text); border-radius: var(--radius); }
 .kio-wrap .hidden { display: none !important; }
 .kio-toolbar { display: flex; gap: var(--space-3); }
-.kio-toolbar .button.active { background: #3f48cc; color: #fff; border: 1px solid #3f48cc; }
+.kio-toolbar .button.active { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
 .kio-setup .kio-buttons { display: flex; justify-content: center; }
 .kio-start .kio-controls { display: grid; gap: var(--space-4); }
 .kio-start .kio-how { margin-top: var(--space-6); }
@@ -171,9 +171,9 @@
 .kio-name:disabled { opacity: 0.6; }
 .kio-pcount { display: inline-flex; align-items: center; gap: 10px; }
 .kio-pbtn { border: 1px solid var(--border); background: var(--bg-elev); color: var(--muted); }
-.kio-pbtn.active { background: #3f48cc; border-color: #3f48cc; color: #fff; }
+.kio-pbtn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 .kio-buttons { display: flex; gap: var(--space-3); justify-content: center; }
-.kio-start #kio-new.button { background: #3f48cc; color: #fff; border: 1px solid #3f48cc; }
+.kio-start #kio-new.button { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
 .kio-start #kio-new.button:hover { filter: brightness(1.05); }
 .kio-rules .kio-list { padding-left: 18px; }
 .kio-examples { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; }
@@ -183,8 +183,8 @@
 .kio-cell { position: relative; }
 .kio-cell.light { background: #f1f5f9; }
 .kio-cell.dark { background: #e2e8f0; }
-.kio-cell.kio-droppable { outline: 2px dashed #3f48cc; outline-offset: -4px; }
-.kio-cell.kio-drop-hover { outline: 3px solid #3f48cc; outline-offset: -4px; }
+.kio-cell.kio-droppable { outline: 2px dashed var(--primary); outline-offset: -4px; }
+.kio-cell.kio-drop-hover { outline: 3px solid var(--primary); outline-offset: -4px; }
 .kio-dot { display: inline-block; width: 18px; height: 18px; border-radius: 999px; border: 2px solid rgba(0,0,0,0.5); box-shadow: 0 1px 1px rgba(0,0,0,0.2); }
 .kio-piece { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 2px solid #111827; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 .kio-piece.face-down { filter: brightness(0.95); }
@@ -240,7 +240,7 @@
 .kio-rack-row { display: flex; align-items: center; gap: 8px; }
 .kio-rack-row { margin-bottom: 10px; }
 .kio-turn-arrow { width: 18px; height: 18px; color: var(--muted); visibility: hidden; flex: 0 0 auto; }
-.kio-rack-row.is-active .kio-turn-arrow { visibility: visible; color: #3f48cc; }
+.kio-rack-row.is-active .kio-turn-arrow { visibility: visible; color: var(--primary); }
 /* Align the Players title with the rack boxes (not the arrow) */
 .kio-left .kio-side-title { margin-left: 26px; }
 
@@ -253,9 +253,9 @@
 .fuse.running { color: #ef4444; font-weight: 700; }
 .fuse.defused { color: #10b981; font-weight: 700; }
 .ts-presets { display: flex; gap: var(--space-2); align-items: center; }
-.ts-presets .button.active { background: #3f48cc; color: #fff; border: 1px solid #3f48cc; }
+.ts-presets .button.active { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
 /* Theme New Game button to site primary */
-.ts-controls #ts-new.button { background: #3f48cc; color: #fff; border: 1px solid #3f48cc; }
+.ts-controls #ts-new.button { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
 .ts-controls #ts-new.button:hover { filter: brightness(1.05); }
 
 .ts-board { --ts-size: 28px; --ts-gap: 0px; display: grid; grid-template-columns: repeat(var(--ts-cols), var(--ts-size)); gap: var(--ts-gap); justify-content: center; margin-top: var(--space-4); }
@@ -286,10 +286,10 @@
 .ts-modal-card h3 { margin: 0 0 var(--space-3); text-align: center; }
 .ts-modal-body { display: grid; gap: var(--space-2); text-align: center; margin-bottom: var(--space-4); }
 .ts-modal-actions { display: flex; justify-content: center; }
-.ts-modal-actions #ts-play-again.button { background: #3f48cc; color: #fff; border: 1px solid #3f48cc; }
+.ts-modal-actions #ts-play-again.button { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
 .ts-modal-actions #ts-play-again.button:hover { filter: brightness(1.05); }
 /* Custom config save themed */
-.ts-modal-actions #cfg-save.button { background: #3f48cc; color: #fff; border: 1px solid #3f48cc; }
+.ts-modal-actions #cfg-save.button { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
 .ts-modal-actions #cfg-save.button:hover { filter: brightness(1.05); }
 
 /* Config modal */

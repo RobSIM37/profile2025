@@ -1,4 +1,5 @@
 import { createCanvasRenderer } from './canvasRenderer.js';
+import { getJSON, setJSON, remove as removeKey } from '../../lib/storage.js';
 
 const STORAGE_KEY = 'coderain:options';
 
@@ -9,20 +10,8 @@ let state = {
   defaults: {},
 };
 
-function loadStoredOptions() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
-    const obj = JSON.parse(raw);
-    return typeof obj === 'object' && obj ? obj : {};
-  } catch {
-    return {};
-  }
-}
-
-function persistOptions(opts) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(opts || {})); } catch {}
-}
+function loadStoredOptions() { return getJSON(STORAGE_KEY, {}) || {}; }
+function persistOptions(opts) { setJSON(STORAGE_KEY, opts || {}); }
 
 export function mountCodeRain(options = {}) {
   // Allow a friendlier alias: `flicker` -> `switchRate`
@@ -95,7 +84,7 @@ export function getEnabled() {
 export function resetOptions() {
   if (!state.defaults) return;
   setOptions({ ...state.defaults });
-  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  removeKey(STORAGE_KEY);
 }
 
 export function getDefaults() {

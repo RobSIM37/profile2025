@@ -1,6 +1,6 @@
 // Minimal hash-based router for a static site
 
-export function initRouter({ routes, baseTitle = document.title }) {
+export function initRouter({ routes, baseTitle = document.title, beforeResolve }) {
   const getPath = () => {
     const hash = window.location.hash || '#/';
     const raw = hash.slice(1); // remove '#'
@@ -10,9 +10,32 @@ export function initRouter({ routes, baseTitle = document.title }) {
   const resolve = (path) => routes[path] || routes['/404'] || routes['/'];
 
   async function render() {
-    const path = getPath();
+    let path = getPath();
+    // Optional guard/preprocess step to allow redirects (e.g., gated routes)
+    try {
+      if (typeof beforeResolve === 'function') {
+        const next = beforeResolve(path);
+        if (typeof next === 'string' && next !== path) {
+          // Update the hash and stop this render; next hashchange will re-enter
+          if (window.location.hash !== '#' + next) window.location.hash = '#' + next;
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('[router] beforeResolve error', err);
+    }
     const loader = resolve(path);
-    const mod = await loader();
+    let mod;
+    try {
+      mod = await loader();
+    } catch (err) {
+      console.error('[router] Failed to load route', path, err);
+      try {
+        mod = routes['/404'] ? await routes['/404']() : { meta: { title: 'Not Found' }, render: () => `<section class="stack"><h2>Route Error</h2><p>Unable to load <code>${path}</code>.</p></section>` };
+      } catch {
+        mod = { render: () => `<section class="stack"><h2>Route Error</h2><p>Unable to load <code>${path}</code>.</p></section>` };
+      }
+    }
     const app = document.getElementById('app');
     if (!app) return;
 

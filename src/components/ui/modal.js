@@ -1,0 +1,71 @@
+// Minimal accessible modal utility
+// Usage: const m = openModal({ title, body, actions: [{ label, variant, onClick }] })
+// Returns handle with close()
+
+export function openModal({ title = '', body = '', actions = [], onClose } = {}) {
+  const overlay = document.createElement('div');
+  overlay.className = 'ui-modal-overlay';
+  Object.assign(overlay.style, {
+    position: 'fixed', inset: '0', display: 'grid', placeItems: 'center',
+    background: 'rgba(0,0,0,0.55)', zIndex: '10000'
+  });
+
+  const card = document.createElement('div');
+  card.className = 'ui-modal-card';
+  Object.assign(card.style, {
+    background: 'var(--bg)', color: 'var(--text)',
+    border: '1px solid var(--border)', borderRadius: '10px',
+    minWidth: '260px', maxWidth: 'min(92vw, 720px)', padding: '18px 22px',
+    boxShadow: '0 10px 24px rgba(0,0,0,0.35)'
+  });
+
+  const h = document.createElement('div');
+  h.className = 'ui-modal-title';
+  h.textContent = title;
+  h.style.fontWeight = '800';
+  h.style.fontSize = '20px';
+  card.appendChild(h);
+
+  const bodyWrap = document.createElement('div');
+  bodyWrap.className = 'ui-modal-body';
+  bodyWrap.style.marginTop = '8px';
+  if (typeof body === 'string') bodyWrap.innerHTML = body;
+  else if (body instanceof Element) bodyWrap.append(body);
+  card.appendChild(bodyWrap);
+
+  if (actions?.length) {
+    const bar = document.createElement('div');
+    bar.className = 'ui-modal-actions';
+    bar.style.display = 'flex';
+    bar.style.gap = '8px';
+    bar.style.justifyContent = 'flex-end';
+    bar.style.marginTop = '12px';
+    for (const a of actions) {
+      const btn = document.createElement('button');
+      btn.className = `button${a.variant === 'secondary' ? ' button-secondary' : ''}`;
+      btn.textContent = a.label || 'OK';
+      btn.addEventListener('click', () => {
+        a.onClick?.();
+        close();
+      });
+      bar.append(btn);
+    }
+    card.appendChild(bar);
+  }
+
+  const close = () => {
+    overlay.remove();
+    document.removeEventListener('keydown', onKey);
+    onClose?.();
+  };
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', onKey);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+  overlay.append(card);
+  document.body.append(overlay);
+  // focus first focusable
+  setTimeout(()=> card.querySelector('button')?.focus(), 0);
+  return { close };
+}
+

@@ -5,6 +5,7 @@
   --muted: #a3a9b7;
   --link: #7cb3ff;
   --accent: #6ee7b7;
+  --primary: #3f48cc;
   --border: #2a3040;
   --radius: 10px;
   --space-1: 4px;
@@ -65,7 +66,8 @@ a:hover { text-decoration: underline; }
 .site-footer { margin-top: auto; }
 
 main { flex: 1 0 auto; }
-main.container { border: 1px solid #3f48cc; border-radius: var(--radius); padding: var(--space-4); }
+main.container { border: 1px solid var(--primary); border-radius: var(--radius); padding: var(--space-4); }
+.app-solid { background: var(--bg); color: var(--text); }
 
 /* Ensure content appears above the background canvas */
 .site-header, main, .site-footer { position: relative; z-index: 1; }
@@ -99,8 +101,8 @@ main:focus { outline: none; }
 
 .button {
   display: inline-block;
-  background: var(--accent);
-  color: #08120f;
+  background: var(--primary);
+  color: #ffffff;
   font-weight: 600;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius);

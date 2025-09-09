@@ -1,3 +1,6 @@
+import { setAppTransparent } from '../lib/appShell.js';
+import { Card } from '../components/ui/card.js';
+
 export const meta = {
   title: 'Gallery',
   description: 'Selected projects and builds',
@@ -36,22 +39,9 @@ const items = [
 ];
 
 export function render() {
+  setAppTransparent();
   const cards = items
-    .map(
-      (i) => `
-      <article class="card">
-        <a href="${i.link}" class="card-link">
-          <div class="card-media">
-            <img loading="lazy" src="${i.img}" alt="${i.tagline || i.title}" onerror="this.onerror=null; this.src='data:image/svg+xml,${ph}';" />
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">${i.title}</h3>
-            ${i.tagline ? `<p class=\"card-tagline\">${i.tagline}</p>` : ''}
-          </div>
-        </a>
-      </article>
-    `
-    )
+    .map((i) => Card({ title: i.title, tagline: i.tagline, img: i.img, link: i.link, alt: i.tagline || i.title }))
     .join('');
 
   return `

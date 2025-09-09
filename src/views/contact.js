@@ -1,9 +1,12 @@
+import { setAppTransparent } from '../lib/appShell.js';
+
 export const meta = {
   title: 'Contact',
   description: 'How to reach me',
 };
 
 export function render() {
+  setAppTransparent();
   return `
     <section class="stack">
       <p>Best way to reach me:</p>
@@ -14,4 +17,3 @@ export function render() {
     </section>
   `;
 }
-

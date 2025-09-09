@@ -1,4 +1,7 @@
 import { initBoard, reveal, chord, toggleFlag, isWin, isLoss, flagsLeft, revealAllMines } from './engine.js';
+import { Button } from '../../components/ui/button.js';
+import { setAppSolid } from '../../lib/appShell.js';
+import { getJSON, setJSON } from '../../lib/storage.js';
 
 export const meta = {
   title: 'Timesweeper',
@@ -9,17 +12,18 @@ export function render() {
   const frag = document.createDocumentFragment();
   const wrap = document.createElement('section');
   wrap.className = 'stack ts-wrap';
+  setAppSolid(true);
 
   const header = document.createElement('div');
   header.className = 'ts-controls';
   header.innerHTML = `
     <div class="ts-presets">
-      <button id="ts-easy" class="button button-secondary">Easy</button>
-      <button id="ts-inter" class="button button-secondary">Intermidiate</button>
-      <button id="ts-hard" class="button button-secondary">Hard</button>
-      <button id="ts-custom" class="button button-secondary">Custom</button>
+      ${Button({ id: 'ts-easy', label: 'Easy', variant: 'secondary' })}
+      ${Button({ id: 'ts-inter', label: 'Intermediate', variant: 'secondary' })}
+      ${Button({ id: 'ts-hard', label: 'Hard', variant: 'secondary' })}
+      ${Button({ id: 'ts-custom', label: 'Custom', variant: 'secondary' })}
     </div>
-    <button id="ts-new" class="button">New Game</button>
+    ${Button({ id: 'ts-new', label: 'New Game' })}
     <div class="ts-stat">Flags: <span id="ts-flags">0</span></div>
     <div class="ts-stat">Fuse: <span id="ts-fuse" class="fuse running">--:--.-</span></div>
   `;
@@ -71,20 +75,15 @@ export function render() {
         </div>
       </div>
       <div class="ts-modal-actions">
-        <button id="cfg-cancel" class="button button-secondary">Cancel</button>
-        <button id="cfg-save" class="button">Save</button>
+        ${Button({ id: 'cfg-cancel', label: 'Cancel', variant: 'secondary' })}
+        ${Button({ id: 'cfg-save', label: 'Save' })}
       </div>
     </div>`;
 
   wrap.append(header, boardHost, modal, cfg);
   frag.append(wrap);
 
-  // Ensure the entire blue-border area (main container) is filled with a solid backdrop
-  const appEl = document.getElementById('app');
-  if (appEl) {
-    appEl.style.background = 'var(--bg)';
-    appEl.style.color = 'var(--text)';
-  }
+  // Container styling handled via CSS + app solid class
 
   // Prevent native context menu anywhere in the Timesweeper area (immersion)
   wrap.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -114,8 +113,8 @@ export function render() {
 
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v|0));
   const statsKey = () => `timesweeper:stats:${W}x${H}x${M}`;
-  const readStats = () => { try { return JSON.parse(localStorage.getItem(statsKey())||'{}'); } catch { return {}; } };
-  const writeStats = (s) => localStorage.setItem(statsKey(), JSON.stringify(s));
+  const readStats = () => getJSON(statsKey(), {}) || {};
+  const writeStats = (s) => setJSON(statsKey(), s);
   const fmt = (ms) => {
     if (!ms || ms <= 0) return '--:--.-';
     const tenths = Math.floor(ms / 100);
@@ -126,8 +125,8 @@ export function render() {
     return `${m}:${ss}.${t}`;
   };
   const fuseKey = 'timesweeper:customFuse';
-  function readFuse(){ try { return JSON.parse(localStorage.getItem(fuseKey)||'{}'); } catch { return {}; } }
-  function writeFuse(obj){ localStorage.setItem(fuseKey, JSON.stringify(obj)); }
+  function readFuse(){ return getJSON(fuseKey, {}) || {}; }
+  function writeFuse(obj){ setJSON(fuseKey, obj); }
 
   function syncStats() {
     flagsEl.textContent = String(flagsLeft(board, M));
@@ -153,7 +152,7 @@ export function render() {
       return Math.max(1000, (mm*60+ss)*1000);
     }
     const s = readStats();
-    const defaults = { Easy: 60000, Intermidiate: 180000, Hard: 300000 };
+    const defaults = { Easy: 60000, Intermediate: 180000, Hard: 300000 };
     const fallback = defaults[difficulty] ?? 60000;
     const best = s.best && isFinite(s.best) && s.best>0 ? s.best : fallback;
     return best;
@@ -162,7 +161,7 @@ export function render() {
   function updateDifficultyUI() {
     const btns = {
       Easy: wrap.querySelector('#ts-easy'),
-      Intermidiate: wrap.querySelector('#ts-inter'),
+      Intermediate: wrap.querySelector('#ts-inter'),
       Hard: wrap.querySelector('#ts-hard'),
       Custom: wrap.querySelector('#ts-custom'),
     };
@@ -291,7 +290,7 @@ export function render() {
       bestEl.textContent = fmt(s.best||0);
       // Highlight Best Time if new record for this preset
       if (won && elapsed < prevBest) {
-        bestEl.style.color = '#3f48cc';
+        bestEl.style.color = 'var(--primary)';
         bestEl.style.fontWeight = '800';
       } else {
         bestEl.style.color = '';
@@ -381,7 +380,7 @@ export function render() {
     else modal.classList.add('hidden');
   });
   wrap.querySelector('#ts-easy').addEventListener('click', () => applyPreset('Easy', 9, 9, 10));
-  wrap.querySelector('#ts-inter').addEventListener('click', () => applyPreset('Intermidiate', 16, 16, 40));
+  wrap.querySelector('#ts-inter').addEventListener('click', () => applyPreset('Intermediate', 16, 16, 40));
   wrap.querySelector('#ts-hard').addEventListener('click', () => applyPreset('Hard', 30, 16, 99));
 
   newGame();
