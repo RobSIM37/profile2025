@@ -30,6 +30,8 @@ export function ensureBaseStyles() {
     .sidebar-footer { margin-top: auto; display: grid; gap: 8px; }
 
     .row { display: flex; gap: 8px; align-items: center; }
+    .pips-controls { margin-bottom: 16px; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 8px; }
+    .pips-controls .hint { color: #666; }
     .section { display: grid; gap: 6px; }
 
     .pips-button {

@@ -19,9 +19,8 @@ export default class Sidebar {
     const tabs = el('div', null, 'tabs');
     const wrap = el('div', null, 'panel');
     const footer = el('div', null, 'sidebar-footer');
-    const hint = el('div', '', 'hint');
-    footer.append(hint);
-    this._hint = hint;
+    // Hint element is now provided externally (next to controls).
+    // Keep footer for layout spacing, but do not render a hint here.
 
     const mkTab = (label, mode) => {
       const b = el('button', label, 'pips-tab');
@@ -33,15 +32,15 @@ export default class Sidebar {
     mkTab(Modes.DefineArea, Modes.DefineArea);
     mkTab(Modes.AddDomino, Modes.AddDomino);
 
-    const solveBtn = primaryBtn('Solve', ()=> this.onSolve?.());
-    const resetBtn = btn('Reset', ()=> this.onReset?.());
-    footer.append(solveBtn, resetBtn);
-
     root.append(tabs, wrap, footer);
     container.innerHTML = '';
     container.append(root);
     this.root = root;
     this._panelWrap = wrap;
+  }
+
+  setHintEl(el){
+    this._hint = el || null;
   }
 
   setMode(mode){
