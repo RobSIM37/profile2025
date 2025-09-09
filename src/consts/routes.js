@@ -1,4 +1,4 @@
-// Centralized route table for the hash router
+﻿// Centralized route table for the hash router
 // Each entry maps a path to a loader that resolves to a module
 
 import { makeBeforeResolve, allow } from '../lib/routeGuards.js';
@@ -7,8 +7,8 @@ export const routes = {
   '/': () => import('../views/landing.js'),
   '/gallery': () => import('../views/gallery.js'),
   '/gallery/pips-solver': () => import('../views/gallery/pips-solver.js'),
-  '/gallery/timesweeper': () => import('../views/gallery/timesweeper/index.js'),
-  '/gallery/knock-it-off': () => import('../views/gallery/knockitoff/index.js'),
+  '/gallery/timesweeper': () => import('../views/gallery/timesweeper/page.js'),
+  '/gallery/knock-it-off': () => import('../views/gallery/knockitoff/page.js'),
   '/gallery/knock-it-off/how-to': () => import('../views/gallery/knockitoff/howto.js'),
   '/gallery/knock-it-off/game': () => import('../views/gallery/knockitoff/game.js'),
   '/about': () => import('../views/about.js'),
@@ -38,3 +38,4 @@ export const beforeResolve = makeBeforeResolve([
     redirect: '/gallery/knock-it-off',
   },
 ]);
+

@@ -1,62 +1,133 @@
-export const meta = {
-  title: 'About',
-  description: 'Data usage and privacy notes for this site',
-};
+﻿export const meta = {
+  title: 'About',
+  description: 'Data usage and privacy notes for this site',
+};
+
+import { Button } from '../components/ui/button.js';
+import { makeTabs } from '../components/ui/tabs.js';
+import { removeByPrefixes } from '../lib/storage.js';
+import { setAppSolid } from '../lib/appShell.js';
+// Simple Patch Entry component (scoped to About page for now)
+function PatchEntry(dateStr, iteration, items = []) {
+  const wrap = document.createElement('article');
+  wrap.className = 'stack';
+  const title = document.createElement('h4');
+  title.textContent = `${dateStr}--${String(iteration).padStart(2,'0')}`;
+  const ul = document.createElement('ul'); ul.style.listStyleType = 'disc'; ul.style.paddingLeft = '18px';
+  for (const s of items) {
+    const li = document.createElement('li');
+    li.textContent = String(s);
+    ul.appendChild(li);
+  }
+  wrap.append(title, ul);
+  return wrap;
+}
+
+function formatDateYMD(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+export function render() {
+  const frag = document.createDocumentFragment();
+  const sec = document.createElement('section');
+  sec.className = 'stack about-wrap';
+  setAppSolid(true);
+
+  // Tabs header
+  const tabs = makeTabs({
+    items: [
+      { id: 'about', label: 'About This Site' },
+      { id: 'patches', label: 'Patch History' },
+    ],
+    activeId: 'about',
+    onChange: (id) => showTab(id),
+  });
+
+  // Panes
+  const aboutPane = document.createElement('div');
+  const patchesPane = document.createElement('div');
+  patchesPane.style.display = 'none';
+
+  aboutPane.innerHTML = `
+    <h2>About This Site</h2>
+    <p>This site is a static, client-side app. It does not use analytics, ads, trackers, or send your gameplay data to any server.</p>
+    <h3>Local Storage Only</h3>
+    <ul>
+      <li>Timesweeper: stores best times, wins/losses per difficulty (size), and Custom fuse time.</li>
+      <li>Code Rain: stores your visual preferences (size, density, colors, speeds) so the background looks the same when you return.</li>
+      <li>Purpose: keep your preferences between visits without tracking. Nothing is sent anywhere.</li>
+      <li>No cookies are set. Nothing leaves your device.</li>
+    </ul>
+    <h3>Managing Your Data</h3>
+    <p>You can clear the saved data anytime using the buttons below (applies only to this browser):</p>
+    <div class="actions">
+      ${Button({ id: 'about-clear-timesweeper', label: 'Clear Timesweeper Data', variant: 'secondary' })}
+      ${Button({ id: 'about-clear-coderain', label: 'Clear Code Rain Settings', variant: 'secondary' })}
+      ${Button({ id: 'about-clear-all', label: 'Clear All Site Data', variant: 'secondary' })}
+    </div>
+    <p class="note">Clearing data will reset stored best times, wins/losses, and Custom fuse settings.</p>
+  `;
+
+  patchesPane.innerHTML = `
+    <div id="patch-list" class="stack"></div>
+  `;
+
+  function showTab(id) {
+    const isAbout = id === 'about';
+    aboutPane.style.display = isAbout ? '' : 'none';
+    patchesPane.style.display = isAbout ? 'none' : '';
+  }
+
+  sec.append(tabs.root, aboutPane, patchesPane);
+  // Populate Patch History (newest on top)
+  try {
+    const list = patchesPane.querySelector('#patch-list');
+    if (list) {
+      const today = formatDateYMD(new Date());
+      const entry = PatchEntry(today, 1, [
+        'Added Demo and Source tabs to Timesweeper and Knock It Off projects',
+        'Created shared Tabs header and integrated into Pips Solver; added Patch History tab to About',
+        'Created shared numberField input; updated Pips Board Tools to use it',
+        'Added GPT Breadcrumbs guide and component manifest in /docs',]);
+      // newest on top
+      list.prepend(entry);
+    }
+  } catch {}
+  frag.append(sec);
+
+  queueMicrotask(() => {
+    const clearTS = sec.querySelector('#about-clear-timesweeper');
+    const clearAll = sec.querySelector('#about-clear-all');
+    const clearCR = sec.querySelector('#about-clear-coderain');
+    clearTS?.addEventListener('click', () => {
+      try {
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith('timesweeper:'))
+          .forEach((k) => localStorage.removeItem(k));
+        alert('Timesweeper data cleared.');
+      } catch {}
+    });
+    clearCR?.addEventListener('click', () => {
+      try {
+        localStorage.removeItem('coderain:options');
+        alert('Code Rain settings cleared.');
+      } catch {}
+    });
+    clearAll?.addEventListener('click', () => {
+      if (!confirm('Clear all data saved by this site in this browser?')) return;
+      removeByPrefixes(['timesweeper:', 'coderain:']);
+      alert('Site data cleared.');
+    });
+  });
+
+  return frag;
+}
+
+
 
-import { Button } from '../components/ui/button.js';
-import { removeByPrefixes } from '../lib/storage.js';
-import { setAppSolid } from '../lib/appShell.js';
 
-export function render() {
-  const frag = document.createDocumentFragment();
-  const sec = document.createElement('section');
-  sec.className = 'stack about-wrap';
-  setAppSolid(true);
-  sec.innerHTML = `
-    <h2>About This Site</h2>
-    <p>This site is a static, client‑side app. It does not use analytics, ads, trackers, or send your gameplay data to any server.</p>
-    <h3>Local Storage Only</h3>
-    <ul>
-      <li>Timesweeper: stores best times, wins/losses per difficulty (size), and Custom fuse time.</li>
-      <li>Code Rain: stores your visual preferences (size, density, colors, speeds) so the background looks the same when you return.</li>
-      <li>Purpose: keep your preferences between visits without tracking. Nothing is sent anywhere.</li>
-      <li>No cookies are set. Nothing leaves your device.</li>
-    </ul>
-    <h3>Managing Your Data</h3>
-    <p>You can clear the saved data anytime using the buttons below (applies only to this browser):</p>
-    <div class="actions">
-      ${Button({ id: 'about-clear-timesweeper', label: 'Clear Timesweeper Data', variant: 'secondary' })}
-      ${Button({ id: 'about-clear-coderain', label: 'Clear Code Rain Settings', variant: 'secondary' })}
-      ${Button({ id: 'about-clear-all', label: 'Clear All Site Data', variant: 'secondary' })}
-    </div>
-    <p class="note">Clearing data will reset stored best times, wins/losses, and Custom fuse settings.</p>
-  `;
-  frag.append(sec);
 
-  queueMicrotask(() => {
-    const clearTS = sec.querySelector('#about-clear-timesweeper');
-    const clearAll = sec.querySelector('#about-clear-all');
-    const clearCR = sec.querySelector('#about-clear-coderain');
-    clearTS?.addEventListener('click', () => {
-      try {
-        Object.keys(localStorage)
-          .filter((k) => k.startsWith('timesweeper:'))
-          .forEach((k) => localStorage.removeItem(k));
-        alert('Timesweeper data cleared.');
-      } catch {}
-    });
-    clearCR?.addEventListener('click', () => {
-      try {
-        localStorage.removeItem('coderain:options');
-        alert('Code Rain settings cleared.');
-      } catch {}
-    });
-    clearAll?.addEventListener('click', () => {
-      if (!confirm('Clear all data saved by this site in this browser?')) return;
-      removeByPrefixes(['timesweeper:', 'coderain:']);
-      alert('Site data cleared.');
-    });
-  });
 
-  return frag;
-}
