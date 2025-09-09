@@ -28,8 +28,22 @@ export function mountPipsSolver(target) {
   layout.className = "pips-layout";
   const boardWrap = document.createElement("div");
   boardWrap.className = "pips-board-wrap";
+  // Create a vertical column for sidebar area with controls above it
+  const sideCol = document.createElement("div");
+  const controls = document.createElement("div");
+  controls.className = "row pips-controls";
+  const solveBtn = document.createElement("button");
+  solveBtn.className = "pips-button pips-primary";
+  solveBtn.textContent = "Solve";
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "pips-button";
+  resetBtn.textContent = "Reset";
+  const hint = document.createElement("div");
+  hint.className = "hint";
+  controls.append(solveBtn, resetBtn, hint);
   const sidebarMount = document.createElement("div");
-  layout.append(boardWrap, sidebarMount);
+  sideCol.append(controls, sidebarMount);
+  layout.append(boardWrap, sideCol);
   target.append(layout);
 
   // Defaults
@@ -43,10 +57,9 @@ export function mountPipsSolver(target) {
 
   let sidebar = new Sidebar({
     onModeChange: (mode)=> controller.setMode(mode),
-    onSolve: handleSolve,
-    onReset: handleReset
   });
   sidebar.mount(sidebarMount);
+  sidebar.setHintEl(hint);
 
   let controller = new Controller({
     puzzle,
@@ -134,19 +147,18 @@ export function mountPipsSolver(target) {
   }
 
   function handleReset() {
-    board.clearSolution();
-    puzzle.clearAll();
-    puzzle.listAreas().forEach(a => puzzle.removeArea(a.id));
-    puzzle.dominos.slice().forEach(d => puzzle.removeDomino(d.id));
-    controller.setActiveArea(null);
-    board.render(puzzle);
-    sidebar.renderPanels({ puzzle, activeAreaId: controller.activeAreaId, grid: GRID });
-    sidebar.toast("Puzzle reset.");
-    // Reset ID counters for areas/dominoes and return to the first step panel
+    // Reset ID counters for areas/dominoes
     resetIdCounters();
-    // Switch UI to the first-step panel and sync controller via sidebar
+    // Reset grid back to defaults, which recreates puzzle/board and re-renders UI
+    applyGridResize({ width: 8, height: 8, cellSize: 48 });
+    // Switch UI to the first-step panel
     sidebar.setMode(Modes.DefineBoard);
+    sidebar.toast("Puzzle reset.");
   }
+
+  // Wire up external controls (above the sidebar)
+  solveBtn.addEventListener('click', handleSolve);
+  resetBtn.addEventListener('click', handleReset);
 
   function applyGridResize({ width, height, cellSize }) {
     GRID = { width, height, cellSize };
@@ -163,7 +175,6 @@ export function mountPipsSolver(target) {
       onHint: (msg) => sidebar.toast(msg),
     });
     controller.setMode(sidebar.mode);
-    sidebar.renderPanels({ puzzle, activeAreaId: controller.activeAreaId, grid: GRID });
     sidebar.toast(`Resized to ${width} × ${height} (cell ${cellSize}px).`);
   }
 

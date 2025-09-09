@@ -17,24 +17,8 @@ export default class AreasPanel {
 
   render({ puzzle, activeAreaId }){
     const c = this.root; c.innerHTML = "";
-    c.append(el("h3","Requirement Areas"));
 
     const add = el("div", null, "section");
-    add.append(el("h4","Add New"));
-
-    const paletteWrap = el("div", null, "palette");
-    PALETTE.forEach(hex => {
-      const sw = el("button", null, "color");
-      sw.style.background = hex;
-      if (this._selectedColor === hex) sw.classList.add("is-selected");
-      sw.addEventListener("click", ()=>{
-        this._selectedColor = hex;
-        [...paletteWrap.children].forEach(ch => ch.classList.remove("is-selected"));
-        sw.classList.add("is-selected");
-      });
-      paletteWrap.append(sw);
-    });
-
     const ruleSel = select("Rule",[
       ["AllSame","All pips equal"],
       ["AllDiff","All pips different"],
@@ -52,17 +36,30 @@ export default class AreasPanel {
       const n = Number(target.input.value); if (Number.isFinite(n)) this._targetVal = n;
     });
 
-    const addBtn = btn("Add Area", ()=>{
-      const kind = this._ruleKind;
-      const rule = kind.startsWith("Sum") ? { kind, target: Number(this._targetVal) } : { kind };
-      this.onAddArea({ color: this._selectedColor, rule });
+    // Color palette moved below rule/target, and clicking a color adds the area
+    const paletteWrap = el("div", null, "palette");
+    PALETTE.forEach(hex => {
+      const sw = el("button", null, "color");
+      sw.style.background = hex;
+      if (this._selectedColor === hex) sw.classList.add("is-selected");
+      sw.addEventListener("click", ()=>{
+        this._selectedColor = hex;
+        // Visual selection update
+        [...paletteWrap.children].forEach(ch => ch.classList.remove("is-selected"));
+        sw.classList.add("is-selected");
+        // Add area immediately using current rule/target
+        const kind = this._ruleKind;
+        const rule = kind.startsWith("Sum") ? { kind, target: Number(this._targetVal) } : { kind };
+        this.onAddArea({ color: this._selectedColor, rule });
+      });
+      paletteWrap.append(sw);
     });
 
-    add.append(labelWrap("Color", paletteWrap), ruleSel.wrapper, target.wrapper, addBtn);
+    add.append(ruleSel.wrapper, target.wrapper, labelWrap("Color", paletteWrap));
     c.append(add);
 
     const listWrap = el("div", null, "section");
-    listWrap.append(el("h4","Existing"));
+    if (((puzzle?.listAreas()?.length) || 0) > 0) listWrap.append(el("h4","Existing"));
     const list = el("div");
     const areas = puzzle ? puzzle.listAreas() : [];
     areas.forEach(a => {
@@ -80,6 +77,10 @@ export default class AreasPanel {
     });
     listWrap.append(list);
     const clear = btn("Clear All", ()=> this.onClearAllAreas?.());
-    c.append(listWrap, clear);
+    if ((areas?.length || 0) >= 2) {
+      c.append(listWrap, clear);
+    } else if ((areas?.length || 0) === 1) {
+      c.append(listWrap);
+    }
   }
 }

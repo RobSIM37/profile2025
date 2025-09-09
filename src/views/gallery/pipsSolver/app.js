@@ -1,4 +1,4 @@
-import Puzzle from "./src/puzzle.js";
+import Puzzle, { resetIdCounters } from "./src/puzzle.js";
 import Board from "./src/board.js";
 import Controller from "./src/controller.js";
 import { solvePuzzle } from "./src/solver.js";
@@ -33,8 +33,22 @@ const layout = document.createElement("div");
 layout.className = "pips-layout";
 const boardWrap = document.createElement("div");
 boardWrap.className = "pips-board-wrap";
+// Create a vertical column for sidebar area with controls above it
+const sideCol = document.createElement("div");
+const controls = document.createElement("div");
+controls.className = "row pips-controls";
+const solveBtn = document.createElement("button");
+solveBtn.className = "pips-button pips-primary";
+solveBtn.textContent = "Solve";
+const resetBtn = document.createElement("button");
+resetBtn.className = "pips-button";
+resetBtn.textContent = "Reset";
+const hint = document.createElement("div");
+hint.className = "hint";
+controls.append(solveBtn, resetBtn, hint);
 const sidebarMount = document.createElement("div");
-layout.append(boardWrap, sidebarMount);
+sideCol.append(controls, sidebarMount);
+layout.append(boardWrap, sideCol);
 app.append(layout);
 
 // One place to define grid defaults
@@ -48,10 +62,9 @@ board.render(puzzle);
 
 let sidebar = new Sidebar({
   onModeChange: (mode)=> controller.setMode(mode),
-  onSolve: handleSolve,
-  onReset: handleReset
 });
 sidebar.mount(sidebarMount);
+sidebar.setHintEl(hint);
 
 let controller = new Controller({
   puzzle,
@@ -139,15 +152,15 @@ function handleSolve() {
 }
 
 function handleReset() {
-  board.clearSolution();
-  puzzle.clearAll();
-  puzzle.listAreas().forEach(a => puzzle.removeArea(a.id));
-  puzzle.dominos.slice().forEach(d => puzzle.removeDomino(d.id));
-  controller.setActiveArea(null);
-  board.render(puzzle);
-  sidebar.renderPanels({ puzzle, activeAreaId: controller.activeAreaId, grid: GRID });
+  resetIdCounters();
+  applyGridResize({ width: 8, height: 8, cellSize: 48 });
+  sidebar.setMode(Modes.DefineBoard);
   sidebar.toast("Puzzle reset.");
 }
+
+// Wire up external controls (above the sidebar)
+solveBtn.addEventListener('click', handleSolve);
+resetBtn.addEventListener('click', handleReset);
 
 function applyGridResize({ width, height, cellSize }) {
   GRID = { width, height, cellSize };
