@@ -1,4 +1,5 @@
 import { getOptions, setOptions } from '../components/codeRain/index.js';
+import { setAppTransparent } from '../lib/appShell.js';
 
 export const meta = {
   title: 'Code Rain',
@@ -6,6 +7,7 @@ export const meta = {
 };
 
 export function render() {
+  setAppTransparent();
   const opts = getOptions();
 
   const frag = document.createDocumentFragment();

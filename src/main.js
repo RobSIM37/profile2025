@@ -1,61 +1,22 @@
 import { initRouter } from './router.js';
-import * as Landing from './views/landing.js';
+import { routes as ROUTES, beforeResolve as BEFORE_RESOLVE } from './consts/routes.js';
 import { Brand } from './components/brand.js';
 import { mountCodeRain, getEnabled, setEnabled } from './components/codeRain/index.js';
+import { RAIN_OPTIONS } from './consts/code-rain.js';
 
 // Keep the footer year current
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-const routes = {
-  '/': async () => Landing,
-  '/gallery': () => import('./views/gallery.js'),
-  '/gallery/pips-solver': () => import('./views/gallery/pips-solver.js'),
-  '/gallery/timesweeper': () => import('./views/timesweeper/index.js'),
-  '/gallery/knock-it-off': () => import('./views/knockitoff/index.js'),
-  '/about': () => import('./views/about.js'),
-  '/contact': () => import('./views/contact.js'),
-  '/rain': () => import('./views/coderain.js'),
-  '/404': async () => ({
-    meta: { title: 'Not Found' },
-    render: () => `
-      <section class="stack">
-        <h2>Page not found</h2>
-        <p>Try the <a href="#/">home page</a>.</p>
-      </section>
-    `,
-  }),
-};
+const routes = ROUTES;
 
 // Mount persistent header brand
 const brandHost = document.getElementById('brand');
 if (brandHost) brandHost.innerHTML = Brand();
 
-initRouter({ routes, baseTitle: 'Rob Lewis' });
+initRouter({ routes, baseTitle: 'Rob Lewis', beforeResolve: BEFORE_RESOLVE });
 
 // Mount background Code Rain after DOM is ready
-const RAIN_OPTIONS = {
-  glyphSize: 24,
-  colorHead: '#c8d7ffff',
-  colorTrail: '#3f48cc',
-  // Flicker chance per trail glyph draw (0..1). You can also use `flicker`.
-  switchRate: 0.05,
-  // Speed in rows per second
-  speedMin: 7,
-  speedMax: 20,
-  // Trail length in rows
-  trailMin: 10,
-  trailMax: 28,
-  // Canvas background: 'auto' uses body background color
-  background: '#000',
-  // Max simultaneous heads per column
-  dropsPerColumn: 2,
-  // Trail fade speed range (higher = faster fade)
-  minFade: 0.8,
-  maxFade: 1.8,
-  // Use sharper digital type for glyphs
-  fontFamily: "'Share Tech Mono', monospace",
-};
 function initRainToggle() {
   const btn = document.getElementById('rain-toggle');
   if (!btn) return;

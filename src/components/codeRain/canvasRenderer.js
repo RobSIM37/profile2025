@@ -198,9 +198,6 @@ export function createCanvasRenderer(userOptions = {}) {
 
   function update(newOpts) {
     Object.assign(opts, newOpts);
-    // Ensure dropsPerColumn is an integer within bounds even if controller missed it
-    opts.dropsPerColumn = Math.max(1, Math.min(8, Math.round(opts.dropsPerColumn || 1)));
-    opts.glyphSize = Math.max(12, Math.min(64, Math.round(opts.glyphSize || 16)));
     resize();
   }
 

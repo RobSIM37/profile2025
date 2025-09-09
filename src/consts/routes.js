@@ -1,0 +1,40 @@
+// Centralized route table for the hash router
+// Each entry maps a path to a loader that resolves to a module
+
+import { makeBeforeResolve, allow } from '../lib/routeGuards.js';
+
+export const routes = {
+  '/': () => import('../views/landing.js'),
+  '/gallery': () => import('../views/gallery.js'),
+  '/gallery/pips-solver': () => import('../views/gallery/pips-solver.js'),
+  '/gallery/timesweeper': () => import('../views/gallery/timesweeper/index.js'),
+  '/gallery/knock-it-off': () => import('../views/gallery/knockitoff/index.js'),
+  '/gallery/knock-it-off/how-to': () => import('../views/gallery/knockitoff/howto.js'),
+  '/gallery/knock-it-off/game': () => import('../views/gallery/knockitoff/game.js'),
+  '/about': () => import('../views/about.js'),
+  '/contact': () => import('../views/contact.js'),
+  '/rain': () => import('../views/coderain.js'),
+  '/404': async () => ({
+    meta: { title: 'Not Found' },
+    render: () => `
+      <section class="stack">
+        <h2>Page not found</h2>
+        <p>Try the <a href="#/">home page</a>.</p>
+      </section>
+    `,
+  }),
+};
+
+// Optional: centralize route guards alongside the table
+export const beforeResolve = makeBeforeResolve([
+  {
+    match: '/gallery/knock-it-off/game',
+    allow: allow.sessionKey('kio:chosen'),
+    redirect: '/gallery/knock-it-off',
+  },
+  {
+    match: '/gallery/knock-it-off/how-to',
+    allow: allow.sessionKey('kio:howto'),
+    redirect: '/gallery/knock-it-off',
+  },
+]);
