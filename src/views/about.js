@@ -1,4 +1,4 @@
-﻿export const meta = {
+export const meta = {
   title: 'About',
   description: 'Data usage and privacy notes for this site',
 };
@@ -65,7 +65,9 @@ export function render() {
     <p>You can clear the saved data anytime using the buttons below (applies only to this browser):</p>
     <div class="actions">
       ${Button({ id: 'about-clear-timesweeper', label: 'Clear Timesweeper Data', variant: 'secondary' })}
-      ${Button({ id: 'about-clear-coderain', label: 'Clear Code Rain Settings', variant: 'secondary' })}
+      ${Button({ id: 'about-clear-coderain', label: 'Clear Code Rain Settings', variant: 'secondary' })}
+
+      ${Button({ id: 'about-clear-lighthouses', label: 'Reset Light Houses Data', variant: 'secondary' })}
       ${Button({ id: 'about-clear-all', label: 'Clear All Site Data', variant: 'secondary' })}
     </div>
     <p class="note">Clearing data will reset stored best times, wins/losses, and Custom fuse settings.</p>
@@ -85,15 +87,26 @@ export function render() {
   // Populate Patch History (newest on top)
   try {
     const list = patchesPane.querySelector('#patch-list');
-    if (list) {
+    if (list) {
+
+      const lhEntry = PatchEntry('2025-09-09', 2, [
+        'Added Light Houses gallery game with level-based difficulty and lighthouse icons',
+        'Seeds now encode puzzle state; shareable links with level + seed (router supports query in hash)',
+        'Progress advances only on legitimate wins; added light anti-cheat and one-click detection',
+        'New performance rules: max moves and minimum lights-on requirement',
+        'Centered, cleaner modals; outside-click on Game Over resets appropriately',
+        'Updated gallery art to illuminated lighthouse thumbnail',
+        'New global components: Accordion and LighthouseIcon',
+        'About page: added �Reset Light Houses Data�; Clear All includes Light Houses'
+      ]);
       const today = formatDateYMD(new Date());
       const entry = PatchEntry(today, 1, [
         'Added Demo and Source tabs to Timesweeper and Knock It Off projects',
         'Created shared Tabs header and integrated into Pips Solver; added Patch History tab to About',
         'Created shared numberField input; updated Pips Board Tools to use it',
         'Added GPT Breadcrumbs guide and component manifest in /docs',]);
-      // newest on top
-      list.prepend(entry);
+            list.prepend(lhEntry);
+list.prepend(entry);
     }
   } catch {}
   frag.append(sec);
@@ -101,7 +114,8 @@ export function render() {
   queueMicrotask(() => {
     const clearTS = sec.querySelector('#about-clear-timesweeper');
     const clearAll = sec.querySelector('#about-clear-all');
-    const clearCR = sec.querySelector('#about-clear-coderain');
+    const clearCR = sec.querySelector('#about-clear-coderain');
+    const clearLH = sec.querySelector('#about-clear-lighthouses');
     clearTS?.addEventListener('click', () => {
       try {
         Object.keys(localStorage)
@@ -116,17 +130,26 @@ export function render() {
         alert('Code Rain settings cleared.');
       } catch {}
     });
-    clearAll?.addEventListener('click', () => {
+    clearAll?.addEventListener('click', () => {
       if (!confirm('Clear all data saved by this site in this browser?')) return;
-      removeByPrefixes(['timesweeper:', 'coderain:']);
+      removeByPrefixes(['timesweeper:', 'coderain:', 'lighthouses:']);
       alert('Site data cleared.');
-    });
+    });
+
+    clearLH?.addEventListener('click', () => {
+      try {
+        removeByPrefixes(['lighthouses:']);
+        alert('Light Houses data reset.');
+      } catch {}
+    });
   });
 
   return frag;
 }
 
 
+
+
 
 
 

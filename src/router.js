@@ -4,7 +4,10 @@ export function initRouter({ routes, baseTitle = document.title, beforeResolve }
   const getPath = () => {
     const hash = window.location.hash || '#/';
     const raw = hash.slice(1); // remove '#'
-    return raw.startsWith('/') ? raw : `/${raw}`;
+    // Strip query/hash params after '?', keep only the route path
+    const qIdx = raw.indexOf('?');
+    const pathOnly = qIdx >= 0 ? raw.slice(0, qIdx) : raw;
+    return pathOnly.startsWith('/') ? pathOnly : `/${pathOnly}`;
   };
 
   const resolve = (path) => routes[path] || routes['/404'] || routes['/'];
