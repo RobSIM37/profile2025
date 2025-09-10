@@ -12,6 +12,8 @@ export const routes = {
   '/gallery/knock-it-off/how-to': () => import('../views/gallery/knockitoff/howto.js'),
   '/gallery/knock-it-off/game': () => import('../views/gallery/knockitoff/game.js'),
   '/gallery/light-houses': () => import('../views/gallery/lighthouses/page.js'),
+  '/gallery/memory': () => import('../views/gallery/memory/page.js'),
+  '/gallery/memory/game': () => import('../views/gallery/memory/game2.js'),
   '/about': () => import('../views/about.js'),
   '/contact': () => import('../views/contact.js'),
   '/rain': () => import('../views/coderain.js'),
@@ -37,6 +39,11 @@ export const beforeResolve = makeBeforeResolve([
     match: '/gallery/knock-it-off/how-to',
     allow: allow.sessionKey('kio:howto'),
     redirect: '/gallery/knock-it-off',
+  },
+  {
+    match: '/gallery/memory/game',
+    allow: allow.sessionKey('memory:chosen'),
+    redirect: '/gallery/memory',
   },
 ]);
 

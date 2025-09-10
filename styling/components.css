@@ -218,6 +218,15 @@
 .kio-dir { box-shadow: 0 1px 2px rgba(0,0,0,0.35); }
 .kio-move-arrow { filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35)); }
 
+/* Global Player Setup (shared by KIO and Memory) */
+.player-field { display: grid; gap: 6px; justify-items: center; }
+.player-grid { display: grid; gap: 8px; }
+.player-row { display: grid; grid-template-columns: 28px 1fr 1fr; gap: 8px; align-items: center; }
+.player-row-label { color: var(--muted); }
+.player-sel, .player-name { background: var(--bg-elev); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; }
+.player-name:disabled { opacity: 0.6; }
+.player-buttons { display: flex; gap: var(--space-3); justify-content: center; }
+
 /* Play layout */
 .kio-play-wrap { display: flex; align-items: flex-start; justify-content: center; gap: 28px; margin-top: var(--space-4); }
 .kio-left { width: 200px; display: grid; gap: 12px; }

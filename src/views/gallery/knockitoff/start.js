@@ -16,13 +16,13 @@ export function render() {
     <h2>Knock It Off!</h2>
     <section class="kio-start stack" id="kio-start">
       <div class="kio-controls">
-        <div class="kio-field">
+        <div class="player-field">
           <label>Players</label>
-          <div class="kio-players-grid">
+          <div class="player-grid">
             ${playerRow(1, 'Human 1', 'human', true)}
             ${playerRow(2, 'Human 2', 'ai-medium', false)}
             ${playerRow(3, 'Human 3', 'none', false)}
-            <div class="kio-row" id="kio-row4" style="display:none;">
+            <div class="player-row" id="kio-row4" style="display:none;">
               ${rowContent(4, 'Human 4', 'none')}
             </div>
           </div>
@@ -110,19 +110,19 @@ export function render() {
 }
 
 function playerRow(i, defaultName, defaultType, selected) {
-  return `<div class="kio-row">${rowContent(i, defaultName, defaultType, selected)}</div>`;
+  return `<div class="player-row">${rowContent(i, defaultName, defaultType, selected)}</div>`;
 }
 function rowContent(i, defaultName, defaultType, selected=false) {
   const sel = (v)=> v===defaultType ? 'selected' : '';
   return `
-    <span class="kio-row-label">#${i}</span>
-    <select class="kio-sel" id="kio-p${i}">
+    <span class="player-row-label">#${i}</span>
+    <select class="player-sel" id="kio-p${i}">
       <option value="human" ${sel('human')}>Human</option>
       <option value="ai-easy" ${sel('ai-easy')}>Easy AI</option>
       <option value="ai-medium" ${sel('ai-medium')}>Medium AI</option>
       <option value="ai-hard" ${sel('ai-hard')}>Hard AI</option>
       <option value="none" ${sel('none')}>None</option>
     </select>
-    <input class="kio-name" id="kio-n${i}" type="text" value="${defaultName}" />
+    <input class="player-name" id="kio-n${i}" type="text" value="${defaultName}" />
   `;
 }
