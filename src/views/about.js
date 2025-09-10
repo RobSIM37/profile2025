@@ -89,6 +89,17 @@ export function render() {
     const list = patchesPane.querySelector('#patch-list');
     if (list) {
 
+      const memEntry = PatchEntry('2025-09-10', 1, [
+        'Added Memory game: Demo/Source wrapper and gallery card',
+        'Start screen: 1–4 players with Human/AI (Easy/Medium/Hard/Perfect) and Face Up Time control',
+        'Play UI: smooth flip, white face-up cards, branded back icon, descriptive hover tooltips',
+        'Game flow: New Game keeps setup and reshuffles; Back returns without losing selections',
+        'Persistence: player choices and Face Up Time persist during the session',
+        'Accessibility/feedback: active player highlighted in theme blue; Game Over uses global modal',
+        'Stability: guarded timers to prevent early flip-downs',
+        'Docs: breadcrumbs updated to require using global UI components'
+      ]);
+
       const lhEntry = PatchEntry('2025-09-09', 2, [
         'Added Light Houses gallery game with level-based difficulty and lighthouse icons',
         'Seeds now encode puzzle state; shareable links with level + seed (router supports query in hash)',
@@ -99,14 +110,16 @@ export function render() {
         'New global components: Accordion and LighthouseIcon',
         'About page: added �Reset Light Houses Data�; Clear All includes Light Houses'
       ]);
-      const today = formatDateYMD(new Date());
-      const entry = PatchEntry(today, 1, [
+      // Historical entry
+      const entry = PatchEntry('2025-09-09', 1, [
         'Added Demo and Source tabs to Timesweeper and Knock It Off projects',
         'Created shared Tabs header and integrated into Pips Solver; added Patch History tab to About',
         'Created shared numberField input; updated Pips Board Tools to use it',
         'Added GPT Breadcrumbs guide and component manifest in /docs',]);
+            // Newest first: 2025-09-10--01 (Memory), 2025-09-09--02 (Light Houses), 2025-09-09--01 (Foundational tabs/inputs)
+            list.prepend(entry);
             list.prepend(lhEntry);
-list.prepend(entry);
+            list.prepend(memEntry);
     }
   } catch {}
   frag.append(sec);

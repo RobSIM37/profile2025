@@ -6,7 +6,7 @@ Session Checklist
 - Read this file end-to-end before any work.
 - Skim the Component Manifest (component-manifest.json) to know available building blocks and contracts.
 - Scan SPA routes (src/consts/routes.js) to map pages and guards.
-- Prefer reusing global components before writing new UI.
+- MANDATORY: Reuse existing global components/utilities in `src/components/ui/` (buttons, modal, inputs, tabs, icons, cards) instead of creating ad-hoc versions. If something is missing, add it to the global folder first.
 - Keep changes minimal and focused; avoid refactors unless asked or required by the task.
 - When adding reusable UI, elevate to `src/components/ui/` and add/update the manifest.
 - Update Patch History on About page only with user-facing outcomes after work completes (no mid-patch fixes).
@@ -21,6 +21,14 @@ Components & Utilities
 - Global modal: `openModal({ title, body, actions, titleAlign, actionsAlign, onClose })` supports centering titles and button rows.
 - Global accordions: `Accordion` and `makeAccordionGroup` for details/summary UIs.
 - Global icons: `LighthouseIcon('lit'|'unlit', { size? })` mirrors in-game artwork; prefer it over text glyphs.
+
+Global-First Requirement
+- Always consume the pre-existing offerings in `src/components/ui/` for UI primitives and flows. Examples:
+  - Use `Button` for actions; do not hand-roll `<button>` strings.
+  - Use `openModal` instead of `alert/confirm` or custom overlays.
+  - Use `numberField` and other input helpers for form controls.
+  - Use `makeTabs` for tabbed chrome in gallery views.
+- Only introduce new primitives by adding them to `src/components/ui/` (with a manifest entry) so future work can reuse them.
 
 Routing Notes
 - The hash router matches by path only (ignores query after `?`). Always put dynamic state in the hash query string.

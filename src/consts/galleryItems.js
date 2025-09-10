@@ -23,5 +23,11 @@ export const GALLERY_ITEMS = [
     img: 'assets/lighthousesThumbnail.svg',
     link: '#/gallery/light-houses',
   },
+  {
+    title: 'Memory',
+    tagline: 'Flip to find matching pictures',
+    img: 'assets/memoryThumbnail.svg',
+    link: '#/gallery/memory',
+  },
 ];
 
