@@ -11,6 +11,7 @@ export const routes = {
   '/gallery/knock-it-off': () => import('../views/gallery/knockitoff/page.js'),
   '/gallery/knock-it-off/how-to': () => import('../views/gallery/knockitoff/howto.js'),
   '/gallery/knock-it-off/game': () => import('../views/gallery/knockitoff/game.js'),
+  '/gallery/light-houses': () => import('../views/gallery/lighthouses/page.js'),
   '/about': () => import('../views/about.js'),
   '/contact': () => import('../views/contact.js'),
   '/rain': () => import('../views/coderain.js'),

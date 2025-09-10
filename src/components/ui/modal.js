@@ -2,7 +2,7 @@
 // Usage: const m = openModal({ title, body, actions: [{ label, variant, onClick }] })
 // Returns handle with close()
 
-export function openModal({ title = '', body = '', actions = [], onClose } = {}) {
+export function openModal({ title = '', body = '', actions = [], actionsAlign = 'flex-end', titleAlign = 'left', onClose } = {}) {
   const overlay = document.createElement('div');
   overlay.className = 'ui-modal-overlay';
   Object.assign(overlay.style, {
@@ -24,6 +24,7 @@ export function openModal({ title = '', body = '', actions = [], onClose } = {})
   h.textContent = title;
   h.style.fontWeight = '800';
   h.style.fontSize = '20px';
+  h.style.textAlign = titleAlign || 'left';
   card.appendChild(h);
 
   const bodyWrap = document.createElement('div');
@@ -38,7 +39,7 @@ export function openModal({ title = '', body = '', actions = [], onClose } = {})
     bar.className = 'ui-modal-actions';
     bar.style.display = 'flex';
     bar.style.gap = '8px';
-    bar.style.justifyContent = 'flex-end';
+    bar.style.justifyContent = actionsAlign || 'flex-end';
     bar.style.marginTop = '12px';
     for (const a of actions) {
       const btn = document.createElement('button');

@@ -5,10 +5,30 @@ Purpose: Re-align an AI assistant to this project’s concepts and coding standa
 Session Checklist
 - Read this file end-to-end before any work.
 - Skim the Component Manifest (component-manifest.json) to know available building blocks and contracts.
+- Scan SPA routes (src/consts/routes.js) to map pages and guards.
 - Prefer reusing global components before writing new UI.
 - Keep changes minimal and focused; avoid refactors unless asked or required by the task.
 - When adding reusable UI, elevate to `src/components/ui/` and add/update the manifest.
 - Update Patch History on About page only with user-facing outcomes after work completes (no mid-patch fixes).
+
+Light Houses Session Tips
+- Prefer bit-string seeds: the puzzle state is encoded in `seed` as a length `size^2` binary string. Generating a new puzzle should update the URL via `history.replaceState`.
+- For shareable links, include a lightweight signature (e.g., `sig=xmur3(salt, seed, level)`) to distinguish app-generated links from hand-edited ones.
+- Gate progression on legitimate wins only (e.g., ignore “one-click” seeds and unsigned URLs when advancing levels).
+- Enforce play caps judiciously (e.g., max moves, minimum lights-on ratio) and communicate rules in the UI.
+
+Components & Utilities
+- Global modal: `openModal({ title, body, actions, titleAlign, actionsAlign, onClose })` supports centering titles and button rows.
+- Global accordions: `Accordion` and `makeAccordionGroup` for details/summary UIs.
+- Global icons: `LighthouseIcon('lit'|'unlit', { size? })` mirrors in-game artwork; prefer it over text glyphs.
+
+Routing Notes
+- The hash router matches by path only (ignores query after `?`). Always put dynamic state in the hash query string.
+- When adding routes, update `src/consts/routes.js` and prefer lazy imports. Add guards in `beforeResolve` when needed.
+
+Gallery & Assets
+- Add gallery entries in `src/consts/galleryItems.js` and provide an asset under `assets/`. Keep art consistent with in-game visuals.
+- Keep view chrome consistent: optional Demo/Source tabs may mount the game and a simple source browser.
 
 Core Principles
 - DRY: share logic and styles; no duplication across projects.

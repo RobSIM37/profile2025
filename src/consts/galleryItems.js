@@ -17,5 +17,11 @@ export const GALLERY_ITEMS = [
     img: 'assets/knockItOffThumbnail.png',
     link: '#/gallery/knock-it-off',
   },
+  {
+    title: 'Light Houses',
+    tagline: 'Toggle neighboring lights to brighten the coast',
+    img: 'assets/lighthousesThumbnail.svg',
+    link: '#/gallery/light-houses',
+  },
 ];
 

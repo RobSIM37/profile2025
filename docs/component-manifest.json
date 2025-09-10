@@ -49,6 +49,22 @@
       "signature": "Card({ title, tagline?, img, link, alt? }) -> string",
       "returns": "HTML string for gallery card",
       "notes": "Used in gallery grid"
+    },
+    {
+      "name": "Accordion",
+      "path": "src/components/ui/accordion.js",
+      "kind": "dom-factory",
+      "signature": "Accordion({ summary, content (Element), open? }) -> Element",
+      "returns": "<details> element with provided summary and content",
+      "notes": "Use makeAccordionGroup(items) to assemble lists"
+    },
+    {
+      "name": "LighthouseIcon",
+      "path": "src/components/ui/lighthouseIcon.js",
+      "kind": "svg-factory",
+      "signature": "LighthouseIcon('lit'|'unlit', { size?, strokeWidth? }) -> SVGElement",
+      "returns": "SVG element of a lighthouse (with or without beams)",
+      "notes": "Use in game grid or UI accents"
     }
   ],
   "conventions": {
