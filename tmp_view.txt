@@ -120,21 +120,21 @@ export function render() {
       const wrap = document.createElement('div'); wrap.className = 'stack';
       const p1 = document.createElement('p'); p1.textContent = 'Clears best times and win/loss statistics for each difficulty.';
       const p2 = document.createElement('p'); p2.className = 'note'; p2.textContent = 'Also removes your Custom fuse time preset.';
-      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-timesweeper', label: 'Clear', variant: 'warning' });
+      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-timesweeper', label: 'Clear', variant: 'secondary' });
       wrap.append(p1, p2, btnWrap.firstElementChild);
       return wrap;
     }),
     cr: (() => {
       const wrap = document.createElement('div'); wrap.className = 'stack';
       const p1 = document.createElement('p'); p1.textContent = 'Clears background visual preferences (size, density, colors, speeds).';
-      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-coderain', label: 'Clear', variant: 'warning' });
+      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-coderain', label: 'Clear', variant: 'secondary' });
       wrap.append(p1, btnWrap.firstElementChild);
       return wrap;
     }),
     lh: (() => {
       const wrap = document.createElement('div'); wrap.className = 'stack';
       const p1 = document.createElement('p'); p1.textContent = 'Clears Light Houses progress (highest level reached, last level, and last generated seed).';
-      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-lighthouses', label: 'Clear', variant: 'warning' });
+      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-lighthouses', label: 'Clear', variant: 'secondary' });
       wrap.append(p1, btnWrap.firstElementChild);
       return wrap;
     }),
@@ -142,7 +142,7 @@ export function render() {
       const wrap = document.createElement('div'); wrap.className = 'stack';
       const p1 = document.createElement('p'); p1.textContent = 'Clears all data saved by this site in this browser.';
       const p2 = document.createElement('p'); p2.className = 'note'; p2.textContent = 'This includes Timesweeper, Code Rain, and Light Houses.';
-      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-all', label: 'Clear', variant: 'warning' });
+      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-all', label: 'Clear', variant: 'secondary' });
       wrap.append(p1, p2, btnWrap.firstElementChild);
       return wrap;
     }),

@@ -12,6 +12,7 @@ export function Button({
 } = {}) {
   const classes = ['button'];
   if (variant === 'secondary') classes.push('button-secondary');
+  if (variant === 'warning') classes.push('button-warning');
   if (size === 'sm' || size === 'small') classes.push('small');
   const idPart = id ? ` id="${escapeHTML(id)}"` : '';
   const typePart = type ? ` type="${escapeHTML(type)}"` : '';
