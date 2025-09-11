@@ -6,7 +6,7 @@
       "kind": "html-string-factory",
       "signature": "Button({ id?, label, variant?, size?, attrs?, type? }) -> string",
       "returns": "HTML string for a styled <button>",
-      "notes": "variant: 'secondary' supported; size: 'small'|'sm' adds .small"
+      "notes": "variant: 'secondary'|'warning' supported; size: 'small'|'sm' adds .small"
     },
     {
       "name": "makePlayerConfigurator",
@@ -83,6 +83,15 @@
       "signature": "LighthouseIcon('lit'|'unlit', { size?, strokeWidth? }) -> SVGElement",
       "returns": "SVG element of a lighthouse (with or without beams)",
       "notes": "Use in game grid or UI accents"
+    },
+    {
+      "name": "makeSelectPanels",
+      "path": "src/components/ui/selectPanels.js",
+      "kind": "dom-factory",
+      "signature": "makeSelectPanels({ id?, label, options: [{id,label}], panels: Record<string, Element|()=>Element>, value?, noneId?, noneLabel?, onChange? }) -> { root, wrapper, select, panelHost, setActive(id,emit?), getActive() }",
+      "returns": "Labeled styled select that shows one panel per selection (None hides panels)",
+      "styles": [".ui-field", ".ui-control", "select.control", ".ui-panel"],
+      "notes": "Preprends a 'None' option; panels can be Elements or factories; uses site field/control styling"
     }
   ],
   "conventions": {
