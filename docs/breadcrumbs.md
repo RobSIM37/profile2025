@@ -46,7 +46,7 @@ Core Principles
 - SRP: each module/class/function does one thing well.
 - Components: clear input/output contracts; no hidden globals; return elements/strings explicitly.
 - Elevate Reuse: prefer “global” components under `src/components/ui/` when multiple views can benefit.
-- Styling: use existing site tokens and classes in `styling/` (e.g., `.button`, `.button-secondary`, `.ui-field`, `.ui-control`, `--radius`, `--border`).
+- Styling: use existing site tokens and classes in `styling/` (e.g., `.button`, `.button-secondary`, `.button-warning`, `.text-warning`, `.ui-field`, `.ui-control`, `--radius`, `--border`, `--warning`).
   - Honor `prefers-reduced-motion` in animations.
 - Routing: use `src/consts/routes.js` for SPA routes; lazy-import views.
 - Patches: keep Patch History newest-first; bullets should be user-visible outcomes only.
