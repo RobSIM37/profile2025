@@ -191,6 +191,12 @@ export function render() {
   try {
     const list = patchesPane.querySelector('#patch-list');
     if (list) {
+      const todayLocal = PatchEntry('2025-09-10', 4, [
+        'Header brand shows (LOCAL) when running on localhost',
+        'LOCAL badge uses warning color for visibility',
+        'Browser tab title includes LOCAL marker on localhost',
+        'Breadcrumbs updated to document warning tokens/classes',
+      ]);
       // Patch titles follow YYYY-MM-DD--NN where NN increments during the day
       const aboutRev = PatchEntry('2025-09-10', 3, [
         'About: streamlined copy and clearer data controls',
@@ -245,6 +251,7 @@ export function render() {
             list.prepend(memEntry);
             list.prepend(latest);
             list.prepend(aboutRev);
+            list.prepend(todayLocal);
     }
   } catch {}
   frag.append(sec);

@@ -10,11 +10,25 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 const routes = ROUTES;
 
+// Detect localhost to highlight local builds
+const isLocalHost = (() => {
+  try {
+    const h = window.location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h === '::1';
+  } catch {
+    return false;
+  }
+})();
+
 // Mount persistent header brand
 const brandHost = document.getElementById('brand');
-if (brandHost) brandHost.innerHTML = Brand();
+if (brandHost) {
+  brandHost.innerHTML = Brand({ name: 'Rob Lewis', local: isLocalHost });
+}
 
-initRouter({ routes, baseTitle: 'Rob Lewis', beforeResolve: BEFORE_RESOLVE });
+// Keep document title aligned with local marker
+const baseTitle = isLocalHost ? 'Rob Lewis — LOCAL' : 'Rob Lewis';
+initRouter({ routes, baseTitle, beforeResolve: BEFORE_RESOLVE });
 
 // Mount background Code Rain after DOM is ready
 function initRainToggle() {

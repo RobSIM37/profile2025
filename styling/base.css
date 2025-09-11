@@ -6,6 +6,7 @@
   --link: #7cb3ff;
   --accent: #6ee7b7;
   --primary: #3f48cc;
+  --warning: #ef4444;
   --border: #2a3040;
   --radius: 10px;
   --space-1: 4px;
@@ -109,10 +110,13 @@ main:focus { outline: none; }
 }
 .button:hover { text-decoration: none; filter: brightness(0.95); }
 .button-secondary { background: var(--bg-elev); color: var(--text); border: 1px solid var(--border); }
-.button-warning { background: #ef4444; color: #ffffff; border: 1px solid #ef4444; }
+.button-warning { background: var(--warning); color: #ffffff; border: 1px solid var(--warning); }
 .button-warning:hover { filter: brightness(1.05); }
 
 .list { list-style: none; }
 .list li { margin-top: var(--space-2); }
 
 img { max-width: 100%; height: auto; display: block; border-radius: calc(var(--radius) - 2px); }
+
+/* Utility: warning text color */
+.text-warning { color: var(--warning); }
