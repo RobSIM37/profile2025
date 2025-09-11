@@ -14,6 +14,7 @@ export const routes = {
   '/gallery/light-houses': () => import('../views/gallery/lighthouses/page.js'),
   '/gallery/memory': () => import('../views/gallery/memory/page.js'),
   '/gallery/memory/game': () => import('../views/gallery/memory/game2.js'),
+  '/gallery/snake-plus': () => import('../views/gallery/snakeplus/page.js'),
   '/about': () => import('../views/about.js'),
   '/contact': () => import('../views/contact.js'),
   '/rain': () => import('../views/coderain.js'),

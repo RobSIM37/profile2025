@@ -29,5 +29,11 @@ export const GALLERY_ITEMS = [
     img: 'assets/memoryThumbnail.svg',
     link: '#/gallery/memory',
   },
+  {
+    title: 'Snake+',
+    tagline: 'Classic Snake with level twists',
+    img: 'assets/snakePlusThumbnail.svg',
+    link: '#/gallery/snake-plus',
+  },
 ];
 

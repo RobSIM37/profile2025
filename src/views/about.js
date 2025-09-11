@@ -138,6 +138,13 @@ export function render() {
       wrap.append(p1, btnWrap.firstElementChild);
       return wrap;
     }),
+    sn: (() => {
+      const wrap = document.createElement('div'); wrap.className = 'stack';
+      const p1 = document.createElement('p'); p1.textContent = 'Clears Snake+ data: highest level reached, last level, longest snake length, and custom color palette.';
+      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-snake', label: 'Clear', variant: 'warning' });
+      wrap.append(p1, btnWrap.firstElementChild);
+      return wrap;
+    }),
     all: (() => {
       const wrap = document.createElement('div'); wrap.className = 'stack';
       const p1 = document.createElement('p'); p1.textContent = 'Clears all data saved by this site in this browser.';
@@ -155,6 +162,7 @@ export function render() {
       { id: 'ts', label: 'Timesweeper data' },
       { id: 'cr', label: 'Code Rain data' },
       { id: 'lh', label: 'Light Houses data' },
+      { id: 'sn', label: 'Snake+ data' },
       { id: 'all', label: 'All data' },
     ],
     panels,
@@ -191,6 +199,18 @@ export function render() {
   try {
     const list = patchesPane.querySelector('#patch-list');
     if (list) {
+      const snakePlus = PatchEntry('2025-09-11', 1, [
+        'Added Snake+ mini game to Gallery (canvas-based)',
+        'New objective: cover the highlighted path simultaneously to level up',
+        'Seamless level-ups: keep position/length; symmetric obstacles added each level',
+        'Wrap-around edges enabled; collisions pause 3 ticks then drop a level',
+        'Obstacle placement ensures no unreachable pockets',
+        'Status now shows Level and Longest Snake; apples stop at 150% of path length',
+        'Path lights brighter when long enough to cover it',
+        'Pause to customize colors (snake, food, path, ready-path, bg, grid, obstacles); settings persist',
+        'Global buttons updated with white inner ring + dark outer ring',
+        'About: Snake+ clear now removes custom colors',
+      ]);
       const todayLocal = PatchEntry('2025-09-10', 4, [
         'Header brand shows (LOCAL) when running on localhost',
         'LOCAL badge uses warning color for visibility',
@@ -260,6 +280,7 @@ export function render() {
             list.prepend(aboutRev);
             list.prepend(todayLocal);
             list.prepend(todayLocal5);
+            list.prepend(snakePlus);
     }
   } catch {}
   frag.append(sec);
@@ -267,6 +288,20 @@ export function render() {
 
 
   queueMicrotask(() => {
+    function showToast(btn, msg) {
+      try {
+        const toast = document.createElement('span');
+        toast.textContent = String(msg);
+        toast.style.marginLeft = '10px';
+        toast.style.color = 'var(--accent)';
+        toast.style.fontWeight = '700';
+        toast.style.fontSize = '0.95rem';
+        toast.style.whiteSpace = 'nowrap';
+        // Place directly after the button
+        btn.insertAdjacentElement('afterend', toast);
+        setTimeout(() => { try { toast.remove(); } catch {} }, 2400);
+      } catch {}
+    }
     sec.addEventListener('click', (ev) => {
       const t = ev.target;
       if (!t || !('id' in t)) return;
@@ -276,19 +311,22 @@ export function render() {
           Object.keys(localStorage)
             .filter((k) => k.startsWith('timesweeper:'))
             .forEach((k) => localStorage.removeItem(k));
-          alert('Timesweeper data cleared.');
+          showToast(t, 'Timesweeper data cleared');
         } catch {}
       }
       else if (id === 'about-clear-coderain') {
-        try { localStorage.removeItem('coderain:options'); alert('Code Rain settings cleared.'); } catch {}
+        try { localStorage.removeItem('coderain:options'); showToast(t, 'Code Rain settings cleared'); } catch {}
       }
       else if (id === 'about-clear-lighthouses') {
-        try { removeByPrefixes(['lighthouses:']); alert('Light Houses data reset.'); } catch {}
+        try { removeByPrefixes(['lighthouses:']); showToast(t, 'Light Houses data reset'); } catch {}
+      }
+      else if (id === 'about-clear-snake') {
+        try { removeByPrefixes(['snake:']); showToast(t, 'Snake+ data cleared'); } catch {}
       }
       else if (id === 'about-clear-all') {
         if (!confirm('Clear all data saved by this site in this browser?')) return;
-        removeByPrefixes(['timesweeper:', 'coderain:', 'lighthouses:']);
-        alert('Site data cleared.');
+        removeByPrefixes(['timesweeper:', 'coderain:', 'lighthouses:', 'snake:']);
+        showToast(t, 'Site data cleared');
       }
     });
   });
