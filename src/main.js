@@ -57,3 +57,22 @@ if (document.readyState === 'loading') {
 } else {
   mountRain();
 }
+
+// Accessibility: ensure Skip to content focuses <main> without changing route
+function initSkipLinkFocus() {
+  const skip = document.querySelector('a.skip-link[href="#app"]');
+  if (!skip) return;
+  skip.addEventListener('click', (e) => {
+    e.preventDefault();
+    const app = document.getElementById('app');
+    if (app) {
+      try { app.focus({ preventScroll: false }); } catch { app.focus(); }
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initSkipLinkFocus);
+} else {
+  initSkipLinkFocus();
+}

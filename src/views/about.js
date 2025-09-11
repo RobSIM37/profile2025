@@ -195,7 +195,14 @@ export function render() {
         'Header brand shows (LOCAL) when running on localhost',
         'LOCAL badge uses warning color for visibility',
         'Browser tab title includes LOCAL marker on localhost',
-        'Breadcrumbs updated to document warning tokens/classes',
+        'Skip to content focuses main without changing route',
+        'Route changes announced to screen readers',
+        'Breadcrumbs updated: a11y made a top priority and warning tokens documented',
+      ]);
+      const todayLocal5 = PatchEntry('2025-09-10', 5, [
+        'Accessibility: live route announcements and improved skip link focus',
+        'Utility: added screen-reader-only class for hidden announcements',
+        'Navigation: aria-current applied only on active link',
       ]);
       // Patch titles follow YYYY-MM-DD--NN where NN increments during the day
       const aboutRev = PatchEntry('2025-09-10', 3, [
@@ -252,6 +259,7 @@ export function render() {
             list.prepend(latest);
             list.prepend(aboutRev);
             list.prepend(todayLocal);
+            list.prepend(todayLocal5);
     }
   } catch {}
   frag.append(sec);

@@ -57,13 +57,18 @@ export function initRouter({ routes, baseTitle = document.title, beforeResolve }
     // Title management
     const title = mod.meta?.title ? `${baseTitle} — ${mod.meta.title}` : baseTitle;
     if (document.title !== title) document.title = title;
+    // Announce route changes for screen readers
+    try {
+      const announcer = document.getElementById('route-announcer');
+      if (announcer) announcer.textContent = mod.meta?.title ? String(mod.meta.title) : 'Page loaded';
+    } catch {}
 
     // Nav active state
     document.querySelectorAll('a[data-route]')?.forEach((a) => {
       const href = a.getAttribute('href') || '';
       const active = href === `#${path}`;
       a.classList.toggle('active', active);
-      a.setAttribute('aria-current', active ? 'page' : 'false');
+      if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
 
     // Focus main for accessibility after navigation

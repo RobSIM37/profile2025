@@ -6,6 +6,7 @@ Session Checklist
 - Read this file end-to-end before any work.
 - Skim the Component Manifest (component-manifest.json) to know available building blocks and contracts.
 - Scan SPA routes (src/consts/routes.js) to map pages and guards.
+- Accessibility is a Priority: ensure features meet baseline a11y (see Accessibility Priority below) and do not regress focus, semantics, or announcements.
 - MANDATORY: Reuse existing global components/utilities in `src/components/ui/` (buttons, modal, inputs, tabs, icons, cards) instead of creating ad-hoc versions. If something is missing, add it to the global folder first.
 - Keep changes minimal and focused; avoid refactors unless asked or required by the task.
 - When adding reusable UI, elevate to `src/components/ui/` and add/update the manifest.
@@ -41,7 +42,7 @@ Gallery & Assets
 - Add gallery entries in `src/consts/galleryItems.js` and provide an asset under `assets/`. Keep art consistent with in-game visuals.
 - Keep view chrome consistent: optional Demo/Source tabs may mount the game and a simple source browser.
 
-Core Principles
+ Core Principles
 - DRY: share logic and styles; no duplication across projects.
 - SRP: each module/class/function does one thing well.
 - Components: clear input/output contracts; no hidden globals; return elements/strings explicitly.
@@ -50,6 +51,18 @@ Core Principles
   - Honor `prefers-reduced-motion` in animations.
 - Routing: use `src/consts/routes.js` for SPA routes; lazy-import views.
 - Patches: keep Patch History newest-first; bullets should be user-visible outcomes only.
+
+Accessibility Priority
+- Landmarks: pages must include header, nav (labeled), main, and footer.
+- Skip link: provide a visible-on-focus skip link that focuses `<main>` without changing SPA route; prefer JS `preventDefault()` handler.
+- Focus management: on route changes, move focus to `<main>`; preserve and restore focus for modals.
+- Live announcements: announce route/view changes via an `aria-live="polite"` region (e.g., `#route-announcer`).
+- Focus-visible: interactive elements must have a clear `:focus-visible` style; avoid suppressing outlines globally.
+- Controls and labels: ensure form controls have associated labels (`<label for>`, `aria-label`, or `aria-labelledby`).
+- Modal semantics: use `openModal` which sets `role="dialog"`, `aria-modal`, labeledby/describedby, and traps focus.
+- Reduced motion: honor `prefers-reduced-motion` across animations and background effects.
+- Navigation state: apply `aria-current="page"` only on the active link; remove it elsewhere.
+- Color tokens: use theme tokens for contrast; warning states use `--warning`, `.button-warning`, and `.text-warning`.
 
 Project Layout (high level)
 - src/components/ui/: shared UI primitives (buttons, tabs, inputs, modal, icons, cards)
