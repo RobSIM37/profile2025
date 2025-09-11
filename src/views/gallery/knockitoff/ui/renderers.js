@@ -152,7 +152,7 @@ export function renderLog(state, playWrap, { onPreviewEnter, onPreviewExit } = {
   if (!right) return;
   right.innerHTML = '';
   const title = document.createElement('div'); title.className = 'kio-side-title kio-log-title'; title.textContent = 'Game Log'; right.appendChild(title);
-  const box = document.createElement('div'); box.className = 'kio-log';
+  const box = document.createElement('div'); box.className = 'kio-log scroll-themed';
   state.logs.forEach((entry, idx) => {
     const item = document.createElement('div'); item.className = 'kio-log-item';
     const textL = document.createElement('span'); textL.textContent = (entry.textPrefix) ? entry.textPrefix : (entry.text || `Move ${idx + 1}`);

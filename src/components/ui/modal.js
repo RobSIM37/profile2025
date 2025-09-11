@@ -3,6 +3,7 @@
 // Returns handle with close()
 
 export function openModal({ title = '', body = '', actions = [], actionsAlign = 'flex-end', titleAlign = 'left', onClose } = {}) {
+  const prevFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   const overlay = document.createElement('div');
   overlay.className = 'ui-modal-overlay';
   Object.assign(overlay.style, {
@@ -25,6 +26,8 @@ export function openModal({ title = '', body = '', actions = [], actionsAlign = 
   h.style.fontWeight = '800';
   h.style.fontSize = '20px';
   h.style.textAlign = titleAlign || 'left';
+  const titleId = `modal-title-${Math.random().toString(36).slice(2,8)}`;
+  h.id = titleId;
   card.appendChild(h);
 
   const bodyWrap = document.createElement('div');
@@ -32,6 +35,8 @@ export function openModal({ title = '', body = '', actions = [], actionsAlign = 
   bodyWrap.style.marginTop = '8px';
   if (typeof body === 'string') bodyWrap.innerHTML = body;
   else if (body instanceof Element) bodyWrap.append(body);
+  const bodyId = `modal-body-${Math.random().toString(36).slice(2,8)}`;
+  bodyWrap.id = bodyId;
   card.appendChild(bodyWrap);
 
   if (actions?.length) {
@@ -57,14 +62,35 @@ export function openModal({ title = '', body = '', actions = [], actionsAlign = 
   const close = () => {
     overlay.remove();
     document.removeEventListener('keydown', onKey);
+    document.removeEventListener('keydown', onTrap);
+    if (prevFocus) {
+      try { prevFocus.focus(); } catch {}
+    }
     onClose?.();
   };
   const onKey = (e) => { if (e.key === 'Escape') close(); };
+  // Focus trap within modal content
+  const getFocusables = () => Array.from(card.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'))
+    .filter(el => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'));
+  const onTrap = (e) => {
+    if (e.key !== 'Tab') return;
+    const f = getFocusables();
+    if (!f.length) return;
+    const first = f[0]; const last = f[f.length-1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
   document.addEventListener('keydown', onKey);
+  document.addEventListener('keydown', onTrap);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
 
   overlay.append(card);
   document.body.append(overlay);
+  // ARIA dialog semantics
+  card.setAttribute('role', 'dialog');
+  card.setAttribute('aria-modal', 'true');
+  card.setAttribute('aria-labelledby', titleId);
+  card.setAttribute('aria-describedby', bodyId);
   // focus first focusable
   setTimeout(()=> card.querySelector('button')?.focus(), 0);
   return { close };

@@ -156,6 +156,17 @@
 
 /* About view backdrop */
 .about-wrap { padding: var(--space-4); background: var(--bg); color: var(--text); border-radius: var(--radius); }
+/* Keep About content fixed; scroll inside patches */
+.about-wrap { max-height: 70vh; overflow: hidden; }
+.about-patches { max-height: 60vh; overflow: auto; }
+
+/* Reusable themed scrollbar utility */
+.scroll-themed { scrollbar-width: thin; scrollbar-color: var(--primary) var(--bg-elev); }
+.scroll-themed::-webkit-scrollbar { width: 10px; height: 10px; }
+.scroll-themed::-webkit-scrollbar-track { background: var(--bg-elev); border-radius: var(--radius); }
+.scroll-themed::-webkit-scrollbar-thumb { background-color: var(--primary); border-radius: 999px; border: 2px solid var(--bg); }
+.scroll-themed::-webkit-scrollbar-thumb:hover { background-color: #5a63ff; }
+.scroll-themed::-webkit-scrollbar-corner { background: var(--bg-elev); }
 
 /* Knock It Off! setup echo */
 .kio-wrap { padding: var(--space-4); background: var(--bg); color: var(--text); border-radius: var(--radius); }
@@ -226,6 +237,23 @@
 .player-sel, .player-name { background: var(--bg-elev); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; }
 .player-name:disabled { opacity: 0.6; }
 .player-buttons { display: flex; gap: var(--space-3); justify-content: center; }
+
+/* ControlsGrid: generic 4-column labeled control rows */
+.controls-grid { display: grid; gap: var(--cg-gap, 8px); }
+.controls-row { display: grid; grid-template-columns: var(--cg-cols, 28px 1fr 72px 1fr); gap: 8px; align-items: center; }
+.controls-label { color: var(--muted); }
+.controls-a > *, .controls-b > *, .controls-c > * { width: 100%; }
+/* Modes */
+.controls-row.mode-one  .controls-a { grid-column: 2 / 5; }
+.controls-row.mode-one  .controls-b, .controls-row.mode-one .controls-c { display: none; }
+.controls-row.mode-two  .controls-a { grid-column: 2 / 4; }
+.controls-row.mode-two  .controls-b { display: none; }
+.controls-row.mode-two  .controls-c { grid-column: 4 / 5; }
+.controls-row.mode-three .controls-a { grid-column: 2 / 3; }
+.controls-row.mode-three .controls-b { grid-column: 3 / 4; display: block; }
+.controls-row.mode-three .controls-c { grid-column: 4 / 5; }
+
+/* Memory row hacks removed, ControlsGrid handles layout */
 
 /* Play layout */
 .kio-play-wrap { display: flex; align-items: flex-start; justify-content: center; gap: 28px; margin-top: var(--space-4); }

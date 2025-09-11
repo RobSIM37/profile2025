@@ -52,7 +52,7 @@ export function render() {
 const MEM_FILES = [
   'page.js','start.js','game2.js',
   'engine/deck.js','engine/state.js','engine/rules.js',
-  'ai/profiles.js','ai/memory.js','ai/choose.js',
+  'ai/memory.js','ai/choose.js',
   'ui/card.js','ui/board.js','ui/icons/index.js'
 ];
 
@@ -68,7 +68,7 @@ function renderMemorySourceBrowser(host){
     const sum = document.createElement('summary');
     sum.textContent = path;
     item.append(sum);
-    const pre = document.createElement('pre');
+    const pre = document.createElement('pre'); pre.className = 'scroll-themed';
     const code = document.createElement('code');
     code.textContent = 'Loading…';
     pre.append(code);

@@ -18,9 +18,12 @@ Light Houses Session Tips
 - Enforce play caps judiciously (e.g., max moves, minimum lights-on ratio) and communicate rules in the UI.
 
 Components & Utilities
-- Global modal: `openModal({ title, body, actions, titleAlign, actionsAlign, onClose })` supports centering titles and button rows.
+- Global modal: `openModal({ title, body, actions, titleAlign, actionsAlign, onClose })` supports centering titles and button rows; includes focus trap and ARIA dialog semantics.
 - Global accordions: `Accordion` and `makeAccordionGroup` for details/summary UIs.
 - Global icons: `LighthouseIcon('lit'|'unlit', { size? })` mirrors in-game artwork; prefer it over text glyphs.
+- Controls grid: `makeControlsGrid({ cols?, gap? })` lays out labeled rows with one/two/three control modes using fixed column widths.
+ - Player configurator: `makePlayerConfigurator({...})` builds N player rows with cascading None logic; used by Memory and Knock It Off.
+ - Timers: `makeTimer()` creates a one-shot timer with `.after(ms, fn)` and `.clear()` that avoids overlapping timeouts.
 
 Global-First Requirement
 - Always consume the pre-existing offerings in `src/components/ui/` for UI primitives and flows. Examples:
@@ -44,6 +47,7 @@ Core Principles
 - Components: clear input/output contracts; no hidden globals; return elements/strings explicitly.
 - Elevate Reuse: prefer “global” components under `src/components/ui/` when multiple views can benefit.
 - Styling: use existing site tokens and classes in `styling/` (e.g., `.button`, `.button-secondary`, `.ui-field`, `.ui-control`, `--radius`, `--border`).
+  - Honor `prefers-reduced-motion` in animations.
 - Routing: use `src/consts/routes.js` for SPA routes; lazy-import views.
 - Patches: keep Patch History newest-first; bullets should be user-visible outcomes only.
 
@@ -70,7 +74,8 @@ When Creating/Updating Components
 
 Patch Notes Guidance
 - Write only user-visible, intentional changes; omit in-session fixes.
-- Format: PatchEntry(date, iteration, [ bullets ]) where date is `YYYY-MM-DD` and iteration is 2-digit string.
+- Title format: `YYYY-MM-DD--NN` where `YYYY-MM-DD` is today’s date and `NN` is a 2‑digit counter that increments with each additional patch on the same day.
+- Implementation: `PatchEntry(date, iteration, [bullets])` where `date = 'YYYY-MM-DD'` and `iteration` is a number (rendered as 2 digits).
 
 Quick Notes About Existing Globals
 - `Button(options): string` – string HTML generator; variant `secondary` supported.
@@ -79,9 +84,11 @@ Quick Notes About Existing Globals
 - `openModal({ title, body, actions, onClose }) -> { close }` – lightweight modal.
 - `FaceIcon(kind, opts) -> SVGElement` – smiley/frowny icon.
 - `Card({ title, tagline, img, link, alt }): string` – gallery card.
+ - `makeControlsGrid({ cols?, gap? }) -> { root, addRow, getRow }` – 4-column labeled control rows; supports modes 'one'|'two'|'three' to control spans.
 
 Assistant Reminders
 - Use ripgrep (`rg`) for fast code search.
 - Read files in small chunks; avoid excessive boilerplate.
 - Keep answers concise; prefer bullet lists for clarity.
 - Confirm assumptions early when scope is ambiguous.
+ - STANDING ORDER: When introducing themed styles or visual behaviors, extract them into reusable global components or utility classes (e.g., ControlsGrid, .scroll-themed) and reuse across views instead of one-off, scoped tweaks.

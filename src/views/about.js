@@ -47,9 +47,10 @@ export function render() {
   });
 
   // Panes
-  const aboutPane = document.createElement('div');
-  const patchesPane = document.createElement('div');
-  patchesPane.style.display = 'none';
+  const aboutPane = document.createElement('div');
+  const patchesPane = document.createElement('div');
+  patchesPane.className = 'about-patches scroll-themed';
+  patchesPane.style.display = 'none';
 
   aboutPane.innerHTML = `
     <h2>About This Site</h2>
@@ -85,9 +86,20 @@ export function render() {
 
   sec.append(tabs.root, aboutPane, patchesPane);
   // Populate Patch History (newest on top)
-  try {
-    const list = patchesPane.querySelector('#patch-list');
+  try {
+    const list = patchesPane.querySelector('#patch-list');
     if (list) {
+      // Patch titles follow YYYY-MM-DD--NN where NN increments during the day
+      const latest = PatchEntry('2025-09-10', 2, [
+        'New Controls Grid for stable multi-control rows; adopted in Memory and Knock It Off setup',
+        'Player Configurator component supports N players with cascading None logic',
+        'Memory setup: per-AI Memory Length inline; widened Name column; Face Up Time aligned',
+        'Knock It Off setup: migrated to Controls Grid; fixed conditional row visibility',
+        'Modal accessibility: focus trap + ARIA dialog semantics; returns focus to opener',
+        'Reduced Motion: Memory card flip respects prefers-reduced-motion',
+        'Timer helper prevents overlapping timeouts; used by Memory AI/mismatch timers',
+        'Themed scrollbars: reusable .scroll-themed class applied to Patch History, KIO log, and Memory source viewer',
+      ]);
 
       const memEntry = PatchEntry('2025-09-10', 1, [
         'Added Memory game: Demo/Source wrapper and gallery card',
@@ -120,8 +132,9 @@ export function render() {
             list.prepend(entry);
             list.prepend(lhEntry);
             list.prepend(memEntry);
-    }
-  } catch {}
+            list.prepend(latest);
+    }
+  } catch {}
   frag.append(sec);
 
   queueMicrotask(() => {
