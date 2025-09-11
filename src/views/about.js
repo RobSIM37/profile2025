@@ -192,6 +192,12 @@ export function render() {
     const list = patchesPane.querySelector('#patch-list');
     if (list) {
       // Patch titles follow YYYY-MM-DD--NN where NN increments during the day
+      const aboutRev = PatchEntry('2025-09-10', 3, [
+        'About: streamlined copy and clearer data controls',
+        'New select-driven panels for clearing saved data',
+        'Destructive Clear buttons use warning styling',
+        'Panels now have borders and improved spacing',
+      ]);
       const latest = PatchEntry('2025-09-10', 2, [
         'New Controls Grid for stable multi-control rows; adopted in Memory and Knock It Off setup',
         'Player Configurator component supports N players with cascading None logic',
@@ -238,6 +244,7 @@ export function render() {
             list.prepend(lhEntry);
             list.prepend(memEntry);
             list.prepend(latest);
+            list.prepend(aboutRev);
     }
   } catch {}
   frag.append(sec);
