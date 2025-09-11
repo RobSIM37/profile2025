@@ -3,7 +3,7 @@ export function createInitialState(deck, players, faceUpSec = 1) {
   const scores = players.map(_ => 0);
   return {
     cards,
-    players, // [{ kind: 'human'|'ai', level?: 'easy'|'medium'|'hard'|'perfect', name }]
+    players, // [{ kind: 'human'|'ai', name, memCap?: number }]
     scores,
     current: 0,
     firstPick: null,

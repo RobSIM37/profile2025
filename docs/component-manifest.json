@@ -9,6 +9,24 @@
       "notes": "variant: 'secondary' supported; size: 'small'|'sm' adds .small"
     },
     {
+      "name": "makePlayerConfigurator",
+      "path": "src/components/ui/playerConfigurator.js",
+      "kind": "dom-factory",
+      "signature": "makePlayerConfigurator({ rows?, cols?, allowNoneFrom?, buildSelect, buildExtra?, buildName, modeFor, onSelectChange? }) -> { root, sels, names, extras, updateVisibility() }",
+      "returns": "Configurable multi-row player setup using ControlsGrid with cascading None handling",
+      "styles": [".controls-grid", ".controls-row"],
+      "notes": "Builds N labeled rows; supports an optional middle control (e.g., Memory). Visibility cascades: row i shows only when row i-1 is not None."
+    },
+    {
+      "name": "makeControlsGrid",
+      "path": "src/components/ui/controlsGrid.js",
+      "kind": "dom-factory",
+      "signature": "makeControlsGrid({ cols?, gap? }) -> { root, addRow({ id?, label, a?, b?, c?, mode? }), getRow(id) }",
+      "returns": "Labeled control rows with 1/2/3 control modes and fixed column widths",
+      "styles": [".controls-grid", ".controls-row", ".controls-label", ".mode-one", ".mode-two", ".mode-three"],
+      "notes": "Use mode 'one' for single control spanning columns 2–4, 'two' for left control spanning 2–3 with a right control in 4, and 'three' for distinct controls in 2/3/4. Customize column widths via cols option."
+    },
+    {
       "name": "makeTabs",
       "path": "src/components/ui/tabs.js",
       "kind": "dom-factory",

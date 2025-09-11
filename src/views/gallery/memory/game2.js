@@ -6,6 +6,7 @@ import { createInitialState, isGameOver, advanceTurn } from './engine/state.js';
 import { canFlip, flipUp, flipDown, evaluateFlip } from './engine/rules.js';
 import { createBoard } from './ui/board.js';
 import { makeAIControllers, rememberForAll, chooseFlip } from './ai/choose.js';
+import { makeTimer } from '../../../lib/timers.js';
 
 export const meta = { title: 'Memory — Game', description: 'Find matching pictures' };
 
@@ -37,8 +38,8 @@ export function render() {
   let boardUI = createBoard({ cards: state.cards, cols: 10, onFlip: onHumanFlip });
 
   // timers (guard against rogue/overlapping timers)
-  let mismatchTimer = null;
-  let aiTimer = null;
+  const mismatchT = makeTimer();
+  const aiT = makeTimer();
 
   wrap.append(header, boardHost);
   boardHost.append(boardUI.root);
@@ -72,8 +73,7 @@ export function render() {
     const first = state.firstPick; // still set
     const a = state.cards[first];
     const b = state.cards[idx2];
-    if (mismatchTimer) { clearTimeout(mismatchTimer); mismatchTimer = null; }
-    mismatchTimer = setTimeout(() => {
+    mismatchT.after(state.faceUpMs, () => {
       if (a) { flipDown(a); setCardState(a.idx, 'down'); }
       if (b) { flipDown(b); setCardState(b.idx, 'down'); }
       state.firstPick = null;
@@ -81,8 +81,7 @@ export function render() {
       advanceTurn(state);
       renderScores();
       maybeAIMove();
-      mismatchTimer = null;
-    }, state.faceUpMs);
+    });
   }
 
   function onGameOver(){
@@ -112,8 +111,7 @@ export function render() {
   function maybeAIMove(){
     const cur = state.players[state.current];
     if (!cur || cur.kind !== 'ai') return;
-    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
-    aiTimer = setTimeout(()=> aiTurnStep(), 350);
+    aiT.after(350, aiTurnStep);
   }
 
   function aiTurnStep(){
@@ -123,18 +121,18 @@ export function render() {
     const idx = chooseFlip(aiCtrls, state);
     if (idx < 0) return;
     const card = state.cards[idx];
-    if (!canFlip(card)) { if (aiTimer) clearTimeout(aiTimer); aiTimer = setTimeout(aiTurnStep, 100); return; }
+    if (!canFlip(card)) { aiT.after(100, aiTurnStep); return; }
     flipUp(card); setCardState(idx, 'up'); rememberForAll(aiCtrls, state, idx);
     const res = evaluateFlip(state, card);
-    if (res.action === 'continue') { if (aiTimer) clearTimeout(aiTimer); aiTimer = setTimeout(aiTurnStep, 350); return; }
-    if (res.action === 'match') { renderScores(); if (isGameOver(state)) return onGameOver(); if (aiTimer) clearTimeout(aiTimer); aiTimer = setTimeout(aiTurnStep, 450); return; }
+    if (res.action === 'continue') { aiT.after(350, aiTurnStep); return; }
+    if (res.action === 'match') { renderScores(); if (isGameOver(state)) return onGameOver(); aiT.after(450, aiTurnStep); return; }
     if (res.action === 'mismatch') { return handleMismatch(res.idx2); }
   }
 
   function newGame(){
     // Clear timers and rebuild fresh state/deck with same players
-    if (mismatchTimer) { clearTimeout(mismatchTimer); mismatchTimer = null; }
-    if (aiTimer) { clearTimeout(aiTimer); aiTimer = null; }
+    mismatchT.clear();
+    aiT.clear();
     deck = makeDeck();
     state = createInitialState(deck, players, faceUpSec);
     aiCtrls = makeAIControllers(players);

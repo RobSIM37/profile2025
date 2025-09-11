@@ -14,6 +14,10 @@ function ensureStyles() {
   .mem-back-icon{ width: 32px; height: 32px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.35); }
   .mem-tip{ position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #0b1220; color: #e6e8ee; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.4); pointer-events: none; opacity: 0; transition: opacity 120ms ease; }
   .mem-card.show-tip .mem-tip{ opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .mem-card-inner{ transition: none; }
+    .mem-tip{ transition: none; }
+  }
   `;
   const tag = document.createElement('style'); tag.id = 'memory-card-css'; tag.textContent = css; document.head.append(tag);
 }
