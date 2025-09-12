@@ -1,88 +1,82 @@
-import { mountPipsSolver } from './pipsSolver/runner.js';
+import { setAppSolid } from '../../../lib/appShell.js';
+import { render as renderStart, meta as startMeta } from './start.js';
 
 export const meta = {
-  title: 'Pips Solver',
-  description: 'Legacy project: interactive domino puzzle solver',
+  title: 'Knuckle Bones',
+  description: startMeta?.description || 'Dice duel: build or break columns',
 };
 
 export function render() {
+  setAppSolid(true);
   const frag = document.createDocumentFragment();
-  const appEl = document.getElementById('app');
-  if (appEl) {
-    // Expand the blue frame to fit content width when needed
-    appEl.style.maxWidth = 'none';
-    appEl.style.width = 'max-content';
-    // Fill the entire blue-border area with a solid backdrop
-    appEl.style.background = 'var(--bg)';
-    appEl.style.color = 'var(--text)';
-  }
 
-  const wrap = document.createElement('section');
-  wrap.className = 'stack';
+  const chrome = document.createElement('section');
+  chrome.className = 'stack';
 
-  // Tabs: Demo | Source
+  // Pips-style tabs (centered, blue highlight)
   const tabs = document.createElement('div');
   tabs.className = 'pips-tabs';
+  // Remove default bottom margin to align with title baseline
+  tabs.style.marginBottom = '0';
   const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
   const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
   tabs.append(demoBtn, srcBtn);
 
   const demoPane = document.createElement('div');
-  demoPane.className = 'pips-demo-pane';
+  demoPane.className = 'gallery-demo-pane';
   const srcPane = document.createElement('div');
   srcPane.className = 'pips-src-pane';
   srcPane.style.display = 'none';
 
-  wrap.append(tabs, demoPane, srcPane);
-  frag.append(wrap);
+  demoPane.append(renderStart());
 
-  let mounted = null;
+  // Top bar with left-justified title and centered tabs
+  const topbar = document.createElement('div');
+  topbar.style.position = 'relative';
+  topbar.style.display = 'flex';
+  topbar.style.justifyContent = 'center';
+  topbar.style.alignItems = 'center';
+  const titleLink = document.createElement('a');
+  titleLink.href = '#/gallery/knuckle-bones'; titleLink.textContent = 'Knuckle Bones';
+  titleLink.style.position = 'absolute'; titleLink.style.left = '0'; titleLink.style.top = '50%'; titleLink.style.transform = 'translateY(-50%)';
+  titleLink.style.color = 'inherit'; titleLink.style.textDecoration = 'none';
+  titleLink.style.fontWeight = '800'; titleLink.style.fontSize = '1.6rem';
+  titleLink.addEventListener('mouseover', ()=> titleLink.style.textDecoration = 'underline');
+  titleLink.addEventListener('mouseout', ()=> titleLink.style.textDecoration = 'none');
+  topbar.append(titleLink, tabs);
+
+  chrome.append(topbar, demoPane, srcPane);
+  frag.append(chrome);
+
   const showDemo = () => {
     srcPane.style.display = 'none';
     demoPane.style.display = '';
     demoBtn.className = 'button button-subtle';
     srcBtn.className = 'button button-secondary button-subtle';
-    if (!mounted) mounted = mountPipsSolver(demoPane);
   };
   const showSrc = () => {
     demoPane.style.display = 'none';
     srcPane.style.display = '';
     demoBtn.className = 'button button-secondary button-subtle';
     srcBtn.className = 'button button-subtle';
-    if (mounted) { mounted.destroy(); mounted = null; demoPane.innerHTML = ''; }
     renderSourceBrowser(srcPane);
   };
   demoBtn.addEventListener('click', (e)=>{ e.preventDefault(); showDemo(); });
   srcBtn.addEventListener('click', (e)=>{ e.preventDefault(); showSrc(); });
-
   showDemo();
   return frag;
 }
 
-// Keep this list in sync with the modules that power the demo
-const FILES = [
-  'runner.js',
-  'app.js',
-  'src/constants.js',
-  'src/controller.js',
-  'src/puzzle.js',
-  'src/sidebar.js',
-  'src/board.js',
-  'src/solver.js',
-  'src/panels/boardToolsPanel.js',
-  'src/panels/areasPanel.js',
-  'src/panels/dominoesPanel.js',
-  'src/utils/ui.js',
-];
+const FILES = [ 'page.js', 'start.js', 'game.js', 'howto.js', 'engine.js' ];
 
 function renderSourceBrowser(host){
   host.innerHTML = '';
   const list = document.createElement('div');
   list.className = 'stack';
   const note = document.createElement('p');
-  note.textContent = 'Source files copied into this repository under src/views/gallery/pipsSolver/';
+  note.textContent = 'Source files under src/views/gallery/knucklebones/';
   list.append(note);
-  FILES.forEach(path => {
+  FILES.forEach(function(path){
     const item = document.createElement('details');
     const sum = document.createElement('summary');
     sum.textContent = path;
@@ -92,10 +86,10 @@ function renderSourceBrowser(host){
     code.textContent = 'Loading…';
     pre.append(code);
     item.append(pre);
-    item.addEventListener('toggle', async () => {
+    item.addEventListener('toggle', async function(){
       if (!item.open) return;
       try {
-        const res = await fetch(`src/views/gallery/pipsSolver/${path}`, { cache: 'no-cache' });
+        const res = await fetch('src/views/gallery/knucklebones/' + path, { cache: 'no-cache' });
         const txt = await res.text();
         code.textContent = txt;
       } catch (e) {

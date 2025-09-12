@@ -12,8 +12,8 @@ export function render() {
   chrome.className = 'stack';
   const tabs = document.createElement('div');
   tabs.className = 'pips-tabs';
-  const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button';
-  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary';
+  const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
+  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
   tabs.append(demoBtn, srcBtn);
 
   const demoPane = document.createElement('div');
@@ -32,14 +32,14 @@ export function render() {
   const showDemo = () => {
     srcPane.style.display = 'none';
     demoPane.style.display = '';
-    demoBtn.className = 'button';
-    srcBtn.className = 'button button-secondary';
+    demoBtn.className = 'button button-subtle';
+    srcBtn.className = 'button button-secondary button-subtle';
   };
   const showSrc = () => {
     demoPane.style.display = 'none';
     srcPane.style.display = '';
-    demoBtn.className = 'button button-secondary';
-    srcBtn.className = 'button';
+    demoBtn.className = 'button button-secondary button-subtle';
+    srcBtn.className = 'button button-subtle';
     renderKioSourceBrowser(srcPane);
   };
   demoBtn.addEventListener('click', function(e){ e.preventDefault(); showDemo(); });
