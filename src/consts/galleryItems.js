@@ -35,5 +35,11 @@ export const GALLERY_ITEMS = [
     img: 'assets/snakePlusThumbnail.svg',
     link: '#/gallery/snake-plus',
   },
+  {
+    title: 'FizzBuzz — Challenge Mode',
+    tagline: 'Human vs AI with challenge-only validation',
+    img: 'assets/fizzbuzzThumbnail.svg',
+    link: '#/gallery/fizzbuzz',
+  },
 ];
 

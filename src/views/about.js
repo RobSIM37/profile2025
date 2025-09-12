@@ -211,6 +211,23 @@ export function render() {
         'Global buttons updated with white inner ring + dark outer ring',
         'About: Snake+ clear now removes custom colors',
       ]);
+      const fizzbuzzEntry = PatchEntry('2025-09-11', 2, [
+        'Added FizzBuzz — Challenge Mode to Gallery',
+        'Start screen: semantic header, Basics + How to Play sections, New Game',
+        'Consistent look: solid card background (matches Knock It Off)',
+        'Demo/Source tabs now use shared Tabs header',
+        'Game: 20s turn timer, challenge-only validation, AI misplays/challenges, level-ups add rules',
+        'Controls: compact response buttons in a scroll area (footer stays visible)',
+        'HUD shows Level and Timer; active rules shown as chips',
+        'Accessibility: polite live updates; Game Over uses global modal',
+        'New global components: HudStat and Tag; adopted in FizzBuzz',
+        'Route guard: Game only starts after choosing New Game',
+      ]);
+      const memoryTweaks = PatchEntry('2025-09-11', 3, [
+        'Memory start: AI players now auto-use pun names from Knock It Off (disabled inputs)',
+        'Switching a player to Human hides the AI memory-length field and widens the type select',
+        'Configurator rows now switch modes correctly between one/two/three columns',
+      ]);
       const todayLocal = PatchEntry('2025-09-10', 4, [
         'Header brand shows (LOCAL) when running on localhost',
         'LOCAL badge uses warning color for visibility',
@@ -281,6 +298,8 @@ export function render() {
             list.prepend(todayLocal);
             list.prepend(todayLocal5);
             list.prepend(snakePlus);
+            list.prepend(fizzbuzzEntry);
+            list.prepend(memoryTweaks);
     }
   } catch {}
   frag.append(sec);

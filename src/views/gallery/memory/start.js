@@ -95,17 +95,45 @@ export function render() {
     },
     buildName(i){ const name = document.createElement('input'); name.className = 'player-name'; name.id = `mem-n${i}`; name.type='text'; name.value = `Human ${i}`; return name; },
     modeFor(v){ return v==='ai' ? 'three' : (v==='human' ? 'two' : 'one'); },
-    onSelectChange(i, value, { name }){
-      if (value === 'ai') { name.disabled = true; if (!name.value || name.value.startsWith('Human')) name.value = randPun(); }
-      else if (value === 'human') { name.disabled = false; const saved = localStorage.getItem(LS_KEY(i)); if (saved && saved.trim()) name.value = saved; }
-      else { name.disabled = true; }
+    onSelectChange(i, value, { name, row }){
+      // Update row layout mode and name field when type changes
+      const idx = i - 1;
+      if (value === 'ai') {
+        row?.setMode('three');
+        if (name) { name.disabled = true; if (!name.value || /^\s*Human\s+/i.test(name.value)) name.value = randPun(); }
+      } else if (value === 'human') {
+        row?.setMode('two');
+        if (name) {
+          name.disabled = false;
+          const saved = localStorage.getItem(LS_KEY(i));
+          if (saved && saved.trim()) name.value = saved;
+        }
+      } else {
+        row?.setMode('one');
+        if (name) name.disabled = true;
+      }
     },
   });
   gridHost.append(pc.root);
   const sels = pc.sels; const names = pc.names; const rowHandles = pc.rows;
   const memFields = pc.extras.map((w)=>({ wrapper: w, input: w?.querySelector('input') }));
 
-  function applySeatUI(idx) { /* handled by configurator on change */ }
+  function applySeatUI(idx) {
+    const i = idx + 1;
+    const sel = sels[idx]; const name = names[idx]; const row = rowHandles[idx];
+    const v = sel?.value || 'none';
+    if (v === 'ai') {
+      row?.setMode('three');
+      if (name) { name.disabled = true; if (!name.value || /^\s*Human\s+/i.test(name.value)) name.value = randPun(); }
+    } else if (v === 'human') {
+      row?.setMode('two');
+      if (name) { name.disabled = false; const saved = localStorage.getItem(LS_KEY(i)); if (saved && saved.trim()) name.value = saved; }
+    } else {
+      row?.setMode('one');
+      if (name) name.disabled = true;
+    }
+  }
+
   // Try to restore prior selection from sessionStorage (persist while in Memory)
   try {
     const saved = JSON.parse(sessionStorage.getItem('memory:chosen') || 'null');

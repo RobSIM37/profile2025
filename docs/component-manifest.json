@@ -92,6 +92,24 @@
       "returns": "Labeled styled select that shows one panel per selection (None hides panels)",
       "styles": [".ui-field", ".ui-control", "select.control", ".ui-panel"],
       "notes": "Preprends a 'None' option; panels can be Elements or factories; uses site field/control styling"
+    },
+    {
+      "name": "HudStat",
+      "path": "src/components/ui/hudStat.js",
+      "kind": "dom-factory",
+      "signature": "HudStat({ label, value }) -> { root, val }",
+      "returns": "Labeled value tile for HUD/status rows",
+      "styles": [],
+      "notes": "Use across games for Level/Timer/etc."
+    },
+    {
+      "name": "Tag",
+      "path": "src/components/ui/tag.js",
+      "kind": "dom-factory",
+      "signature": "Tag({ text }) -> Element",
+      "returns": "Pill-like tag element",
+      "styles": [],
+      "notes": "Use for rule chips and inline labels"
     }
   ],
   "conventions": {
