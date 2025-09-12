@@ -198,8 +198,14 @@ export function render() {
 
   try {
     const list = patchesPane.querySelector('#patch-list');
-    if (list) {
-      const snakePlus = PatchEntry('2025-09-11', 1, [
+      if (list) {
+        const kbEntry = PatchEntry('2025-09-12', 1, [
+          'Knuckle Bones: new gallery entry, start and game screens with AI and drag-and-drop roll cup',
+          'Game UI: stacked grids, per-player name/score rows, centered roll cup with animation + pause',
+          'Gallery: new 4:3 thumbnail, centered with black background',
+        ]);
+        // list.append(kbEntry);
+        const snakePlus = PatchEntry('2025-09-11', 1, [
         'Added Snake+ mini game to Gallery (canvas-based)',
         'New objective: cover the highlighted path simultaneously to level up',
         'Seamless level-ups: keep position/length; symmetric obstacles added each level',
@@ -300,6 +306,7 @@ export function render() {
             list.prepend(snakePlus);
             list.prepend(fizzbuzzEntry);
             list.prepend(memoryTweaks);
+            list.prepend(kbEntry);
     }
   } catch {}
   frag.append(sec);
@@ -354,6 +361,7 @@ export function render() {
   return frag;
 
 }
+
 
 
 

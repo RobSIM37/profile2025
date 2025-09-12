@@ -12,18 +12,8 @@ export function render() {
   const frag = document.createDocumentFragment();
   const wrap = document.createElement('section');
   wrap.className = 'stack kio-wrap kio-start';
+  // Title moved to top bar in page.js; omit duplicate header here
 
-  const headerEl = document.createElement('header');
-  headerEl.className = 'stack';
-  const h = document.createElement('h2');
-  h.textContent = 'Knuckle Bones';
-  h.style.fontSize = '1.8rem';
-  h.style.lineHeight = '1.2';
-  h.style.fontWeight = '800';
-  const tag = document.createElement('p');
-  tag.textContent = 'Two players alternate rolling a d6 and placing it in a 3×3 grid. Place in a column to knock out matching dice in the opponent’s same column. Score by column; clumps multiply value × count.';
-  tag.style.color = 'var(--muted)';
-  headerEl.append(h);
 
   // Start screen keeps only short blurb; full how-to is offered as a button below
 
@@ -142,7 +132,9 @@ export function render() {
   const howBtn = howWrap.firstElementChild;
   howBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.hash = '#/gallery/knuckle-bones/how-to'; });
 
-  wrap.append(headerEl, controls, buttons, howWrap);
+  wrap.append(controls, buttons, howWrap);
   frag.append(wrap);
   return frag;
 }
+
+

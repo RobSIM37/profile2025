@@ -95,40 +95,47 @@ export function rollD6(rng) {
 
 // AI evaluation helpers
 export function evaluateMove({ myBoard, oppBoard, col, value, profile }) {
-  // Simulate placement, compute heuristic score
+  // Simulate placement, compute heuristic score per 3 criteria
   const my = cloneBoard(myBoard);
   const op = cloneBoard(oppBoard);
   const beforeMy = scoreBoard(my);
   const beforeOp = scoreBoard(op);
-  // Before counts in column for clump calc
-  const beforeCounts = new Map();
-  for (let r = 0; r < 3; r++) {
-    const v = my[col][r];
-    if (v != null) beforeCounts.set(v, (beforeCounts.get(v) || 0) + 1);
-  }
+
+  // Before counts in column for pairing computation
+  let beforeCnt = 0;
+  for (let r = 0; r < 3; r++) if (my[col][r] === value) beforeCnt++;
+
   const res = placeDie(my, op, col, value);
   if (!res.ok) return -Infinity;
+
+  // After scores
   const afterMy = scoreBoard(my);
   const afterOp = scoreBoard(op);
-  const deltaMy = afterMy - beforeMy;
-  const deltaOp = afterOp - beforeOp;
-  const net = deltaMy - (beforeOp - afterOp); // my gain + opponent loss
 
-  const knockedBonus = res.knocked * (profile.attackWeight || 2); // reward removing
+  // 1) Pairing: how much did this value's contribution in this column increase?
+  let afterCnt = 0;
+  for (let r = 0; r < 3; r++) if (my[col][r] === value) afterCnt++;
+  const pairingGain = value * (afterCnt * afterCnt - beforeCnt * beforeCnt); // delta for this value in this column
 
-  // Clump risk penalty: if we increased count of this value in col, penalize by opp open slots and value
-  const beforeCnt = beforeCounts.get(value) || 0;
-  const afterCnt = beforeCnt + 1;
-  let clumpPenalty = 0;
-  if (afterCnt > 1) {
-    const oppOpen = getOpenRow(oppBoard, col) === -1 ? 0 : (3 - oppBoard[col].filter(v => v != null).length);
-    clumpPenalty = (profile.riskWeight ?? 1) * oppOpen * value * (afterCnt - 1);
-  }
+  // 2) Opponent loss: how much did their score drop overall?
+  const oppLoss = (beforeOp - afterOp);
 
-  // Slight preference for placing lower rows first (stability in tie-breaks)
+  // 3) Safety / future opportunity: avoid matching opponent's frequent value in this column.
+  // Penalize if opponent already has many of this value in the same column (higher risk they'll clear ours later).
+  let oppSameCnt = 0;
+  for (let r = 0; r < 3; r++) if (oppBoard[col][r] === value) oppSameCnt++;
+  const safetyScore = -oppSameCnt - (afterCnt - 1) * 0.5; // light anti-clump
+
+  // Row bias: slightly prefer lower rows (fills from top -> bottom visually)
   const rowBias = (2 - res.row) * 0.01;
 
-  return net + knockedBonus - clumpPenalty + rowBias;
+  const wPair = profile.wPair ?? 1.0;
+  const wOpp = profile.wOpp ?? 1.0;
+  const wSafe = profile.wSafe ?? 0.3;
+  const noiseMag = profile.noise ?? 0.15;
+  const noise = (Math.random() * 2 - 1) * noiseMag;
+
+  return (wPair * pairingGain) + (wOpp * oppLoss) + (wSafe * safetyScore) + rowBias + noise;
 }
 
 export function chooseAiMove({ myBoard, oppBoard, value, profile }) {
@@ -144,8 +151,10 @@ export function chooseAiMove({ myBoard, oppBoard, value, profile }) {
 }
 
 export const AI_PROFILES = {
-  cautious: { name: 'Cautious', riskWeight: 2.0, attackWeight: 1.5 },
-  balanced: { name: 'Balanced', riskWeight: 1.0, attackWeight: 2.0 },
-  aggressive: { name: 'Aggressive', riskWeight: 0.4, attackWeight: 2.5 },
+  // Higher safety weight, lower noise
+  cautious:  { name: 'Cautious',  wPair: 1.0, wOpp: 1.0, wSafe: 0.8, noise: 0.08 },
+  // Balanced emphasis
+  balanced:  { name: 'Balanced',  wPair: 1.2, wOpp: 1.3, wSafe: 0.4, noise: 0.12 },
+  // More aggressive on immediate gain/knockouts, low safety
+  aggressive:{ name: 'Aggressive',wPair: 1.4, wOpp: 1.8, wSafe: 0.1, noise: 0.18 },
 };
-

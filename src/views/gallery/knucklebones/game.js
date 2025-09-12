@@ -17,6 +17,7 @@ export function render() {
   chrome.className = 'stack';
   const tabs = document.createElement('div');
   tabs.className = 'pips-tabs';
+  tabs.style.marginBottom = '0';
   const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
   const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
   tabs.append(demoBtn, srcBtn);
@@ -65,16 +66,7 @@ export function render() {
   // Root
   const wrap = document.createElement('section');
   wrap.className = 'stack';
-  const header = document.createElement('header');
-  header.className = 'stack';
-  const h = document.createElement('h2');
-  const home = document.createElement('a'); home.href = '#/gallery/knuckle-bones'; home.textContent = 'Knuckle Bones';
-  home.style.color = 'inherit'; home.style.textDecoration = 'none';
-  home.addEventListener('mouseover', ()=>{ home.style.textDecoration = 'underline'; });
-  home.addEventListener('mouseout', ()=>{ home.style.textDecoration = 'none'; });
-  h.append(home);
-  h.style.fontWeight = '800'; h.style.fontSize = '1.6rem';
-  header.append(h);
+  // Title is rendered in the top bar; omit duplicate header here
 
   // No global HUD row; scores live next to player names
 
@@ -167,9 +159,23 @@ export function render() {
   restartBtn.addEventListener('click', () => restart());
   controls.append(restartWrap);
 
-  wrap.append(header, layout);
+  wrap.append(layout);
   demoPane.append(wrap);
-  chrome.append(tabs, demoPane, srcPane);
+  // Top bar with left-justified title and centered tabs
+  const topbar = document.createElement('div');
+  topbar.style.position = 'relative';
+  topbar.style.display = 'flex';
+  topbar.style.justifyContent = 'center';
+  topbar.style.alignItems = 'center';
+  const titleLinkTop = document.createElement('a');
+  titleLinkTop.href = '#/gallery/knuckle-bones'; titleLinkTop.textContent = 'Knuckle Bones';
+  titleLinkTop.style.position = 'absolute'; titleLinkTop.style.left = '0'; titleLinkTop.style.top = '50%'; titleLinkTop.style.transform = 'translateY(-50%)';
+  titleLinkTop.style.color = 'inherit'; titleLinkTop.style.textDecoration = 'none';
+  titleLinkTop.style.fontWeight = '800'; titleLinkTop.style.fontSize = '1.6rem';
+  titleLinkTop.addEventListener('mouseover', ()=> titleLinkTop.style.textDecoration = 'underline');
+  titleLinkTop.addEventListener('mouseout', ()=> titleLinkTop.style.textDecoration = 'none');
+  topbar.append(titleLinkTop, tabs);
+  chrome.append(topbar, demoPane, srcPane);
   frag.append(chrome);
 
   updateScores();
@@ -178,8 +184,7 @@ export function render() {
   // Ensure cup starts next to the active grid
   try { positionCup(); } catch {}
   requestAnimationFrame(() => { try { positionCup(); } catch {} });
-  animateRoll(currentRoll);
-  maybeAiAct();
+  animateRoll(currentRoll).then(() => { maybeAiAct(); });
   // Reposition cup on resize
   window.addEventListener('resize', () => { try { positionCup(); } catch {} });
 
@@ -201,7 +206,8 @@ export function render() {
 
   function makeBoard(idx){
     const container = document.createElement('div');
-    container.className = 'stack';
+    // Avoid global .stack auto-margins inside a board; we manage spacing explicitly
+    container.className = '';
     const title = document.createElement('h3');
     title.textContent = names[idx];
     title.style.textAlign = 'center';
@@ -217,9 +223,12 @@ export function render() {
     score.style.background = 'var(--bg-elev)';
     const nameRow = document.createElement('div');
     nameRow.style.display = 'flex';
-    nameRow.style.justifyContent = 'center';
+    nameRow.style.justifyContent = 'space-between';
     nameRow.style.alignItems = 'center';
     nameRow.style.gap = '12px';
+    nameRow.style.width = '192px';
+    // Symmetric spacing so top gap (to upper grid) equals bottom gap (to lower grid)
+    nameRow.style.margin = '10px auto';
     nameRow.append(title, score);
     const grid = document.createElement('div');
     grid.style.display = 'grid';
@@ -237,6 +246,9 @@ export function render() {
         cell.style.minHeight = '56px';
         cell.style.padding = '0';
         cell.style.fontWeight = '700';
+        // Center SVG nicely within the cell
+        cell.style.display = 'grid';
+        cell.style.placeItems = 'center';
         cell.setAttribute('aria-label', `Row ${r+1} Column ${c+1}`);
         const colIdx = c; // for click handler referencing column
         cell.addEventListener('click', () => {
@@ -297,8 +309,7 @@ export function render() {
     if (types[turn].startsWith('ai:')) {
       // Move cup to AI grid immediately, then animate and act
       positionCup();
-      animateRoll(currentRoll);
-      maybeAiAct();
+      animateRoll(currentRoll).then(() => { maybeAiAct(); });
     } else {
       if (prevWasAI) {
         // Keep cup at previous player during pause; show empty cup
@@ -346,7 +357,7 @@ export function render() {
         const btn = els[i];
         btn.innerHTML = '';
         if (v != null) {
-          const die = makeDieFace(v, 52);
+          const die = makeDieFace(v, 54); // slightly larger but still centered
           btn.appendChild(die.root);
         }
         btn.className = 'button' + (v == null ? ' button-secondary' : '');
@@ -411,59 +422,63 @@ export function render() {
 
 function animateRoll(value){
     // Bouncing die inside the cup: jitter position and pips, then settle
-    const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const setDie = (val) => {
-      const parent = dieFace.root.parentElement;
-      if (parent) parent.removeChild(dieFace.root);
-      dieFace = makeDieFace(val, 44);
-      dieFace.root.style.position = 'absolute';
-      dieFace.root.style.left = '50%';
-      dieFace.root.style.top = '50%';
-      dieFace.root.style.transform = 'translate(-50%, -50%)';
-      dieFace.root.addEventListener('dragstart', (e) => {
-        if (dieFace.root.getAttribute('draggable') !== 'true') { e.preventDefault(); return; }
-        try { e.dataTransfer?.setData('text/kb-die', String(currentRoll)); } catch {}
-        if (e.dataTransfer) e.dataTransfer.effectAllowed = 'copy';
-        document.body.style.cursor = 'grabbing';
-        dieFace.root.style.cursor = 'grabbing';
-      });
-      dieFace.root.addEventListener('dragend', () => { document.body.style.cursor=''; dieFace.root.style.cursor='grab'; });
-      if (parent) parent.appendChild(dieFace.root);
-    };
-
-    dieFace.root.setAttribute('draggable', 'false');
-    if (prefersReduced) { setDie(value); dieFace.root.setAttribute('draggable','true'); dieFace.root.style.cursor='grab'; return; }
-
-    const start = performance.now();
-    const dur = 250 + Math.floor(rng()*1750);
-    const amp = 10;
-    const freq = 0.006 + rng()*0.012;
-    const R = 120/2 - 14; // based on CUP_SIZE
-
-    const step = () => {
-      const now = performance.now();
-      const t = now - start;
-      // wobble dice column container slightly
-      const x = Math.sin(now*freq) * amp;
-      diceCol.style.transform = `translateX(${x}px)`;
-      // temporary face and position
-      setDie(1 + Math.floor(rng()*6));
-      const ang = rng()*Math.PI*2; const rad = Math.sqrt(rng())*R;
-      const dx = Math.cos(ang)*rad; const dy = Math.sin(ang)*rad;
-      dieFace.root.style.left = `${60 + dx}px`;
-      dieFace.root.style.top = `${60 + dy}px`;
-      dieFace.root.style.transform = 'translate(-50%, -50%)';
-      if (t < dur) { rollReq = requestAnimationFrame(step); }
-      else {
-        diceCol.style.transform = '';
-        setDie(value);
-        dieFace.root.style.left = '50%'; dieFace.root.style.top = '50%';
+    // Returns a Promise that resolves when the die settles.
+    return new Promise((resolve) => {
+      const prefersReduced = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const setDie = (val) => {
+        const parent = dieFace.root.parentElement;
+        if (parent) parent.removeChild(dieFace.root);
+        dieFace = makeDieFace(val, 44);
+        dieFace.root.style.position = 'absolute';
+        dieFace.root.style.left = '50%';
+        dieFace.root.style.top = '50%';
         dieFace.root.style.transform = 'translate(-50%, -50%)';
-        dieFace.root.setAttribute('draggable','true'); dieFace.root.style.cursor='grab';
-      }
-    };
-    cancelAnimationFrame(rollReq);
-    rollReq = requestAnimationFrame(step);
+        dieFace.root.addEventListener('dragstart', (e) => {
+          if (dieFace.root.getAttribute('draggable') !== 'true') { e.preventDefault(); return; }
+          try { e.dataTransfer?.setData('text/kb-die', String(currentRoll)); } catch {}
+          if (e.dataTransfer) e.dataTransfer.effectAllowed = 'copy';
+          document.body.style.cursor = 'grabbing';
+          dieFace.root.style.cursor = 'grabbing';
+        });
+        dieFace.root.addEventListener('dragend', () => { document.body.style.cursor=''; dieFace.root.style.cursor='grab'; });
+        if (parent) parent.appendChild(dieFace.root);
+      };
+
+      dieFace.root.setAttribute('draggable', 'false');
+      if (prefersReduced) { setDie(value); dieFace.root.setAttribute('draggable','true'); dieFace.root.style.cursor='grab'; resolve(); return; }
+
+      const start = performance.now();
+      const dur = 250 + Math.floor(rng()*1750);
+      const amp = 10;
+      const freq = 0.006 + rng()*0.012;
+      const R = 120/2 - 14; // based on CUP_SIZE
+
+      const step = () => {
+        const now = performance.now();
+        const t = now - start;
+        // wobble dice column container slightly
+        const x = Math.sin(now*freq) * amp;
+        diceCol.style.transform = `translateX(${x}px)`;
+        // temporary face and position
+        setDie(1 + Math.floor(rng()*6));
+        const ang = rng()*Math.PI*2; const rad = Math.sqrt(rng())*R;
+        const dx = Math.cos(ang)*rad; const dy = Math.sin(ang)*rad;
+        dieFace.root.style.left = `${60 + dx}px`;
+        dieFace.root.style.top = `${60 + dy}px`;
+        dieFace.root.style.transform = 'translate(-50%, -50%)';
+        if (t < dur) { rollReq = requestAnimationFrame(step); }
+        else {
+          diceCol.style.transform = '';
+          setDie(value);
+          dieFace.root.style.left = '50%'; dieFace.root.style.top = '50%';
+          dieFace.root.style.transform = 'translate(-50%, -50%)';
+          dieFace.root.setAttribute('draggable','true'); dieFace.root.style.cursor='grab';
+          resolve();
+        }
+      };
+      cancelAnimationFrame(rollReq);
+      rollReq = requestAnimationFrame(step);
+    });
   }
   
 
@@ -516,12 +531,13 @@ function animateRoll(value){
     const body = document.createElement('div');
     const p = document.createElement('p'); p.textContent = `${names[0]}: ${s1} — ${names[1]}: ${s2}`; body.append(p);
     const chosen = types.map((t,i)=> t==='human' ? { kind: 'human', name: names[i] } : { kind: 'ai', level: (t.split(':')[1]||'balanced'), name: names[i] });
-    const again = { label: 'Play Again', onClick: () => {
+    const restart = () => {
       try { sessionStorage.setItem('kb:chosen', JSON.stringify(chosen)); } catch {}
-      const newSeed = Date.now();
-      location.hash = `#/gallery/knuckle-bones/game?seed=${newSeed}`;
-    } };
-    openModal({ title, body, actions: [again], actionsAlign: 'center', titleAlign: 'center' });
+      // Start a new game without adding a seed to the URL
+      location.hash = '#/gallery/knuckle-bones/game';
+    };
+    const again = { label: 'Play Again', onClick: restart };
+    openModal({ title, body, actions: [again], actionsAlign: 'center', titleAlign: 'center', onClose: restart });
   }
 
   function endGame(){

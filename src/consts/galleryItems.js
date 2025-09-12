@@ -38,7 +38,7 @@ export const GALLERY_ITEMS = [
   {
     title: 'Knuckle Bones',
     tagline: 'Dice duel: build or break columns',
-    img: 'assets/memoryThumbnail.svg',
+    img: 'assets/knuckleBonesThumbnail.png',
     link: '#/gallery/knuckle-bones',
   },
   {

@@ -16,6 +16,8 @@ export function render() {
   // Pips-style tabs (centered, blue highlight)
   const tabs = document.createElement('div');
   tabs.className = 'pips-tabs';
+  // Remove default bottom margin to align with title baseline
+  tabs.style.marginBottom = '0';
   const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
   const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
   tabs.append(demoBtn, srcBtn);
@@ -28,7 +30,22 @@ export function render() {
 
   demoPane.append(renderStart());
 
-  chrome.append(tabs, demoPane, srcPane);
+  // Top bar with left-justified title and centered tabs
+  const topbar = document.createElement('div');
+  topbar.style.position = 'relative';
+  topbar.style.display = 'flex';
+  topbar.style.justifyContent = 'center';
+  topbar.style.alignItems = 'center';
+  const titleLink = document.createElement('a');
+  titleLink.href = '#/gallery/knuckle-bones'; titleLink.textContent = 'Knuckle Bones';
+  titleLink.style.position = 'absolute'; titleLink.style.left = '0'; titleLink.style.top = '50%'; titleLink.style.transform = 'translateY(-50%)';
+  titleLink.style.color = 'inherit'; titleLink.style.textDecoration = 'none';
+  titleLink.style.fontWeight = '800'; titleLink.style.fontSize = '1.6rem';
+  titleLink.addEventListener('mouseover', ()=> titleLink.style.textDecoration = 'underline');
+  titleLink.addEventListener('mouseout', ()=> titleLink.style.textDecoration = 'none');
+  topbar.append(titleLink, tabs);
+
+  chrome.append(topbar, demoPane, srcPane);
   frag.append(chrome);
 
   const showDemo = () => {
