@@ -1,5 +1,6 @@
 import { meta as gameMeta } from './game.js';
 import { Button } from '../../../components/ui/button.js';
+import { makeTabs } from '../../../components/ui/tabs.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 
 export const meta = {
@@ -14,17 +15,23 @@ export function render() {
   const chrome = document.createElement('section');
   chrome.className = 'stack';
 
-  // Minimal two-tab chrome: Demo / Source
-  const tabs = document.createElement('div');
-  tabs.className = 'pips-tabs';
-  const startBtn = document.createElement('a'); startBtn.href = '#'; startBtn.textContent = 'Demo'; startBtn.className = 'button';
-  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary';
-  tabs.append(startBtn, srcBtn);
-
+  // Tabs: Demo / Source using shared makeTabs
   const startPane = document.createElement('div');
   startPane.className = 'gallery-demo-pane';
   const srcPane = document.createElement('div');
   srcPane.className = 'pips-src-pane';
+  const tabs = makeTabs({
+    items: [ { id: 'demo', label: 'Demo' }, { id: 'source', label: 'Source' } ],
+    activeId: 'demo',
+    onChange(id){
+      const showDemo = id === 'demo';
+      startPane.style.display = showDemo ? '' : 'none';
+      srcPane.style.display = showDemo ? 'none' : '';
+      if (!showDemo) renderSourceBrowser(srcPane);
+    }
+  });
+
+  // Initialize panes
   srcPane.style.display = 'none';
 
   // Start view: header + how-to + New Game
@@ -105,25 +112,10 @@ export function render() {
   intro.append(headerEl, basics, how, newGameWrap);
   startPane.append(intro);
 
-  chrome.append(tabs, startPane, srcPane);
+  chrome.append(tabs.root, startPane, srcPane);
   frag.append(chrome);
-
-  const showStart = () => {
-    srcPane.style.display = 'none';
-    startPane.style.display = '';
-    startBtn.className = 'button';
-    srcBtn.className = 'button button-secondary';
-  };
-  const showSrc = () => {
-    startPane.style.display = 'none';
-    srcPane.style.display = '';
-    startBtn.className = 'button button-secondary';
-    srcBtn.className = 'button';
-    renderSourceBrowser(srcPane);
-  };
-  startBtn.addEventListener('click', function(e){ e.preventDefault(); showStart(); });
-  srcBtn.addEventListener('click', function(e){ e.preventDefault(); showSrc(); });
-  showStart();
+  // Ensure default tab state
+  tabs.setActive('demo');
 
   return frag;
 }

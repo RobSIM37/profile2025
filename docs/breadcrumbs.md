@@ -25,6 +25,8 @@ Components & Utilities
 - Controls grid: `makeControlsGrid({ cols?, gap? })` lays out labeled rows with one/two/three control modes using fixed column widths.
  - Player configurator: `makePlayerConfigurator({...})` builds N player rows with cascading None logic; used by Memory and Knock It Off.
  - Timers: `makeTimer()` creates a one-shot timer with `.after(ms, fn)` and `.clear()` that avoids overlapping timeouts.
+ - HUD stat: `HudStat({ label, value }) -> { root, val }` small labeled value tile for Level/Timer/etc.
+ - Tag: `Tag({ text }) -> Element` pill-style label used for rule chips and inline metadata.
 
 Global-First Requirement
 - Always consume the pre-existing offerings in `src/components/ui/` for UI primitives and flows. Examples:
@@ -32,6 +34,7 @@ Global-First Requirement
   - Use `openModal` instead of `alert/confirm` or custom overlays.
   - Use `numberField` and other input helpers for form controls.
   - Use `makeTabs` for tabbed chrome in gallery views.
+  - Use `HudStat` for small status tiles and `Tag` for simple pill labels when showing chips/tags.
 - Only introduce new primitives by adding them to `src/components/ui/` (with a manifest entry) so future work can reuse them.
 
 Routing Notes
@@ -98,6 +101,8 @@ Quick Notes About Existing Globals
 - `FaceIcon(kind, opts) -> SVGElement` – smiley/frowny icon.
 - `Card({ title, tagline, img, link, alt }): string` – gallery card.
  - `makeControlsGrid({ cols?, gap? }) -> { root, addRow, getRow }` – 4-column labeled control rows; supports modes 'one'|'two'|'three' to control spans.
+ - `HudStat({ label, value }) -> { root, val }` – small status tile.
+ - `Tag({ text }) -> Element` – pill-style label for chips.
 
 Assistant Reminders
 - Use ripgrep (`rg`) for fast code search.

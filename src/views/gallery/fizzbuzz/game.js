@@ -2,6 +2,8 @@ import { Button } from '../../../components/ui/button.js';
 import { openModal } from '../../../components/ui/modal.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 import { makeTimer } from '../../../lib/timers.js';
+import { HudStat } from '../../../components/ui/hudStat.js';
+import { Tag } from '../../../components/ui/tag.js';
 
 export const meta = {
   title: 'FizzBuzz �?" Game',
@@ -30,9 +32,9 @@ export function render(){
   header.style.gridTemplateColumns = 'repeat(2, 1fr)';
   header.style.gap = '8px';
   header.style.alignItems = 'center';
-  const hudLevel = mkHud('Level', '0');
-  const hudTimer = mkHud('Timer', '-');
-  header.append(hudLevel.wrap, hudTimer.wrap);
+  const hudLevel = HudStat({ label: 'Level', value: '0' });
+  const hudTimer = HudStat({ label: 'Timer', value: '-' });
+  header.append(hudLevel.root, hudTimer.root);
 
   // Rules panel
   const rulesPanel = document.createElement('div');
@@ -309,15 +311,7 @@ export function render(){
   function syncRules(){
     rulesList.innerHTML = '';
     const pairs = [...S.rules.entries()].sort((a,b)=>a[0]-b[0]);
-    pairs.forEach(([k, w]) => {
-      const pill = document.createElement('span');
-      pill.textContent = `${k}: ${w}`;
-      pill.style.border = '1px solid var(--border)';
-      pill.style.borderRadius = '999px';
-      pill.style.padding = '2px 8px';
-      pill.style.background = 'var(--bg)';
-      rulesList.append(pill);
-    });
+    pairs.forEach(([k, w]) => { rulesList.append(Tag({ text: `${k}: ${w}` })); });
   }
 
   function rebuildButtons(){
@@ -449,18 +443,4 @@ export function render(){
 }
 
 // Helpers
-function mkHud(label, value){
-  const wrap = document.createElement('div');
-  wrap.style.textAlign = 'center';
-  wrap.style.background = 'var(--bg-elev)';
-  wrap.style.border = '1px solid var(--border)';
-  wrap.style.borderRadius = '8px';
-  wrap.style.padding = '6px 8px';
-  const lab = document.createElement('div'); lab.textContent = label; lab.style.fontSize = '12px'; lab.style.color = 'var(--muted)';
-  const val = document.createElement('div'); val.textContent = value; val.style.fontWeight = '700'; val.style.fontSize = '16px';
-  wrap.append(lab, val);
-  return { wrap, val };
-}
-
 function border0(el){ el.style.border = '0'; el.style.padding = '0'; }
-
