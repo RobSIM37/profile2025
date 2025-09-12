@@ -262,8 +262,7 @@ export function render() {
           if (!hasDie) return;
           if (turn !== idx) return; // only current player's board
           if (!getValidColumns(boards[idx]).includes(colIdx)) return;
-          const orow = getOpenRow(boards[idx], colIdx);
-          if (orow !== r) return; // must drop into the next open slot in this column
+          if (boards[idx][colIdx][r] != null) return; // only empty cell
           e.preventDefault();
           if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
         });
@@ -273,9 +272,8 @@ export function render() {
           e.preventDefault();
           if (turn !== idx) return;
           if (!getValidColumns(boards[idx]).includes(colIdx)) return;
-          const orow = getOpenRow(boards[idx], colIdx);
-          if (orow !== r) return;
-          tryPlace(colIdx);
+          if (boards[idx][colIdx][r] != null) return;
+          tryPlace(colIdx, r);
         });
 
         cells.push(cell);
@@ -288,11 +286,11 @@ export function render() {
     return { root: container, cells, title, grid, score, nameRow };
   }
 
-  function tryPlace(col){
+  function tryPlace(col, row){
     const my = boards[turn];
     const op = boards[1 - turn];
     if (!getValidColumns(my).includes(col)) return; // column full
-    const res = placeDie(my, op, col, currentRoll);
+    const res = placeDie(my, op, col, currentRoll, row);
     if (!res.ok) return;
     // Advance turn and roll
     const prevWasAI = types[turn].startsWith('ai:');
@@ -531,13 +529,16 @@ function animateRoll(value){
     const body = document.createElement('div');
     const p = document.createElement('p'); p.textContent = `${names[0]}: ${s1} — ${names[1]}: ${s2}`; body.append(p);
     const chosen = types.map((t,i)=> t==='human' ? { kind: 'human', name: names[i] } : { kind: 'ai', level: (t.split(':')[1]||'balanced'), name: names[i] });
+    let quitting = false;
     const restart = () => {
       try { sessionStorage.setItem('kb:chosen', JSON.stringify(chosen)); } catch {}
-      // Start a new game without adding a seed to the URL
-      location.hash = '#/gallery/knuckle-bones/game';
+      // Force rerender by changing hash (router strips query, but hashchange still fires)
+      const seed = Date.now();
+      location.hash = `#/gallery/knuckle-bones/game?seed=${seed}`;
     };
     const again = { label: 'Play Again', onClick: restart };
-    openModal({ title, body, actions: [again], actionsAlign: 'center', titleAlign: 'center', onClose: restart });
+    const quit = { label: 'Quit', variant: 'secondary', onClick: () => { quitting = true; try { sessionStorage.removeItem('kb:chosen'); sessionStorage.removeItem('kb:config'); } catch {}; location.hash = '#/gallery/knuckle-bones'; } };
+    openModal({ title, body, actions: [again, quit], actionsAlign: 'center', titleAlign: 'center', onClose: () => { if (!quitting) restart(); } });
   }
 
   function endGame(){
@@ -547,8 +548,10 @@ function animateRoll(value){
     const title = s1 === s2 ? 'Tie Game' : `${s1 > s2 ? names[0] : names[1]} Wins!`;
     const body = document.createElement('div');
     const p = document.createElement('p'); p.textContent = `${names[0]}: ${s1} — ${names[1]}: ${s2}`; body.append(p);
-    const again = { label: 'Play Again', onClick: () => { try { sessionStorage.setItem('kb:chosen', '1'); } catch {}; location.hash = '#/gallery/knuckle-bones'; } };
-    openModal({ title, body, actions: [again], actionsAlign: 'center', titleAlign: 'center' });
+    const chosen = types.map((t,i)=> t==='human' ? { kind: 'human', name: names[i] } : { kind: 'ai', level: (t.split(':')[1]||'balanced'), name: names[i] });
+    const again = { label: 'Play Again', onClick: () => { try { sessionStorage.setItem('kb:chosen', JSON.stringify(chosen)); } catch {}; const seed = Date.now(); location.hash = `#/gallery/knuckle-bones/game?seed=${seed}`; } };
+    const quit = { label: 'Quit', variant: 'secondary', onClick: () => { try { sessionStorage.removeItem('kb:chosen'); sessionStorage.removeItem('kb:config'); } catch {}; location.hash = '#/gallery/knuckle-bones'; } };
+    openModal({ title, body, actions: [again, quit], actionsAlign: 'center', titleAlign: 'center' });
   }
 
   // Tabs wiring

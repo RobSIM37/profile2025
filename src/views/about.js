@@ -204,6 +204,14 @@ export function render() {
           'Game UI: stacked grids, per-player name/score rows, centered roll cup with animation + pause',
           'Gallery: new 4:3 thumbnail, centered with black background',
         ]);
+        const kbEntry2 = PatchEntry('2025-09-12', 2, [
+          'Knuckle Bones: Game Over modal reliably restarts via ?seed hash (close or Play Again)',
+          'Knuckle Bones: Added Quit button to Game Over modal; routes to #/gallery/knuckle-bones and avoids auto-restart on close',
+          'Knuckle Bones: Drag-and-drop places dice into the exact cell dropped (removed top-only restriction)',
+          'Engine: placeDie now accepts an optional row for precise placement; scoring unchanged',
+          'UI: Drag-over/drop allowed only on empty cells; clicking still uses the first open slot',
+          'FizzBuzz: Temporary Quit button added and then removed per feedback',
+        ]);
         // list.append(kbEntry);
         const snakePlus = PatchEntry('2025-09-11', 1, [
         'Added Snake+ mini game to Gallery (canvas-based)',
@@ -307,6 +315,7 @@ export function render() {
             list.prepend(fizzbuzzEntry);
             list.prepend(memoryTweaks);
             list.prepend(kbEntry);
+            list.prepend(kbEntry2);
     }
   } catch {}
   frag.append(sec);

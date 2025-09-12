@@ -47,12 +47,13 @@ export function canPlace(board, col) {
   return getOpenRow(board, col) !== -1;
 }
 
-export function placeDie(myBoard, oppBoard, col, value) {
-  // Place value in myBoard at given column (first open slot),
-  // then remove matching values in same column from oppBoard.
-  const row = getOpenRow(myBoard, col);
-  if (row === -1) return { ok: false, knocked: 0 };
-  myBoard[col][row] = value;
+export function placeDie(myBoard, oppBoard, col, value, row = undefined) {
+  // Place value in myBoard at given column.
+  // If row is provided, place at that empty row; otherwise use first open slot.
+  let targetRow = (row == null ? getOpenRow(myBoard, col) : row|0);
+  if (targetRow < 0 || targetRow > 2) return { ok: false, knocked: 0 };
+  if (myBoard[col][targetRow] != null) return { ok: false, knocked: 0 };
+  myBoard[col][targetRow] = value;
   let knocked = 0;
   for (let r = 0; r < 3; r++) {
     if (oppBoard[col][r] === value) {
@@ -60,7 +61,7 @@ export function placeDie(myBoard, oppBoard, col, value) {
       knocked++;
     }
   }
-  return { ok: true, row, knocked };
+  return { ok: true, row: targetRow, knocked };
 }
 
 export function isBoardFull(board) {
