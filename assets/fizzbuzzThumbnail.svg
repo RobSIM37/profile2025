@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#1b2333"/>
+      <stop offset="100%" stop-color="#0f141f"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g)"/>
+  <g font-family="'Orbitron', 'Share Tech Mono', sans-serif" fill="#7cb3ff" text-anchor="middle">
+    <text x="50%" y="45%" font-size="64" font-weight="800">FizzBuzz</text>
+    <text x="50%" y="58%" font-size="22" fill="#a7c4ff">Challenge-Only · Human vs AI</text>
+  </g>
+</svg>

@@ -15,6 +15,8 @@ export const routes = {
   '/gallery/memory': () => import('../views/gallery/memory/page.js'),
   '/gallery/memory/game': () => import('../views/gallery/memory/game2.js'),
   '/gallery/snake-plus': () => import('../views/gallery/snakeplus/page.js'),
+  '/gallery/fizzbuzz': () => import('../views/gallery/fizzbuzz/page.js'),
+  '/gallery/fizzbuzz/game': () => import('../views/gallery/fizzbuzz/game.js'),
   '/about': () => import('../views/about.js'),
   '/contact': () => import('../views/contact.js'),
   '/rain': () => import('../views/coderain.js'),
@@ -31,6 +33,11 @@ export const routes = {
 
 // Optional: centralize route guards alongside the table
 export const beforeResolve = makeBeforeResolve([
+  {
+    match: '/gallery/fizzbuzz/game',
+    allow: allow.sessionKey('fb:chosen'),
+    redirect: '/gallery/fizzbuzz',
+  },
   {
     match: '/gallery/knock-it-off/game',
     allow: allow.sessionKey('kio:chosen'),
