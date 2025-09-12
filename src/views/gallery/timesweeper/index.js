@@ -21,10 +21,10 @@ export function render() {
   header.className = 'ts-controls';
   header.innerHTML = `
     <div class="ts-presets">
-      ${Button({ id: 'ts-easy', label: 'Easy', variant: 'secondary' })}
-      ${Button({ id: 'ts-inter', label: 'Intermediate', variant: 'secondary' })}
-      ${Button({ id: 'ts-hard', label: 'Hard', variant: 'secondary' })}
-      ${Button({ id: 'ts-custom', label: 'Custom', variant: 'secondary' })}
+      ${Button({ id: 'ts-easy', label: 'Easy', variant: 'secondary', className: 'button-subtle' })}
+      ${Button({ id: 'ts-inter', label: 'Intermediate', variant: 'secondary', className: 'button-subtle' })}
+      ${Button({ id: 'ts-hard', label: 'Hard', variant: 'secondary', className: 'button-subtle' })}
+      ${Button({ id: 'ts-custom', label: 'Custom', variant: 'secondary', className: 'button-subtle' })}
     </div>
     ${Button({ id: 'ts-new', label: 'New Game' })}
     <div class="ts-stat">Flags: <span id="ts-flags">0</span></div>

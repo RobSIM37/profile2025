@@ -113,6 +113,7 @@ main:focus { outline: none; }
 }
 .button:hover { text-decoration: none; filter: brightness(0.95); }
 .button-secondary { background: var(--bg-elev); color: var(--text); border: 1px solid var(--border); }
+.button-subtle { box-shadow: none; }
 .button-warning { background: var(--warning); color: #ffffff; border: 1px solid var(--warning); }
 .button-warning:hover { filter: brightness(1.05); }
 

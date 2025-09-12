@@ -19,10 +19,11 @@ export function makeGrid({ size, getState, onCell }) {
   const n = size * size;
   for (let i = 0; i < n; i++) {
     const btn = document.createElement('button');
-    btn.className = 'button';
+    btn.className = 'button button-subtle';
     btn.style.padding = '0';
     btn.style.borderRadius = 'var(--radius, 6px)';
-    btn.style.borderWidth = 'var(--border, 1px)';
+    // Remove outer ring and any per-button border for a tile look
+    btn.style.border = 'none';
     btn.style.display = 'inline-flex';
     btn.style.alignItems = 'center';
     btn.style.justifyContent = 'center';

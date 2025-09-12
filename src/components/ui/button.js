@@ -9,11 +9,19 @@ export function Button({
   size = 'md',
   attrs = {},
   type,
+  className,
 } = {}) {
   const classes = ['button'];
   if (variant === 'secondary') classes.push('button-secondary');
   if (variant === 'warning') classes.push('button-warning');
+  if (variant === 'subtle') classes.push('button-subtle');
   if (size === 'sm' || size === 'small') classes.push('small');
+  if (className) {
+    String(className)
+      .split(/\s+/)
+      .filter(Boolean)
+      .forEach((c) => classes.push(c));
+  }
   const idPart = id ? ` id="${escapeHTML(id)}"` : '';
   const typePart = type ? ` type="${escapeHTML(type)}"` : '';
   const rest = Object.entries(attrs || {})

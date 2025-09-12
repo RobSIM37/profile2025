@@ -50,7 +50,7 @@ Gallery & Assets
 - SRP: each module/class/function does one thing well.
 - Components: clear input/output contracts; no hidden globals; return elements/strings explicitly.
 - Elevate Reuse: prefer “global” components under `src/components/ui/` when multiple views can benefit.
-- Styling: use existing site tokens and classes in `styling/` (e.g., `.button`, `.button-secondary`, `.button-warning`, `.text-warning`, `.ui-field`, `.ui-control`, `--radius`, `--border`, `--warning`).
+- Styling: use existing site tokens and classes in `styling/` (e.g., `.button`, `.button-secondary`, `.button-warning`, `.button-subtle`, `.text-warning`, `.ui-field`, `.ui-control`, `--radius`, `--border`, `--warning`).
   - Honor `prefers-reduced-motion` in animations.
 - Routing: use `src/consts/routes.js` for SPA routes; lazy-import views.
 - Patches: keep Patch History newest-first; bullets should be user-visible outcomes only.
@@ -94,7 +94,7 @@ Patch Notes Guidance
 - Implementation: `PatchEntry(date, iteration, [bullets])` where `date = 'YYYY-MM-DD'` and `iteration` is a number (rendered as 2 digits).
 
 Quick Notes About Existing Globals
-- `Button(options): string` – string HTML generator; variant `secondary` supported.
+- `Button(options): string` - string HTML generator; variants `secondary`|`warning`|`subtle` supported. `subtle` removes the white ring (box-shadow); use for low-emphasis actions like Demo/Source tabs.
 - `makeTabs({ items, activeId, onChange }) -> { root, setActive, getActive }` – tabs header utility.
 - `numberField({ id, label, value, min, max, step }) -> { wrapper, input }` – standard labeled numeric field.
 - `openModal({ title, body, actions, onClose }) -> { close }` – lightweight modal.

@@ -36,6 +36,12 @@ export const GALLERY_ITEMS = [
     link: '#/gallery/snake-plus',
   },
   {
+    title: 'Knuckle Bones',
+    tagline: 'Dice duel: build or break columns',
+    img: 'assets/memoryThumbnail.svg',
+    link: '#/gallery/knuckle-bones',
+  },
+  {
     title: 'FizzBuzz — Challenge Mode',
     tagline: 'Human vs AI with challenge-only validation',
     img: 'assets/fizzbuzzThumbnail.svg',

@@ -17,6 +17,9 @@ export const routes = {
   '/gallery/snake-plus': () => import('../views/gallery/snakeplus/page.js'),
   '/gallery/fizzbuzz': () => import('../views/gallery/fizzbuzz/page.js'),
   '/gallery/fizzbuzz/game': () => import('../views/gallery/fizzbuzz/game.js'),
+  '/gallery/knuckle-bones': () => import('../views/gallery/knucklebones/page.js'),
+  '/gallery/knuckle-bones/how-to': () => import('../views/gallery/knucklebones/howto.js'),
+  '/gallery/knuckle-bones/game': () => import('../views/gallery/knucklebones/game.js'),
   '/about': () => import('../views/about.js'),
   '/contact': () => import('../views/contact.js'),
   '/rain': () => import('../views/coderain.js'),
@@ -52,6 +55,11 @@ export const beforeResolve = makeBeforeResolve([
     match: '/gallery/memory/game',
     allow: allow.sessionKey('memory:chosen'),
     redirect: '/gallery/memory',
+  },
+  {
+    match: '/gallery/knuckle-bones/game',
+    allow: allow.sessionKey('kb:chosen'),
+    redirect: '/gallery/knuckle-bones',
   },
 ]);
 
