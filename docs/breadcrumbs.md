@@ -110,3 +110,41 @@ Assistant Reminders
 - Keep answers concise; prefer bullet lists for clarity.
 - Confirm assumptions early when scope is ambiguous.
  - STANDING ORDER: When introducing themed styles or visual behaviors, extract them into reusable global components or utility classes (e.g., ControlsGrid, .scroll-themed) and reuse across views instead of one-off, scoped tweaks.
+
+Messaging System (WS)
+- Overview: Frontend sends intent-based messages over WebSocket using a consistent envelope. Backend verifies JWT per message, authorizes by intent, dispatches to handlers, then replies or broadcasts based on room presence and handler policy.
+- Envelope (client -> server): `{ auth: { jwt }, message: { intent, payload, requestId } }`
+- Envelope (server -> client): `{ requestId?, intent?, ok, data?, error? }` where:
+  - `requestId`: echoes request for direct replies; omitted for unsolicited/broadcasts.
+  - `intent`: present on broadcasts so clients can subscribe by intent.
+- Auth: JWT required on every message; backend reads HS256 or RS256 keys from env (see `backend/core/security/jwt.js`).
+- Intents: Register handlers in `backend/src/registerIntents.js`; reuse claim roots from `backend/core/security/claims.js` to align FE/BE meaning.
+
+Backend Dispatch & Rooms
+- Dispatch: `backend/index.js` parses envelope, verifies JWT, checks authz (`isAuthorized`), then routes via `core/intentionRouter`.
+- Broadcast policy: If `payload.gameId` is present and handler returns success, the server broadcasts `{ intent, ok, data, error }` to that room unless handler sets `broadcast: false`. Otherwise, a direct reply is sent to the requester.
+- Rooms API (server context): handlers receive `ctx` with `joinRoom(roomId)`, `leaveRoom(roomId)`, `broadcast(data, { gameId?, excludeSender? })`, `reply(data)`, and `rooms()`.
+- System intents: `system.room.join` and `system.room.leave` accept `{ roomId? , gameId? }` and never broadcast. See `backend/src/handlers/system/*.js`.
+
+Frontend Client (vanilla JS)
+- Location: `frontend/src/lib/ws.js`
+- Initialize: import and connect once on app boot (done in `frontend/src/main.js`).
+  - `import ws from '../lib/ws.js'`
+  - `ws.connect({ url? , getToken? })` — default URL derives from current host, port 3001, and `wss` on HTTPS.
+  - Provide JWT via `ws.setToken(token)` or a `getToken()` provider; token is attached on every `send()`.
+- Send: `ws.send(intent, payload, { timeout? }) -> Promise<{ ok, data, error, requestId, intent? }>`
+- Subscribe: `const off = ws.on('some.intent', (msg) => { ... })`
+- Rooms: `ws.joinRoom({ roomId? , gameId? }|string)` and `ws.leaveRoom({ roomId? , gameId? }|string)`
+- Correlation: Replies with a matching `requestId` resolve the promise from `send()`. Broadcasts (room messages) invoke `ws.on(intent, ...)` handlers.
+- Reconnect: Auto‑reconnect with backoff after `close`.
+
+Routing Integration (join/leave on navigation)
+- Router event: After each navigation, the router dispatches a global `app:navigate` event with `{ path, prevPath }` (path is the route without hash query). See `frontend/src/router.js`.
+- Helper: `ws.installRouteRoomSync({ deriveRoomId(path) })` joins/leaves rooms automatically on route changes.
+  - Example (fixed lobby): `ws.installRouteRoomSync({ deriveRoomId: (p) => p.startsWith('/gallery/knuckle-bones/game') ? 'kb-lobby' : null })`
+  - If you store room IDs in the hash query (recommended for shareable links), parse `window.location.hash` inside your `deriveRoomId` to read `?room=...` since the router’s `path` excludes query for matching.
+
+Dev Tips (JWT)
+- Mint a dev token: `npm run mint --prefix backend -- --secret <your-secret> --roles user --ttl 1h`
+- Save in the browser: `ws.setToken('<JWT>')` from the dev console.
+- Test round‑trip: `ws.send('system.ping', { echo: 'hi' }).then(console.log)`

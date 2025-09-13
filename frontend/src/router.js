@@ -12,6 +12,7 @@ export function initRouter({ routes, baseTitle = document.title, beforeResolve }
 
   const resolve = (path) => routes[path] || routes['/404'] || routes['/'];
 
+  let _prevPath = null;
   async function render() {
     let path = getPath();
     // Optional guard/preprocess step to allow redirects (e.g., gated routes)
@@ -73,6 +74,12 @@ export function initRouter({ routes, baseTitle = document.title, beforeResolve }
 
     // Focus main for accessibility after navigation
     app.focus({ preventScroll: true });
+
+    try {
+      const detail = { path, prevPath: _prevPath };
+      window.dispatchEvent(new CustomEvent('app:navigate', { detail }));
+      _prevPath = path;
+    } catch {}
   }
 
   window.addEventListener('hashchange', render);
