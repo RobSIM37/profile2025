@@ -3,6 +3,7 @@ import { routes as ROUTES, beforeResolve as BEFORE_RESOLVE } from './consts/rout
 import { Brand } from './components/brand.js';
 import { mountCodeRain, getEnabled, setEnabled } from './components/codeRain/index.js';
 import { RAIN_OPTIONS } from './consts/code-rain.js';
+import ws from './lib/ws.js';
 
 // Keep the footer year current
 const yearEl = document.getElementById('year');
@@ -29,6 +30,9 @@ if (brandHost) {
 // Keep document title aligned with local marker
 const baseTitle = isLocalHost ? 'Rob Lewis — LOCAL' : 'Rob Lewis';
 initRouter({ routes, baseTitle, beforeResolve: BEFORE_RESOLVE });
+
+// Initialize WebSocket connection (token is attached per-message)
+ws.connect();
 
 // Mount background Code Rain after DOM is ready
 function initRainToggle() {
