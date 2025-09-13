@@ -119,8 +119,23 @@
   display: flex; flex-direction: column; gap: 12px; background: var(--bg-elev);
 }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-.pips-tab { padding: 6px 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 6px; cursor: pointer; }
-.pips-tab.is-active { background: var(--bg-elev); border-color: var(--border); font-weight: 600; }
+/* Subtle tab buttons: inactive look like secondary buttons; active highlights blue without the white ring */
+.pips-tab {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pips-tab:hover { filter: brightness(1.05); }
+.pips-tab:focus-visible { outline: 2px solid #c8d7ff; outline-offset: 2px; }
+.pips-tab.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+}
 .panel { display: grid; gap: 8px; flex: 1; }
 .sidebar-footer { margin-top: auto; display: grid; gap: 8px; }
 .pips-controls { margin-bottom: var(--space-5, 20px); background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-3); }
@@ -376,5 +391,19 @@
 /* Styled select matching site controls */
 .ui-control select.control { background: var(--bg-elev); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 8px; }
 .ui-control select.control:focus-visible { outline: 2px solid #c8d7ff; outline-offset: 2px; }
+/* Generic text input to match themed controls */
+.ui-control input.control { background: var(--bg-elev); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 8px; }
+.ui-control input.control:focus-visible { outline: 2px solid #c8d7ff; outline-offset: 2px; }
+
+/* Timesweeper overrides: fix mine icon rendering */
+.ts-cell.revealed.mine::after {
+  content: '💣';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+}
 /* Generic contained panel */
 .ui-panel { border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-4); background: var(--bg-elev); }

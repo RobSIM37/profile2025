@@ -1,4 +1,6 @@
 import { mountPipsSolver } from './pipsSolver/runner.js';
+import { makeGallerySubheader } from '../../components/ui/subheader.js';
+import { setAppSolid } from '../../lib/appShell.js';
 
 export const meta = {
   title: 'Pips Solver',
@@ -7,55 +9,51 @@ export const meta = {
 
 export function render() {
   const frag = document.createDocumentFragment();
+  // Ensure opaque app background (black)
+  setAppSolid(true);
   const appEl = document.getElementById('app');
   if (appEl) {
-    // Expand the blue frame to fit content width when needed
-    appEl.style.maxWidth = 'none';
-    appEl.style.width = 'max-content';
-    // Fill the entire blue-border area with a solid backdrop
-    appEl.style.background = 'var(--bg)';
-    appEl.style.color = 'var(--text)';
+    // Use default container sizing; avoid forcing max-content which can collapse width
+    try {
+      appEl.style.removeProperty('max-width');
+      appEl.style.removeProperty('width');
+      appEl.style.removeProperty('background');
+      appEl.style.removeProperty('color');
+    } catch {}
   }
 
   const wrap = document.createElement('section');
   wrap.className = 'stack';
 
-  // Tabs: Demo | Source
-  const tabs = document.createElement('div');
-  tabs.className = 'pips-tabs';
-  const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
-  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
-  tabs.append(demoBtn, srcBtn);
-
   const demoPane = document.createElement('div');
   demoPane.className = 'pips-demo-pane';
+  // Keep demo surface white regardless of app background
+  demoPane.style.background = '#ffffff';
   const srcPane = document.createElement('div');
   srcPane.className = 'pips-src-pane';
   srcPane.style.display = 'none';
+  // Unified subheader with title and tabs
+  const sub = makeGallerySubheader({
+    title: 'Pips Solver',
+    href: '#/gallery/pips-solver',
+    onChange(id){
+      const showDemo = id === 'demo';
+      srcPane.style.display = showDemo ? 'none' : '';
+      demoPane.style.display = showDemo ? '' : 'none';
+      if (showDemo) {
+        if (!mounted) mounted = mountPipsSolver(demoPane);
+      } else {
+        if (mounted) { mounted.destroy(); mounted = null; demoPane.innerHTML = ''; }
+        renderSourceBrowser(srcPane);
+      }
+    }
+  });
 
-  wrap.append(tabs, demoPane, srcPane);
+  wrap.append(sub.root, demoPane, srcPane);
   frag.append(wrap);
 
   let mounted = null;
-  const showDemo = () => {
-    srcPane.style.display = 'none';
-    demoPane.style.display = '';
-    demoBtn.className = 'button button-subtle';
-    srcBtn.className = 'button button-secondary button-subtle';
-    if (!mounted) mounted = mountPipsSolver(demoPane);
-  };
-  const showSrc = () => {
-    demoPane.style.display = 'none';
-    srcPane.style.display = '';
-    demoBtn.className = 'button button-secondary button-subtle';
-    srcBtn.className = 'button button-subtle';
-    if (mounted) { mounted.destroy(); mounted = null; demoPane.innerHTML = ''; }
-    renderSourceBrowser(srcPane);
-  };
-  demoBtn.addEventListener('click', (e)=>{ e.preventDefault(); showDemo(); });
-  srcBtn.addEventListener('click', (e)=>{ e.preventDefault(); showSrc(); });
-
-  showDemo();
+  // Initial onChange is fired by the subheader component to mount the demo.
   return frag;
 }
 

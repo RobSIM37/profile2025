@@ -11,17 +11,7 @@ import { Modes } from "./src/constants.js";
 export function mountPipsSolver(target) {
   if (!target) throw new Error('mountPipsSolver: target required');
 
-  // Header
-  const header = document.createElement("header");
-  header.className = "pips-header";
-  const h1 = document.createElement("h1");
-  h1.className = "pips-title";
-  h1.textContent = "Pips Solver";
-  const sub = document.createElement("div");
-  sub.className = "pips-subtitle";
-  sub.textContent = "Place dominoes to satisfy area rules.";
-  header.append(h1, sub);
-  target.append(header);
+  // Header removed — title is now in the page header topbar
 
   // Layout containers
   const layout = document.createElement("div");
@@ -33,10 +23,12 @@ export function mountPipsSolver(target) {
   const controls = document.createElement("div");
   controls.className = "row pips-controls";
   const solveBtn = document.createElement("button");
-  solveBtn.className = "pips-button pips-primary";
+  // Use global themed button with white ring
+  solveBtn.className = "button";
   solveBtn.textContent = "Solve";
   const resetBtn = document.createElement("button");
-  resetBtn.className = "pips-button";
+  // Secondary style for Reset
+  resetBtn.className = "button button-secondary";
   resetBtn.textContent = "Reset";
   const hint = document.createElement("div");
   hint.className = "hint";

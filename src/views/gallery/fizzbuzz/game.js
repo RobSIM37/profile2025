@@ -16,6 +16,26 @@ export function render(){
   setAppSolid(true);
 
   const frag = document.createDocumentFragment();
+  // Top bar with left-aligned title that returns to Start
+  const topbar = document.createElement('div');
+  topbar.style.position = 'relative';
+  topbar.style.display = 'flex';
+  topbar.style.justifyContent = 'center';
+  topbar.style.alignItems = 'center';
+  const titleLink = document.createElement('a');
+  titleLink.href = '#/gallery/fizzbuzz';
+  titleLink.textContent = 'FizzBuzz';
+  titleLink.style.position = 'absolute';
+  titleLink.style.left = '0';
+  titleLink.style.top = '50%';
+  titleLink.style.transform = 'translateY(-50%)';
+  titleLink.style.color = 'inherit';
+  titleLink.style.textDecoration = 'none';
+  titleLink.style.fontWeight = '800';
+  titleLink.style.fontSize = '1.6rem';
+  titleLink.addEventListener('mouseover', ()=> titleLink.style.textDecoration = 'underline');
+  titleLink.addEventListener('mouseout', ()=> titleLink.style.textDecoration = 'none');
+  topbar.append(titleLink);
   const wrap = document.createElement('section');
   wrap.className = 'stack';
 
@@ -73,7 +93,7 @@ export function render(){
   const TOP_H = 48;    // height for top-row controls to match Challenge
 
   wrap.append(header, rulesPanel, topRow, btnScroll, sr);
-  frag.append(wrap);
+  frag.append(topbar, wrap);
 
   // Game State
   /** @type {Map<number,string>} */

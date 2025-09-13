@@ -1,4 +1,5 @@
-import { el, btn, input, renderDominoTile, parseDominoInput } from "../utils/ui.js";
+import { el, btn, renderDominoTile, parseDominoInput } from "../utils/ui.js";
+import { textField } from "../../../../../components/ui/inputs.js";
 
 export default class DominoesPanel {
   constructor({ onAddDominoes, onRemoveDomino, onClearDominoes } = {}){
@@ -15,7 +16,7 @@ export default class DominoesPanel {
     const c = this.root; c.innerHTML = '';
 
     const add = el('div', null, 'section');
-    const ip = input('text','Pairs', '');
+    const ip = textField({ label: 'Pairs', value: '' });
     this._input = ip.input;
     this._input.placeholder = 'e.g. 06,23,5 ,0 ';
     const addFromInput = ()=>{

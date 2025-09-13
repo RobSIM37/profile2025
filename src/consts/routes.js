@@ -8,6 +8,8 @@ export const routes = {
   '/gallery': () => import('../views/gallery.js'),
   '/gallery/pips-solver': () => import('../views/gallery/pips-solver.js'),
   '/gallery/timesweeper': () => import('../views/gallery/timesweeper/page.js'),
+  '/gallery/timesweeper/how-to': () => import('../views/gallery/timesweeper/howto.js'),
+  '/gallery/timesweeper/game': () => import('../views/gallery/timesweeper/index.js'),
   '/gallery/knock-it-off': () => import('../views/gallery/knockitoff/page.js'),
   '/gallery/knock-it-off/how-to': () => import('../views/gallery/knockitoff/howto.js'),
   '/gallery/knock-it-off/game': () => import('../views/gallery/knockitoff/game.js'),
@@ -40,6 +42,11 @@ export const beforeResolve = makeBeforeResolve([
     match: '/gallery/fizzbuzz/game',
     allow: allow.sessionKey('fb:chosen'),
     redirect: '/gallery/fizzbuzz',
+  },
+  {
+    match: '/gallery/timesweeper/game',
+    allow: allow.sessionKey('ts:chosen'),
+    redirect: '/gallery/timesweeper',
   },
   {
     match: '/gallery/knock-it-off/game',

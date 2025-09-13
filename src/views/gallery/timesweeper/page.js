@@ -1,8 +1,9 @@
-﻿import { meta as gameMeta, render as renderGame } from './index.js';
+import { meta as startMeta, render as renderStart } from './start.js';
+import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 
 export const meta = {
-  title: gameMeta?.title || 'Timesweeper',
-  description: gameMeta?.description || 'Minesweeper with a timed twist',
+  title: startMeta?.title || 'Timesweeper',
+  description: startMeta?.description || 'Minesweeper with a timed twist',
 };
 
 export function render() {
@@ -10,11 +11,6 @@ export function render() {
 
   const chrome = document.createElement('section');
   chrome.className = 'stack';
-  const tabs = document.createElement('div');
-  tabs.className = 'pips-tabs';
-  const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
-  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
-  tabs.append(demoBtn, srcBtn);
 
   const demoPane = document.createElement('div');
   demoPane.className = 'gallery-demo-pane';
@@ -22,30 +18,26 @@ export function render() {
   srcPane.className = 'pips-src-pane';
   srcPane.style.display = 'none';
 
-  // Mount existing Timesweeper view
-  const gameFrag = renderGame();
-  demoPane.append(gameFrag);
+  // Mount Start view
+  const startFrag = renderStart();
+  demoPane.append(startFrag);
 
-  chrome.append(tabs, demoPane, srcPane);
+  // Unified subheader with title and tabs
+  const sub = makeGallerySubheader({
+    title: 'Timesweeper',
+    href: '#/gallery/timesweeper',
+    onChange(id){
+      const showDemo = id === 'demo';
+      srcPane.style.display = showDemo ? 'none' : '';
+      demoPane.style.display = showDemo ? '' : 'none';
+      if (!showDemo) renderTsSourceBrowser(srcPane);
+    },
+  });
+
+  chrome.append(sub.root, demoPane, srcPane);
   frag.append(chrome);
 
-  const showDemo = () => {
-    srcPane.style.display = 'none';
-    demoPane.style.display = '';
-    demoBtn.className = 'button button-subtle';
-    srcBtn.className = 'button button-secondary button-subtle';
-  };
-  const showSrc = () => {
-    demoPane.style.display = 'none';
-    srcPane.style.display = '';
-    demoBtn.className = 'button button-secondary button-subtle';
-    srcBtn.className = 'button button-subtle';
-    renderTsSourceBrowser(srcPane);
-  };
-  demoBtn.addEventListener('click', function(e){ e.preventDefault(); showDemo(); });
-  srcBtn.addEventListener('click', function(e){ e.preventDefault(); showSrc(); });
-  showDemo();
-
+  // Initial selection handled by subheader (emits onChange for activeId)
   return frag;
 }
 
@@ -68,7 +60,7 @@ function renderTsSourceBrowser(host){
     item.append(sum);
     const pre = document.createElement('pre');
     const code = document.createElement('code');
-    code.textContent = 'Loading…';
+    code.textContent = 'Loading.';
     pre.append(code);
     item.append(pre);
     item.addEventListener('toggle', async function(){
@@ -85,4 +77,3 @@ function renderTsSourceBrowser(host){
   });
   host.append(list);
 }
-

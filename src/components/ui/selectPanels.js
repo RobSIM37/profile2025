@@ -2,7 +2,7 @@
 // makeSelectPanels({ id?, label, options: [{ id, label }], panels: Record<string, Element|()=>Element>, value?, noneId?, noneLabel?, onChange? })
 // -> { root, wrapper, select, panelHost, setActive(id, emit?), getActive() }
 
-export function makeSelectPanels({ id, label = '', options = [], panels = {}, value, noneId = 'none', noneLabel = 'None', onChange } = {}) {
+export function makeSelectPanels({ id, label = '', options = [], panels = {}, value, noneId = 'none', noneLabel = 'None', includeNone = true, onChange } = {}) {
   const wrapper = document.createElement('div');
   wrapper.className = 'ui-field';
 
@@ -17,8 +17,8 @@ export function makeSelectPanels({ id, label = '', options = [], panels = {}, va
   if (id) select.id = id;
   select.className = 'control';
 
-  // Build options (prepend None)
-  const allOptions = [{ id: noneId, label: noneLabel }, ...options];
+  // Build options (optionally prepend None)
+  const allOptions = includeNone ? [{ id: noneId, label: noneLabel }, ...options] : options.slice();
   for (const opt of allOptions) {
     const o = document.createElement('option');
     o.value = String(opt.id);
@@ -32,7 +32,7 @@ export function makeSelectPanels({ id, label = '', options = [], panels = {}, va
   const panelHost = document.createElement('div');
   panelHost.className = 'stack';
 
-  let active = noneId;
+  let active = includeNone ? noneId : (options[0]?.id ?? '');
 
   function buildPanel(id) {
     const def = panels[id];
@@ -45,7 +45,7 @@ export function makeSelectPanels({ id, label = '', options = [], panels = {}, va
   function setActive(id, emit = true) {
     active = id;
     while (panelHost.firstChild) panelHost.removeChild(panelHost.firstChild);
-    if (id && id !== noneId) {
+    if (id && (!includeNone || id !== noneId)) {
       const panel = buildPanel(id);
       if (panel) {
         const wrap = document.createElement('div');
@@ -59,7 +59,7 @@ export function makeSelectPanels({ id, label = '', options = [], panels = {}, va
 
   function getActive(){ return active; }
 
-  const initial = value !== undefined ? String(value) : String(noneId);
+  const initial = value !== undefined ? String(value) : String(active);
   select.value = initial;
   setActive(initial, false);
 
