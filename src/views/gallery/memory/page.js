@@ -1,4 +1,5 @@
 import { meta as startMeta, render as renderStart } from './start.js';
+import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 
 export const meta = {
   title: 'Memory',
@@ -10,11 +11,6 @@ export function render() {
 
   const chrome = document.createElement('section');
   chrome.className = 'stack';
-  const tabs = document.createElement('div');
-  tabs.className = 'pips-tabs';
-  const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
-  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
-  tabs.append(demoBtn, srcBtn);
 
   const demoPane = document.createElement('div');
   demoPane.className = 'gallery-demo-pane';
@@ -26,25 +22,21 @@ export function render() {
   const startFrag = renderStart();
   demoPane.append(startFrag);
 
-  chrome.append(tabs, demoPane, srcPane);
-  frag.append(chrome);
+  // Unified subheader with title and tabs
+  const sub = makeGallerySubheader({
+    title: 'Memory',
+    href: '#/gallery/memory',
+    onChange(id){
+      const showDemo = id === 'demo';
+      srcPane.style.display = showDemo ? 'none' : '';
+      demoPane.style.display = showDemo ? '' : 'none';
+      if (!showDemo) renderMemorySourceBrowser(srcPane);
+    },
+  });
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
 
-  const showDemo = () => {
-    srcPane.style.display = 'none';
-    demoPane.style.display = '';
-    demoBtn.className = 'button button-subtle';
-    srcBtn.className = 'button button-secondary button-subtle';
-  };
-  const showSrc = () => {
-    demoPane.style.display = 'none';
-    srcPane.style.display = '';
-    demoBtn.className = 'button button-secondary button-subtle';
-    srcBtn.className = 'button button-subtle';
-    renderMemorySourceBrowser(srcPane);
-  };
-  demoBtn.addEventListener('click', function(e){ e.preventDefault(); showDemo(); });
-  srcBtn.addEventListener('click', function(e){ e.preventDefault(); showSrc(); });
-  showDemo();
+  chrome.append(sub.root, demoPane, srcPane);
+  frag.append(chrome);
 
   return frag;
 }

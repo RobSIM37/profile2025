@@ -33,6 +33,8 @@ export function render() {
       if (!showDemo) renderTsSourceBrowser(srcPane);
     },
   });
+  // Ensure Source accordions have styled scrollbars
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
 
   chrome.append(sub.root, demoPane, srcPane);
   frag.append(chrome);

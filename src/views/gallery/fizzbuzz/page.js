@@ -1,7 +1,7 @@
 import { meta as gameMeta } from './game.js';
 import { Button } from '../../../components/ui/button.js';
-import { makeTabs } from '../../../components/ui/tabs.js';
 import { setAppSolid } from '../../../lib/appShell.js';
+import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 
 export const meta = {
   title: 'FizzBuzz - Challenge Mode',
@@ -15,45 +15,24 @@ export function render() {
   const chrome = document.createElement('section');
   chrome.className = 'stack';
 
-  // Tabs: Demo / Source using shared makeTabs
+  // Panes: Demo (start) and Source
   const startPane = document.createElement('div');
   startPane.className = 'gallery-demo-pane';
   const srcPane = document.createElement('div');
   srcPane.className = 'pips-src-pane';
-  const tabs = makeTabs({
-    items: [ { id: 'demo', label: 'Demo' }, { id: 'source', label: 'Source' } ],
-    activeId: 'demo',
+  srcPane.style.display = 'none';
+  // Unified subheader (title + Demo/Source tabs)
+  const sub = makeGallerySubheader({
+    title: 'FizzBuzz',
+    href: '#/gallery/fizzbuzz',
     onChange(id){
       const showDemo = id === 'demo';
       startPane.style.display = showDemo ? '' : 'none';
       srcPane.style.display = showDemo ? 'none' : '';
       if (!showDemo) renderSourceBrowser(srcPane);
-    }
+    },
   });
-
-  // Initialize panes
-  srcPane.style.display = 'none';
-
-  // Top bar with left-justified clickable title and centered tabs
-  const topbar = document.createElement('div');
-  topbar.style.position = 'relative';
-  topbar.style.display = 'flex';
-  topbar.style.justifyContent = 'center';
-  topbar.style.alignItems = 'center';
-  const titleLink = document.createElement('a');
-  titleLink.href = '#/gallery/fizzbuzz';
-  titleLink.textContent = 'FizzBuzz';
-  titleLink.style.position = 'absolute';
-  titleLink.style.left = '0';
-  titleLink.style.top = '50%';
-  titleLink.style.transform = 'translateY(-50%)';
-  titleLink.style.color = 'inherit';
-  titleLink.style.textDecoration = 'none';
-  titleLink.style.fontWeight = '800';
-  titleLink.style.fontSize = '1.6rem';
-  titleLink.addEventListener('mouseover', ()=> titleLink.style.textDecoration = 'underline');
-  titleLink.addEventListener('mouseout', ()=> titleLink.style.textDecoration = 'none');
-  topbar.append(titleLink, tabs.root);
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
 
   // Start view: header + how-to + New Game
   const intro = document.createElement('section');
@@ -133,10 +112,8 @@ export function render() {
   intro.append(headerEl, basics, how, newGameWrap);
   startPane.append(intro);
 
-  chrome.append(topbar, startPane, srcPane);
+  chrome.append(sub.root, startPane, srcPane);
   frag.append(chrome);
-  // Ensure default tab state
-  tabs.setActive('demo');
 
   return frag;
 }

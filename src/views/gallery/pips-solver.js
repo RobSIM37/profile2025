@@ -48,6 +48,8 @@ export function render() {
       }
     }
   });
+  // Ensure Source accordions use styled, scoped scrollbars
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
 
   wrap.append(sub.root, demoPane, srcPane);
   frag.append(wrap);

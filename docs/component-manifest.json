@@ -30,8 +30,8 @@
       "name": "makeGallerySubheader",
       "path": "src/components/ui/subheader.js",
       "kind": "dom-factory",
-      "signature": "makeGallerySubheader({ title, href, onChange?, activeId? }) -> { root, setActive(id,emit?), getActive() }",
-      "returns": "Top subheader with left title link and centered Demo/Source tabs",
+      "signature": "makeGallerySubheader({ title, href, onChange?, activeId?, emitInitial? }) -> { root, setActive(id,emit?), getActive(), attachSourcePane(host,{maxHeight?}) }",
+      "returns": "Top subheader with left title link and centered Demo/Source tabs. Includes attachSourcePane() to style Source accordions with themed scroll and max-height.",
       "styles": [".tabs", ".pips-tab", ".is-active"],
       "notes": "Removes bottom margin to align with title; use setActive('demo'|'source') to toggle panes"
     },

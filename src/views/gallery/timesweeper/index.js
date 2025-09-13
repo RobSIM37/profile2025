@@ -28,6 +28,8 @@ export function render(){
       try { renderTsSourceBrowser(srcPane); srcPane.style.display = ''; } catch {}
     },
   });
+  // Ensure Source accordions have styled scrollbars
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
 
   const wrap = document.createElement('section');
   wrap.className = 'stack ts-wrap';

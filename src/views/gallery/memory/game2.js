@@ -1,4 +1,3 @@
-import { Button } from '../../../components/ui/button.js';
 import { openModal } from '../../../components/ui/modal.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 import { makeDeck } from './engine/deck.js';
@@ -7,12 +6,17 @@ import { canFlip, flipUp, flipDown, evaluateFlip } from './engine/rules.js';
 import { createBoard } from './ui/board.js';
 import { makeAIControllers, rememberForAll, chooseFlip } from './ai/choose.js';
 import { makeTimer } from '../../../lib/timers.js';
+import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 
 export const meta = { title: 'Memory — Game', description: 'Find matching pictures' };
 
 export function render() {
   setAppSolid(true);
   const frag = document.createDocumentFragment();
+  // Source pane (hidden by default) toggled by subheader tabs
+  const srcPane = document.createElement('div');
+  srcPane.className = 'pips-src-pane';
+  srcPane.style.display = 'none';
   const wrap = document.createElement('section'); wrap.className = 'stack';
 
   // Pull config
@@ -26,12 +30,10 @@ export function render() {
   let state = createInitialState(deck, players, faceUpSec);
   let aiCtrls = makeAIControllers(players);
 
-  // Header: scores and controls
-  const header = document.createElement('div'); header.style.display = 'flex'; header.style.justifyContent = 'space-between'; header.style.alignItems = 'center';
+  // Header: scores only (controls removed; subheader handles nav)
+  const header = document.createElement('div'); header.style.display = 'flex'; header.style.justifyContent = 'center'; header.style.alignItems = 'center';
   const scores = document.createElement('div'); scores.className = 'mem-scores';
-  const controls = document.createElement('div'); controls.className = 'mem-actions';
-  controls.innerHTML = `${Button({ id: 'mem-new', label: 'New Game' })} ${Button({ id: 'mem-back', label: 'Back', variant: 'secondary' })}`;
-  header.append(scores, controls);
+  header.append(scores);
 
   // Host for board so we can rebuild it for New Game
   const boardHost = document.createElement('div');
@@ -43,7 +45,23 @@ export function render() {
 
   wrap.append(header, boardHost);
   boardHost.append(boardUI.root);
-  frag.append(wrap);
+  // Subheader with Demo/Source tabs and title link back to setup
+  const sub = makeGallerySubheader({
+    title: 'Memory',
+    href: '#/gallery/memory',
+    emitInitial: false,
+    onChange(id){
+      const showDemo = id === 'demo';
+      if (showDemo) {
+        try { wrap.style.display = ''; srcPane.style.display = 'none'; } catch {}
+        return;
+      }
+      try { wrap.style.display = 'none'; renderMemorySourceBrowser(srcPane); srcPane.style.display = ''; } catch {}
+    },
+  });
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
+
+  frag.append(sub.root, wrap, srcPane);
 
   function renderScores(){
     const parts = players.map((p,i)=>{
@@ -144,17 +162,36 @@ export function render() {
     maybeAIMove();
   }
 
-  // Controls
-  const btnNew = header.querySelector('#mem-new');
-  const btnBack = header.querySelector('#mem-back');
-
-  btnNew?.addEventListener('click', () => { newGame(); });
-  btnBack?.addEventListener('click', () => { location.hash = '#/gallery/memory'; });
-
   // Kick off AI if needed
   maybeAIMove();
 
   return frag;
+}
+
+// Lightweight local source browser (mirrors Memory page)
+const MEM_FILES = [
+  'page.js','start.js','game2.js',
+  'engine/deck.js','engine/state.js','engine/rules.js',
+  'ai/memory.js','ai/choose.js',
+  'ui/card.js','ui/board.js','ui/icons/index.js'
+];
+function renderMemorySourceBrowser(host){
+  host.innerHTML = '';
+  const list = document.createElement('div'); list.className = 'stack';
+  const note = document.createElement('p'); note.textContent = 'Source files under src/views/gallery/memory/';
+  list.append(note);
+  MEM_FILES.forEach(function(path){
+    const item = document.createElement('details');
+    const sum = document.createElement('summary'); sum.textContent = path; item.append(sum);
+    const pre = document.createElement('pre'); const code = document.createElement('code'); code.textContent = 'Loading.'; pre.append(code); item.append(pre);
+    item.addEventListener('toggle', async function(){
+      if (!item.open) return;
+      try { const res = await fetch('src/views/gallery/memory/' + path, { cache: 'no-cache' }); const txt = await res.text(); code.textContent = txt; }
+      catch(e){ code.textContent = 'Unable to load file in this context.'; }
+    }, { once: true });
+    list.append(item);
+  });
+  host.append(list);
 }
 
 function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }

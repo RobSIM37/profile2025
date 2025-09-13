@@ -212,6 +212,16 @@ export function render() {
           'UI: Drag-over/drop allowed only on empty cells; clicking still uses the first open slot',
           'FizzBuzz: Temporary Quit button added and then removed per feedback',
         ]);
+        const unifyLayout = PatchEntry('2025-09-12', 3, [
+          'Unified layout across Gallery projects using a global Subheader',
+          'New global Subheader: title + Demo/Source tabs; Source uses scoped, themed scroll',
+          'Timesweeper split into Start / How to / Game with consistent spacing and guards',
+          'Knock It Off: matched Timesweeper layout; subheader on Start/Game/How To; removed duplicate titles/buttons',
+          'Light Houses, Pips Solver, Memory, Snake+, and FizzBuzz migrated to the Subheader',
+          'Source views now replace content (no stacking) and lazy-load accordions',
+          'Memory Game: simplified header (scores only); subheader handles navigation',
+          'Snake+: highlights Longest stat when tying your best run',
+        ]);
         // list.append(kbEntry);
         const snakePlus = PatchEntry('2025-09-11', 1, [
         'Added Snake+ mini game to Gallery (canvas-based)',
@@ -316,6 +326,7 @@ export function render() {
             list.prepend(memoryTweaks);
             list.prepend(kbEntry);
             list.prepend(kbEntry2);
+            list.prepend(unifyLayout);
     }
   } catch {}
   frag.append(sec);

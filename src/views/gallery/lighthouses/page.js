@@ -2,6 +2,7 @@ import { Button } from '../../../components/ui/button.js';
 import { openModal } from '../../../components/ui/modal.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 import { Accordion } from '../../../components/ui/accordion.js';
+import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 import { generate, levelToSize, intendedSteps, applyMove, isSolved, xmur3 } from './engine.js';
 import { makeGrid } from './grid.js';
 import { loadProgress, saveMaxLevel, saveLastLevel, saveLastSeed } from './state.js';
@@ -259,20 +260,32 @@ function renderGame() {
 
 export function render() {
   const frag = document.createDocumentFragment();
-  const chrome = document.createElement('section'); chrome.className = 'stack';
-  const tabs = document.createElement('div'); tabs.className = 'pips-tabs';
-  const demoBtn = document.createElement('a'); demoBtn.href = '#'; demoBtn.textContent = 'Demo'; demoBtn.className = 'button button-subtle';
-  const srcBtn = document.createElement('a'); srcBtn.href = '#'; srcBtn.textContent = 'Source'; srcBtn.className = 'button button-secondary button-subtle';
-  tabs.append(demoBtn, srcBtn);
-  const demoPane = document.createElement('div'); demoPane.className = 'gallery-demo-pane';
-  const srcPane = document.createElement('div'); srcPane.className = 'pips-src-pane'; srcPane.style.display = 'none';
-  const gameFrag = renderGame(); demoPane.append(gameFrag);
-  chrome.append(tabs, demoPane, srcPane); frag.append(chrome);
-  const showDemo = () => { srcPane.style.display = 'none'; demoPane.style.display = ''; demoBtn.className = 'button button-subtle'; srcBtn.className = 'button button-secondary button-subtle'; };
-  const showSrc = () => { demoPane.style.display = 'none'; srcPane.style.display = ''; demoBtn.className = 'button button-secondary button-subtle'; srcBtn.className = 'button button-subtle'; renderLhSourceBrowser(srcPane); };
-  demoBtn.addEventListener('click', function(e){ e.preventDefault(); showDemo(); });
-  srcBtn.addEventListener('click', function(e){ e.preventDefault(); showSrc(); });
-  showDemo();
+  const chrome = document.createElement('section');
+  chrome.className = 'stack';
+
+  const demoPane = document.createElement('div');
+  demoPane.className = 'gallery-demo-pane';
+  const srcPane = document.createElement('div');
+  srcPane.className = 'pips-src-pane';
+  srcPane.style.display = 'none';
+
+  const gameFrag = renderGame();
+  demoPane.append(gameFrag);
+
+  const sub = makeGallerySubheader({
+    title: 'Light Houses',
+    href: '#/gallery/light-houses',
+    onChange(id){
+      const showDemo = id === 'demo';
+      srcPane.style.display = showDemo ? 'none' : '';
+      demoPane.style.display = showDemo ? '' : 'none';
+      if (!showDemo) renderLhSourceBrowser(srcPane);
+    },
+  });
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
+
+  chrome.append(sub.root, demoPane, srcPane);
+  frag.append(chrome);
   return frag;
 }
 
