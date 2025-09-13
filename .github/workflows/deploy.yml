@@ -18,20 +18,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # If you have a build step (e.g. bundling, transpiling, etc), do it here
-      - name: Install dependencies
-        run: npm install    # or whatever toolchain you use
-
-      - name: Build static frontend
-        run: npm run build  # adjust accordingly; for purely static may not be needed
-        working-directory: ./frontend   # assuming your frontend folder
-
       - name: Upload static files as Pages artifact
         id: pages-artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./frontend/build   # adjust this to where your build / static output is
-          # name: github-pages     # default is fine if you don’t need to change
+          path: ./frontend
 
   deploy:
     needs: build
