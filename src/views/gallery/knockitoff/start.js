@@ -14,15 +14,14 @@ export function render() {
   wrap.className = 'stack kio-wrap';
 
   wrap.innerHTML = `
-    <h2>Knock It Off!</h2>
     <section class="kio-start stack" id="kio-start">
       <div class="kio-controls">
         <div class="player-field">
           <label>Players</label>
           <div class="player-grid" id="kio-player-grid"></div>
         </div>
-        <div class="kio-buttons"><a id="kio-new" class="button" href="#/gallery/knock-it-off/game">New Game</a></div>
-        <div class="kio-buttons kio-how">${Button({ id: 'kio-how', label: 'How To Play', variant: 'secondary' })}</div>
+        <div class="kio-buttons" style="display:grid;place-items:center"><a id="kio-new" class="button" href="#/gallery/knock-it-off/game">New Game</a></div>
+        <div class="kio-buttons" style="display:grid;place-items:center">${Button({ id: 'kio-how', label: 'How to Play', variant: 'secondary' })}</div>
       </div>
     </section>
   `;

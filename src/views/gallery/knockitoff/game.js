@@ -1,6 +1,5 @@
 import { MASK_2P, MASK_4P, COLORS } from "./masks.js";
 import { createGame, nextTurn } from "./state.js";
-import { Button } from "../../../components/ui/button.js";
 import { AI_PROFILES } from "./ai/profiles.js";
 import {
   rememberOwn as rememberOwnMod,
@@ -8,6 +7,7 @@ import {
   bindMemory as bindMemoryAI,
 } from "./ai/memory.js";
 import { setAppSolid } from "../../../lib/appShell.js";
+import { makeGallerySubheader } from "../../../components/ui/subheader.js";
 import { simulateMove as simMoveCore } from "./engine/moves.js";
 import { DIRS } from "./engine/directions.js";
 import { performMove as performMoveCore } from "./play/perform.js";
@@ -48,30 +48,40 @@ export const meta = {
 
 export function render() {
   const frag = document.createDocumentFragment();
+  // Subheader: title with Demo/Source tabs (match Timesweeper)
+  const srcPane = document.createElement('div');
+  srcPane.className = 'pips-src-pane';
+  srcPane.style.display = 'none';
+  const sub = makeGallerySubheader({
+    title: 'Knock it Off',
+    href: '#/gallery/knock-it-off',
+    emitInitial: false,
+    onChange(id){
+      const showDemo = id === 'demo';
+      // For Demo, keep users on the Game route and show the game panel
+      if (showDemo) {
+        try { wrap.style.display = ''; srcPane.style.display = 'none'; } catch {}
+        return;
+      }
+      // For Source, hide the game panel and show source browser
+      try { wrap.style.display = 'none'; renderKioSourceBrowser(srcPane); srcPane.style.display = ''; } catch {}
+    },
+  });
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
   const wrap = document.createElement("section");
   wrap.className = "stack kio-wrap";
   setAppSolid(true);
 
-  frag.append(wrap);
+  frag.append(sub.root, wrap, srcPane);
   wrap.innerHTML = `
-    <h2>Knock It Off!</h2>
     <section class="stack kio-setup" id="kio-setup">
       <div class="kio-board" aria-label="8x8 board" role="grid"></div>
       <div class="kio-racks" id="kio-racks"></div>
-      <div class="kio-buttons">${Button({
-        id: "kio-back",
-        label: "Back",
-        variant: "secondary",
-      })}</div>
     </section>
   `;
   const setupEl = wrap.querySelector("#kio-setup");
 
   const boardEl = setupEl.querySelector(".kio-board");
-  const btnBack = setupEl.querySelector("#kio-back");
-  btnBack?.addEventListener("click", () => {
-    window.location.hash = "#/gallery/knock-it-off";
-  });
   let currentMask = MASK_2P;
   let gameState = null;
   // Active human during setup sequence
@@ -344,4 +354,47 @@ export function render() {
   }
 
   return frag;
+}
+
+// Simple in-place source browser to mirror the page view
+const KIO_FILES = [
+  'index.js','start.js','game.js','howto.js','masks.js','rules.js','state.js',
+  'ai/evaluate.js','ai/memory.js','ai/profiles.js','ai/turns.js',
+  'engine/directions.js','engine/moves.js',
+  'flow/autostart.js','flow/startGame.js',
+  'play/perform.js',
+  'setup/phase.js','setup/planner.js',
+  'ui/inputs.js','ui/racks.js','ui/renderers.js','ui/setupBoard.js',
+  'util/players.js',
+];
+function renderKioSourceBrowser(host){
+  host.innerHTML = '';
+  const list = document.createElement('div');
+  list.className = 'stack';
+  const note = document.createElement('p');
+  note.textContent = 'Source files under src/views/gallery/knockitoff/';
+  list.append(note);
+  KIO_FILES.forEach(function(path){
+    const item = document.createElement('details');
+    const sum = document.createElement('summary');
+    sum.textContent = path;
+    item.append(sum);
+    const pre = document.createElement('pre');
+    const code = document.createElement('code');
+    code.textContent = 'Loading.';
+    pre.append(code);
+    item.append(pre);
+    item.addEventListener('toggle', async function(){
+      if (!item.open) return;
+      try {
+        const res = await fetch('src/views/gallery/knockitoff/' + path, { cache: 'no-cache' });
+        const txt = await res.text();
+        code.textContent = txt;
+      } catch (e) {
+        code.textContent = 'Unable to load file in this context.';
+      }
+    }, { once: true });
+    list.append(item);
+  });
+  host.append(list);
 }

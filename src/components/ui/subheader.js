@@ -53,7 +53,41 @@ export function makeGallerySubheader({ title, href, onChange, activeId = 'demo',
 
   container.append(topbar, divider);
 
+  // Helper: styled scroll for Source accordions (pre blocks inside host)
+  function attachSourcePane(host, opts = {}){
+    if (!host) return { detach(){ /* noop */ } };
+    const maxHeight = opts.maxHeight || '60vh';
+    // Constrain the host itself so the page doesn't scroll
+    try {
+      host.classList.add('scroll-themed');
+      host.style.maxHeight = maxHeight;
+      host.style.overflow = 'auto';
+    } catch {}
+    const applyToPre = (pre)=>{
+      try {
+        pre.classList.add('scroll-themed');
+        pre.style.maxHeight = maxHeight;
+        pre.style.overflow = 'auto';
+      } catch {}
+    };
+    // Style any existing pre blocks
+    try { host.querySelectorAll('pre').forEach(applyToPre); } catch {}
+    // Observe for future adds (lazy-loaded source)
+    const mo = new MutationObserver((mutations)=>{
+      for (const m of mutations){
+        m.addedNodes && m.addedNodes.forEach((n)=>{
+          if (n && n.nodeType === 1){
+            if (n.tagName === 'PRE') applyToPre(n);
+            try { n.querySelectorAll && n.querySelectorAll('pre').forEach(applyToPre); } catch {}
+          }
+        });
+      }
+    });
+    try { mo.observe(host, { childList: true, subtree: true }); } catch {}
+    return { detach(){ try { mo.disconnect(); } catch {} } };
+  }
+
   // Optionally emit initial onChange once to mount content
   try { if (emitInitial && typeof onChange === 'function') queueMicrotask(() => onChange(activeId)); } catch {}
-  return { root: container, setActive: tabs.setActive, getActive: tabs.getActive };
+  return { root: container, setActive: tabs.setActive, getActive: tabs.getActive, attachSourcePane };
 }

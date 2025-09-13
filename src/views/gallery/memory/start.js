@@ -16,7 +16,6 @@ export function render() {
   wrap.className = 'stack';
 
   wrap.innerHTML = `
-    <h2>Memory</h2>
     <section class="mem-start stack" id="mem-start">
       <div class="mem-controls stack">
         <div class="mem-field player-field">

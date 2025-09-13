@@ -400,7 +400,9 @@ export function render() {
   }
 
   function updateStatus(){
-    status.textContent = `Level ${currentLevel} • Longest: ${bestLen}${paused ? ' • Paused' : ''}`;
+    const isPeak = bestLen > 0 && snake.length === bestLen;
+    const longest = `<span style="${isPeak ? 'color: var(--link); font-weight: 800;' : ''}">Longest: ${bestLen}</span>`;
+    status.innerHTML = `Level ${currentLevel} • ${longest}${paused ? ' • Paused' : ''}`;
     canvas.setAttribute('aria-label', `Snake plus level ${currentLevel}, longest snake ${bestLen}`);
   }
 
