@@ -1,6 +1,7 @@
 import { Button } from '../../../components/ui/button.js';
 import { openModal } from '../../../components/ui/modal.js';
 import { setAppSolid } from '../../../lib/appShell.js';
+import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 import { makeTimer } from '../../../lib/timers.js';
 import { HudStat } from '../../../components/ui/hudStat.js';
 import { Tag } from '../../../components/ui/tag.js';
@@ -16,26 +17,24 @@ export function render(){
   setAppSolid(true);
 
   const frag = document.createDocumentFragment();
-  // Top bar with left-aligned title that returns to Start
-  const topbar = document.createElement('div');
-  topbar.style.position = 'relative';
-  topbar.style.display = 'flex';
-  topbar.style.justifyContent = 'center';
-  topbar.style.alignItems = 'center';
-  const titleLink = document.createElement('a');
-  titleLink.href = '#/gallery/fizzbuzz';
-  titleLink.textContent = 'FizzBuzz';
-  titleLink.style.position = 'absolute';
-  titleLink.style.left = '0';
-  titleLink.style.top = '50%';
-  titleLink.style.transform = 'translateY(-50%)';
-  titleLink.style.color = 'inherit';
-  titleLink.style.textDecoration = 'none';
-  titleLink.style.fontWeight = '800';
-  titleLink.style.fontSize = '1.6rem';
-  titleLink.addEventListener('mouseover', ()=> titleLink.style.textDecoration = 'underline');
-  titleLink.addEventListener('mouseout', ()=> titleLink.style.textDecoration = 'none');
-  topbar.append(titleLink);
+  // Subheader with title + Demo/Source tabs
+  const srcPane = document.createElement('div');
+  srcPane.className = 'pips-src-pane';
+  srcPane.style.display = 'none';
+  const sub = makeGallerySubheader({
+    title: 'FizzBuzz',
+    href: '#/gallery/fizzbuzz',
+    emitInitial: false,
+    onChange(id){
+      const showDemo = id === 'demo';
+      try {
+        wrap.style.display = showDemo ? '' : 'none';
+        srcPane.style.display = showDemo ? 'none' : '';
+      } catch {}
+      if (!showDemo) renderSourceBrowser(srcPane);
+    },
+  });
+  try { sub.attachSourcePane(srcPane, { maxHeight: '60vh' }); } catch {}
   const wrap = document.createElement('section');
   wrap.className = 'stack';
 
@@ -93,14 +92,14 @@ export function render(){
   const TOP_H = 48;    // height for top-row controls to match Challenge
 
   wrap.append(header, rulesPanel, topRow, btnScroll, sr);
-  frag.append(topbar, wrap);
+  frag.append(sub.root, wrap, srcPane);
 
   // Game State
   /** @type {Map<number,string>} */
   const rules = new Map([[3, 'Fizz'], [5, 'Buzz']]);
   /** @type {{ N:number, level:number, rules:Map<number,string>, turn:Player, lastMove?:{player:Player,N:number,text:string,ts:number}, over:boolean, winner?:Player }} */
   const START_LEVEL = 1; // Start level
-  const S = { N: 1, level: START_LEVEL, rules, turn: 'Human', over: false };
+  const S = { N: 1, level: START_LEVEL, rules, turn: (Math.random() < 0.5 ? 'Human' : 'AI'), over: false };
   let pendingRuleAdd = false; // add rule after Next Level
   let levelCombos = computeAllCombos(S.rules);
 
@@ -248,7 +247,7 @@ export function render(){
   }
 
   function resetGame(){
-    S.N = 1; S.level = START_LEVEL; S.rules = new Map([[3,'Fizz'],[5,'Buzz']]); S.turn = 'Human'; S.lastMove = undefined; S.over = false; S.winner = undefined;
+    S.N = 1; S.level = START_LEVEL; S.rules = new Map([[3,'Fizz'],[5,'Buzz']]); S.turn = (Math.random() < 0.5 ? 'Human' : 'AI'); S.lastMove = undefined; S.over = false; S.winner = undefined;
     preloadRulesForLevel(S.level);
     levelCombos = computeAllCombos(S.rules);
     syncRules();
@@ -259,7 +258,7 @@ export function render(){
 
   function startNextLevel(){
     if (pendingRuleAdd) { addNextRuleOnly(); pendingRuleAdd = false; }
-    S.N = 1; S.turn = 'Human'; S.over = false; S.winner = undefined; S.lastMove = undefined;
+    S.N = 1; S.turn = (Math.random() < 0.5 ? 'Human' : 'AI'); S.over = false; S.winner = undefined; S.lastMove = undefined;
     levelCombos = computeAllCombos(S.rules);
     syncRules();
     syncHud();
@@ -460,6 +459,41 @@ export function render(){
   }
 
   function announce(msg){ try { sr.textContent = msg; } catch {} }
+}
+
+// Minimal source browser for this view (Demo/Source tabs)
+const FILES = [ 'page.js', 'game.js' ];
+function renderSourceBrowser(host){
+  if (!host) return;
+  host.innerHTML = '';
+  const list = document.createElement('div');
+  list.className = 'stack';
+  const note = document.createElement('p');
+  note.textContent = 'Source files under src/views/gallery/fizzbuzz/';
+  list.append(note);
+  FILES.forEach(function(path){
+    const item = document.createElement('details');
+    const sum = document.createElement('summary');
+    sum.textContent = path;
+    item.append(sum);
+    const pre = document.createElement('pre');
+    const code = document.createElement('code');
+    code.textContent = 'Loading…';
+    pre.append(code);
+    item.append(pre);
+    item.addEventListener('toggle', async function(){
+      if (!item.open) return;
+      try {
+        const res = await fetch('src/views/gallery/fizzbuzz/' + path, { cache: 'no-cache' });
+        const txt = await res.text();
+        code.textContent = txt;
+      } catch (e) {
+        code.textContent = 'Unable to load file in this context.';
+      }
+    }, { once: true });
+    list.append(item);
+  });
+  host.append(list);
 }
 
 // Helpers
