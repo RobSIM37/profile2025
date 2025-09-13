@@ -37,7 +37,6 @@ export function render(){
   header.style.justifyContent='center';
   header.style.marginTop = 'var(--space-6)';
   header.innerHTML = `
-    ${Button({ id: 'ts-new', label: 'New Game' })}
     <span class="ts-stat">Flags: <span id="ts-flags">0</span></span>
     <span class="ts-stat">Fuse: <span id="ts-fuse" class="fuse running">--:--.-</span></span>
   `;
@@ -62,6 +61,7 @@ export function render(){
       </div>
       <div class="ts-modal-actions">
         <button id="ts-play-again" class="button">New Game</button>
+        <button id="ts-quit" class="button button-secondary">Quit</button>
       </div>
     </div>`;
 
@@ -254,10 +254,14 @@ export function render(){
   boardHost.addEventListener('dblclick', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; onCellChord(b.dataset.x|0, b.dataset.y|0); });
   boardHost.addEventListener('contextmenu', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; e.preventDefault(); onCellFlag(b.dataset.x|0, b.dataset.y|0); });
 
-  wrap.querySelector('#ts-new').addEventListener('click', newGame);
   modal.querySelector('#ts-play-again').addEventListener('click', ()=>{
     if (modal.dataset.outcome === 'win') newGame();
     else modal.classList.add('hidden');
+  });
+  // Quit: navigate back to the start screen
+  modal.querySelector('#ts-quit').addEventListener('click', ()=>{
+    try { sessionStorage.removeItem('ts:chosen'); } catch {}
+    location.hash = '#/gallery/timesweeper';
   });
 
   // Initialize game state
