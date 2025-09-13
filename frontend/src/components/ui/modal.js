@@ -64,14 +64,19 @@ export function openModal({ title = '', body = '', actions = [], actionsAlign = 
     card.appendChild(bar);
   }
 
+  let routeClosing = false;
+  const onRoute = () => { try { routeClosing = true; } catch {} close(); };
+
   const close = () => {
     overlay.remove();
     document.removeEventListener('keydown', onKey);
     document.removeEventListener('keydown', onTrap);
+    try { window.removeEventListener('hashchange', onRoute); } catch {}
+    try { window.removeEventListener('popstate', onRoute); } catch {}
     if (prevFocus) {
       try { prevFocus.focus(); } catch {}
     }
-    onClose?.();
+    if (!routeClosing) onClose?.();
   };
   const onKey = (e) => { if (e.key === 'Escape') close(); };
   // Focus trap within modal content
@@ -87,6 +92,9 @@ export function openModal({ title = '', body = '', actions = [], actionsAlign = 
   };
   document.addEventListener('keydown', onKey);
   document.addEventListener('keydown', onTrap);
+  // Always close on navigation changes; ignore onClose in that case
+  try { window.addEventListener('hashchange', onRoute, { once: true }); } catch {}
+  try { window.addEventListener('popstate', onRoute, { once: true }); } catch {}
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
       try { onBackdropClick?.(); } catch {}
