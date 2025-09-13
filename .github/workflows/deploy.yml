@@ -1,23 +1,55 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main] 
+    branches:
+      - main    # or whatever your main branch is
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read   # to check out code
+      pages: write     # needed by later deploy job
+      id-token: write  # required by deploy-pages action for identity verification
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
+      # If you have a build step (e.g. bundling, transpiling, etc), do it here
+      - name: Install dependencies
+        run: npm install    # or whatever toolchain you use
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      - name: Build static frontend
+        run: npm run build  # adjust accordingly; for purely static may not be needed
+        working-directory: ./frontend   # assuming your frontend folder
+
+      - name: Upload static files as Pages artifact
+        id: pages-artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: './frontend'
+          path: ./frontend/build   # adjust this to where your build / static output is
+          # name: github-pages     # default is fine if you don’t need to change
 
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v2
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-to-pages.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages
+        id: deploy-to-pages
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages   # should match the default or name from upload
