@@ -9,6 +9,33 @@
       "notes": "variant: 'secondary'|'warning' supported; size: 'small'|'sm' adds .small"
     },
     {
+      "name": "textField",
+      "path": "src/components/ui/inputs.js",
+      "kind": "field-factory",
+      "signature": "textField({ id?, label?, value?, placeholder? }) -> { wrapper, input }",
+      "returns": "Labeled text input with .ui-field/.ui-control",
+      "styles": [".ui-field", ".ui-control", "input.control"],
+      "notes": "Use for simple text inputs like comma-separated pairs"
+    },
+    {
+      "name": "selectField",
+      "path": "src/components/ui/inputs.js",
+      "kind": "field-factory",
+      "signature": "selectField({ id?, label?, value?, options: ({value,label}|[value,label])[] }) -> { wrapper, input }",
+      "returns": "Labeled select styled with .ui-field/.ui-control and select.control",
+      "styles": [".ui-field", ".ui-control", "select.control"],
+      "notes": "Use across forms for consistent selects"
+    },
+    {
+      "name": "makeGallerySubheader",
+      "path": "src/components/ui/subheader.js",
+      "kind": "dom-factory",
+      "signature": "makeGallerySubheader({ title, href, onChange?, activeId? }) -> { root, setActive(id,emit?), getActive() }",
+      "returns": "Top subheader with left title link and centered Demo/Source tabs",
+      "styles": [".tabs", ".pips-tab", ".is-active"],
+      "notes": "Removes bottom margin to align with title; use setActive('demo'|'source') to toggle panes"
+    },
+    {
       "name": "makePlayerConfigurator",
       "path": "src/components/ui/playerConfigurator.js",
       "kind": "dom-factory",

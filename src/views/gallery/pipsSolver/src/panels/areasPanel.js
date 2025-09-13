@@ -1,5 +1,6 @@
 import { PALETTE } from "../constants.js";
-import { el, btn, input, select, labelWrap, ruleLabel } from "../utils/ui.js";
+import { el, btn, labelWrap, ruleLabel } from "../utils/ui.js";
+import { selectField, numberField } from "../../../../../components/ui/inputs.js";
 
 export default class AreasPanel {
   constructor({ onAddArea, onRemoveArea, onClearAllAreas, onSelectArea } = {}) {
@@ -19,15 +20,18 @@ export default class AreasPanel {
     const c = this.root; c.innerHTML = "";
 
     const add = el("div", null, "section");
-    const ruleSel = select("Rule",[
-      ["AllSame","All pips equal"],
-      ["AllDiff","All pips different"],
-      ["SumEq","Sum = target"],
-      ["SumLt","Sum < target"],
-      ["SumGt","Sum > target"],
-    ]);
-    ruleSel.input.value = this._ruleKind;
-    const target = input("number","Target", String(this._targetVal));
+    const ruleSel = selectField({
+      label: "Rule",
+      value: this._ruleKind,
+      options: [
+        ["AllSame","All pips equal"],
+        ["AllDiff","All pips different"],
+        ["SumEq","Sum = target"],
+        ["SumLt","Sum < target"],
+        ["SumGt","Sum > target"],
+      ],
+    });
+    const target = numberField({ label: "Target", value: String(this._targetVal) });
     const syncTargetVis = ()=> target.wrapper.style.display = this._ruleKind.startsWith("Sum") ? "" : "none";
     syncTargetVis();
 

@@ -4,7 +4,7 @@ import { makeTabs } from '../../../components/ui/tabs.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 
 export const meta = {
-  title: 'FizzBuzz — Challenge Mode',
+  title: 'FizzBuzz - Challenge Mode',
   description: gameMeta?.description || 'Human vs AI with challenge-only validation',
 };
 
@@ -34,6 +34,27 @@ export function render() {
   // Initialize panes
   srcPane.style.display = 'none';
 
+  // Top bar with left-justified clickable title and centered tabs
+  const topbar = document.createElement('div');
+  topbar.style.position = 'relative';
+  topbar.style.display = 'flex';
+  topbar.style.justifyContent = 'center';
+  topbar.style.alignItems = 'center';
+  const titleLink = document.createElement('a');
+  titleLink.href = '#/gallery/fizzbuzz';
+  titleLink.textContent = 'FizzBuzz';
+  titleLink.style.position = 'absolute';
+  titleLink.style.left = '0';
+  titleLink.style.top = '50%';
+  titleLink.style.transform = 'translateY(-50%)';
+  titleLink.style.color = 'inherit';
+  titleLink.style.textDecoration = 'none';
+  titleLink.style.fontWeight = '800';
+  titleLink.style.fontSize = '1.6rem';
+  titleLink.addEventListener('mouseover', ()=> titleLink.style.textDecoration = 'underline');
+  titleLink.addEventListener('mouseout', ()=> titleLink.style.textDecoration = 'none');
+  topbar.append(titleLink, tabs.root);
+
   // Start view: header + how-to + New Game
   const intro = document.createElement('section');
   // Match Knock It Off background using shared kio-wrap style
@@ -41,7 +62,7 @@ export function render() {
   const headerEl = document.createElement('header');
   headerEl.className = 'stack';
   const h = document.createElement('h2');
-  h.textContent = 'FizzBuzz — Challenge Mode';
+  h.textContent = 'FizzBuzz - Challenge Mode';
   h.style.fontSize = '1.8rem';
   h.style.lineHeight = '1.2';
   h.style.fontWeight = '800';
@@ -55,7 +76,7 @@ export function render() {
   ul.className = 'list';
   [
     'Turns alternate Human ↔ AI. You must act before the timer hits 0.',
-    'Actions: play “The Number” or a word combo (e.g., FizzBuzz), or press Challenge.',
+    'Actions: play The Number or a word combo (e.g., FizzBuzz), or press Challenge.',
     'Timeouts record an empty move — not an auto-loss.',
     'Human wins a level-up by correctly challenging an invalid AI move. A new rule is added.',
     'AI can challenge your move. A correct challenge ends the game.',
@@ -73,14 +94,14 @@ export function render() {
   // Very basic FizzBuzz explanation with examples
   const basicsBody = document.createElement('div');
   const basicsP = document.createElement('p');
-  basicsP.textContent = 'Classic FizzBuzz: say the number unless it is divisible by 3 or 5. If divisible by 3 say “Fizz”, if divisible by 5 say “Buzz”, if divisible by both say “FizzBuzz”.';
+  basicsP.textContent = 'Classic FizzBuzz: say the number unless it is divisible by 3 or 5. If divisible by 3 say "Fizz", if divisible by 5 say "Buzz", if divisible by both say "FizzBuzz".';
   const ex = document.createElement('ul');
   ex.className = 'list';
   [
-    '1 → "1" (not divisible by 3 or 5)',
-    '3 → "Fizz" (divisible by 3)',
-    '5 → "Buzz" (divisible by 5)',
-    '15 → "FizzBuzz" (divisible by 3 and 5)'
+    '1 -> 1 (not divisible by 3 or 5)',
+    '3 -> Fizz (divisible by 3)',
+    '5 -> Buzz (divisible by 5)',
+    '15 -> FizzBuzz (divisible by 3 and 5)'
   ].forEach((t)=>{ const li = document.createElement('li'); li.textContent = t; ex.append(li); });
   const note = document.createElement('p');
   note.className = 'text-muted';
@@ -112,7 +133,7 @@ export function render() {
   intro.append(headerEl, basics, how, newGameWrap);
   startPane.append(intro);
 
-  chrome.append(tabs.root, startPane, srcPane);
+  chrome.append(topbar, startPane, srcPane);
   frag.append(chrome);
   // Ensure default tab state
   tabs.setActive('demo');
@@ -136,7 +157,7 @@ function renderSourceBrowser(host){
     item.append(sum);
     const pre = document.createElement('pre');
     const code = document.createElement('code');
-    code.textContent = 'Loading…';
+    code.textContent = 'Loading...';
     pre.append(code);
     item.append(pre);
     item.addEventListener('toggle', async function(){
@@ -153,3 +174,4 @@ function renderSourceBrowser(host){
   });
   host.append(list);
 }
+
