@@ -279,6 +279,10 @@ export function render(){
         }
       },
       onClose: () => {
+        // Apply +5s timeout penalty after modal closes (display shows pre-penalty value)
+        if (winner === 'AI' && info?.kind === 'timeout') {
+          try { respAvgMs = Math.min(20000, (respAvgMs || 20000) + 5000); saveResp(respAvgMs, respCount); } catch {}
+        }
         if (winner === 'Human' && !advanced && !closedViaBackdrop) {
           advanced = true;
           startNextLevel();
@@ -589,7 +593,7 @@ export function render(){
 
   function linesForOver(info){
     if (!info) return ['Game ended.'];
-    if (info.kind === 'timeout') return ['You ran out of time.'];
+    if (info.kind === 'timeout') return ['You ran out of time. (+5s penalty will be applied to your average)'];
     if (info.kind === 'challenged-invalid-move') return ['AI challenged your move.'];
     return [ describeOver(info) ];
   }
