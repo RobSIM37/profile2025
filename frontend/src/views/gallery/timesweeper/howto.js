@@ -20,7 +20,7 @@ export function render(){
   h.style.fontSize = '1.6rem';
   h.style.fontWeight = '800';
 
-  const p1 = document.createElement('p'); p1.textContent = 'Timesweeper is classic Minesweeper with a twist: one mine is a time bomb. You win by revealing all safe cells and leaving all mines flagged.';
+  const p1 = document.createElement('p'); p1.textContent = 'Timesweeper is classic Minesweeper with a twist: one mine is a time bomb. You win by revealing all safe cells.';
   const p2 = document.createElement('p'); p2.textContent = 'Basics: numbers show how many adjacent mines surround a cell (8-neighborhood). Use them to deduce where mines are.';
   const ul = document.createElement('ul'); ul.className='list';
   [

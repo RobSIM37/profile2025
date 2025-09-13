@@ -1,4 +1,5 @@
 import { getOptions, setOptions } from '../components/codeRain/index.js';
+import { Button } from '../components/ui/button.js';
 import { setAppTransparent } from '../lib/appShell.js';
 
 export const meta = {
@@ -58,9 +59,7 @@ export function render() {
           <input class="control" type="color" id="background" value="${hex6(typeof opts.background === 'string' ? opts.background : '#0f1115')}" />
         </div>
       </div>
-      <div style="display:flex; justify-content:center; margin-top: var(--space-6);">
-        <button type="button" id="restore-defaults" class="button button-secondary">Restore Defaults</button>
-      </div>
+      <div style="display:flex; justify-content:center; margin-top: var(--space-6);">${Button({ id: 'restore-defaults', label: 'Restore Defaults', variant: 'secondary', type: 'button' })}</div>
     </form>
   `;
   frag.appendChild(section);

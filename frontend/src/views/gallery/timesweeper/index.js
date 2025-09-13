@@ -1,5 +1,6 @@
 import { initBoard, reveal, chord, toggleFlag, isWin, isLoss, flagsLeft, revealAllMines } from './engine.js';
 import { Button } from '../../../components/ui/button.js';
+import { openModal } from '../../../components/ui/modal.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 import { readStats, writeStats } from '../../../features/timesweeper/stats.js';
@@ -47,27 +48,7 @@ export function render(){
   boardHost.className='ts-board';
   boardHost.style.setProperty('--ts-cols', '30');
 
-  // Modal for end-game and stats
-  const modal = document.createElement('div');
-  modal.className = 'ts-modal hidden';
-  modal.innerHTML = `
-    <div class="ts-modal-card">
-      <h3 id="ts-modal-title">Game Over</h3>
-      <div class="ts-modal-body">
-        <div id="ts-stats-block">
-          <p>Solve Time: <span id="ts-solve">--:--</span></p>
-          <p>Best Time: <span id="ts-best">--:--</span></p>
-          <p>Wins: <span id="ts-wins">0</span> &nbsp; Losses: <span id="ts-losses">0</span> &nbsp; Win%: <span id="ts-winpct">0%</span></p>
-        </div>
-        <div id="ts-custom-note" class="hidden"><p>Custom mode: stats are not tracked.</p></div>
-      </div>
-      <div class="ts-modal-actions">
-        <button id="ts-play-again" class="button">New Game</button>
-        <button id="ts-quit" class="button button-secondary">Quit</button>
-      </div>
-    </div>`;
-
-  wrap.append(header, boardHost, modal);
+  wrap.append(header, boardHost);
   frag.append(sub.root, wrap, srcPane);
 
   // Prevent native context menu anywhere in the Timesweeper area (immersion)
@@ -96,11 +77,8 @@ export function render(){
 
   const flagsEl = wrap.querySelector('#ts-flags');
   const fuseEl = wrap.querySelector('#ts-fuse');
-  const bestEl = modal.querySelector('#ts-best');
-  const solveEl = modal.querySelector('#ts-solve');
-  const winsEl = modal.querySelector('#ts-wins');
-  const lossesEl = modal.querySelector('#ts-losses');
-  const winpctEl = modal.querySelector('#ts-winpct');
+  // Modal element handles are built when opening the modal
+  let endModalHandle = null;
 
   const fmt = (ms)=> formatTenths(ms||0);
 
@@ -205,9 +183,33 @@ export function render(){
     if (timerId) { clearInterval(timerId); timerId = 0; }
     const elapsed = startTs ? (performance.now() - startTs) : 0;
     if (!won) revealAllMines(board);
-    // Stats UI
-    const statsBlock = modal.querySelector('#ts-stats-block');
-    const customNote = modal.querySelector('#ts-custom-note');
+
+    // Build body content for the global modal
+    const body = document.createElement('div');
+    body.className = 'ts-modal-body';
+    const statsBlock = document.createElement('div');
+    statsBlock.id = 'ts-stats-block';
+    const pSolve = document.createElement('p');
+    const solveEl = document.createElement('span'); solveEl.id = 'ts-solve'; solveEl.textContent = '--:--';
+    pSolve.innerHTML = 'Solve Time: ';
+    pSolve.append(solveEl);
+    const pBest = document.createElement('p');
+    const bestEl = document.createElement('span'); bestEl.id = 'ts-best'; bestEl.textContent = '--:--';
+    pBest.innerHTML = 'Best Time: ';
+    pBest.append(bestEl);
+    const pWL = document.createElement('p');
+    const winsEl = document.createElement('span'); winsEl.id = 'ts-wins'; winsEl.textContent = '0';
+    const lossesEl = document.createElement('span'); lossesEl.id = 'ts-losses'; lossesEl.textContent = '0';
+    const winpctEl = document.createElement('span'); winpctEl.id = 'ts-winpct'; winpctEl.textContent = '0%';
+    pWL.append(document.createTextNode('Wins: '), winsEl, document.createTextNode(' \u00A0 Losses: '), lossesEl, document.createTextNode(' \u00A0 Win%: '), winpctEl);
+    statsBlock.append(pSolve, pBest, pWL);
+    const customNote = document.createElement('div');
+    customNote.id = 'ts-custom-note';
+    customNote.className = 'hidden';
+    const customP = document.createElement('p'); customP.textContent = 'Custom mode: stats are not tracked.'; customNote.append(customP);
+    body.append(statsBlock, customNote);
+
+    // Populate stats
     if (difficulty === 'Custom') {
       statsBlock.classList.add('hidden');
       customNote.classList.remove('hidden');
@@ -215,7 +217,7 @@ export function render(){
       const s = readStatsLocal();
       s.wins = (s.wins|0) + (won?1:0);
       s.losses = (s.losses|0) + (!won?1:0);
-      if (solveEl) solveEl.textContent = fmt(elapsed);
+      solveEl.textContent = fmt(elapsed);
       const prevBest = s.best||Infinity;
       if (won) s.best = Math.min(prevBest, elapsed);
       writeStatsLocal(s);
@@ -229,11 +231,26 @@ export function render(){
       statsBlock.classList.remove('hidden');
       customNote.classList.add('hidden');
     }
-    wrap.querySelector('#ts-modal-title').textContent = won ? 'You Win!' : 'Game Over';
-    const btn = modal.querySelector('#ts-play-again');
-    modal.dataset.outcome = won ? 'win' : 'loss';
-    btn.textContent = won ? 'New Game' : 'Continue';
-    modal.classList.remove('hidden');
+
+    // Actions
+    const actions = won
+      ? [
+          { label: 'New Game', onClick: () => { newGame(); } },
+          { label: 'Quit', variant: 'secondary', onClick: () => { try { sessionStorage.removeItem('ts:chosen'); } catch {} location.hash = '#/gallery/timesweeper'; } },
+        ]
+      : [
+          { label: 'Continue', onClick: () => {} },
+          { label: 'Quit', variant: 'secondary', onClick: () => { try { sessionStorage.removeItem('ts:chosen'); } catch {} location.hash = '#/gallery/timesweeper'; } },
+        ];
+
+    // Open global modal
+    endModalHandle = openModal({
+      title: won ? 'You Win!' : 'Game Over',
+      body,
+      actions,
+      titleAlign: 'center',
+      actionsAlign: 'center',
+    });
   }
 
   function newGame(){
@@ -241,7 +258,7 @@ export function render(){
     gameOver = false;
     if (timerId) { clearInterval(timerId); timerId = 0; }
     board = initBoard(W,H);
-    modal.classList.add('hidden');
+    try { endModalHandle?.close?.(); } catch {}
     fuseTotalMs = startingFuseMsLocal();
     fuseRemainingMs = fuseTotalMs;
     fuseDefused = false;
@@ -256,15 +273,7 @@ export function render(){
   boardHost.addEventListener('dblclick', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; onCellChord(b.dataset.x|0, b.dataset.y|0); });
   boardHost.addEventListener('contextmenu', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; e.preventDefault(); onCellFlag(b.dataset.x|0, b.dataset.y|0); });
 
-  modal.querySelector('#ts-play-again').addEventListener('click', ()=>{
-    if (modal.dataset.outcome === 'win') newGame();
-    else modal.classList.add('hidden');
-  });
-  // Quit: navigate back to the start screen
-  modal.querySelector('#ts-quit').addEventListener('click', ()=>{
-    try { sessionStorage.removeItem('ts:chosen'); } catch {}
-    location.hash = '#/gallery/timesweeper';
-  });
+  // Modal buttons are now handled via openModal actions
 
   // Initialize game state
   newGame();
