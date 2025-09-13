@@ -2,7 +2,7 @@
 // Usage: const m = openModal({ title, body, actions: [{ label, variant, onClick }] })
 // Returns handle with close()
 
-export function openModal({ title = '', body = '', actions = [], actionsAlign = 'flex-end', titleAlign = 'left', onClose } = {}) {
+export function openModal({ title = '', body = '', actions = [], actionsAlign = 'flex-end', titleAlign = 'left', titleVariant, onClose, onBackdropClick } = {}) {
   const prevFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   const overlay = document.createElement('div');
   overlay.className = 'ui-modal-overlay';
@@ -26,6 +26,11 @@ export function openModal({ title = '', body = '', actions = [], actionsAlign = 
   h.style.fontWeight = '800';
   h.style.fontSize = '20px';
   h.style.textAlign = titleAlign || 'left';
+  // Optional themed title color
+  try {
+    if (titleVariant === 'primary') h.style.color = 'var(--primary)';
+    else if (titleVariant === 'warning') h.style.color = 'var(--warning)';
+  } catch {}
   const titleId = `modal-title-${Math.random().toString(36).slice(2,8)}`;
   h.id = titleId;
   card.appendChild(h);
@@ -82,7 +87,12 @@ export function openModal({ title = '', body = '', actions = [], actionsAlign = 
   };
   document.addEventListener('keydown', onKey);
   document.addEventListener('keydown', onTrap);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      try { onBackdropClick?.(); } catch {}
+      close();
+    }
+  });
 
   overlay.append(card);
   document.body.append(overlay);

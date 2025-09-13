@@ -40,23 +40,19 @@ export function render() {
   intro.className = 'stack kio-wrap';
   const headerEl = document.createElement('header');
   headerEl.className = 'stack';
-  const h = document.createElement('h2');
-  h.textContent = 'FizzBuzz - Challenge Mode';
-  h.style.fontSize = '1.8rem';
-  h.style.lineHeight = '1.2';
-  h.style.fontWeight = '800';
   const tag = document.createElement('p');
   tag.textContent = 'A friendly Human vs AI take on FizzBuzz. You play the number or a word combo — or press Challenge. Only challenges decide correctness.';
   tag.style.color = 'var(--muted)';
-  headerEl.append(h, tag);
+  headerEl.append(tag);
 
   const howBody = document.createElement('div');
   const ul = document.createElement('ul');
   ul.className = 'list';
   [
-    'Turns alternate Human ↔ AI. You must act before the timer hits 0.',
+    'Turns alternate Human ↔ AI. You must act before the timer hits 0 — no response is an automatic loss.',
+    'Your time to respond adapts based on a rolling average of your recent responses.',
     'Actions: play The Number or a word combo (e.g., FizzBuzz), or press Challenge.',
-    'Timeouts record an empty move — not an auto-loss.',
+    'If you run out of time, you lose the game.',
     'Human wins a level-up by correctly challenging an invalid AI move. A new rule is added.',
     'AI can challenge your move. A correct challenge ends the game.',
   ].forEach((t) => { const li = document.createElement('li'); li.textContent = t; ul.append(li); });
