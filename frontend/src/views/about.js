@@ -138,6 +138,13 @@ export function render() {
       wrap.append(p1, btnWrap.firstElementChild);
       return wrap;
     }),
+    fb: (() => {
+      const wrap = document.createElement('div'); wrap.className = 'stack';
+      const p1 = document.createElement('p'); p1.textContent = 'Clears FizzBuzz response timing average and related data.';
+      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-fizzbuzz', label: 'Clear', variant: 'warning' });
+      wrap.append(p1, btnWrap.firstElementChild);
+      return wrap;
+    }),
     sn: (() => {
       const wrap = document.createElement('div'); wrap.className = 'stack';
       const p1 = document.createElement('p'); p1.textContent = 'Clears Snake+ data: highest level reached, last level, longest snake length, and custom color palette.';
@@ -162,6 +169,7 @@ export function render() {
       { id: 'ts', label: 'Timesweeper data' },
       { id: 'cr', label: 'Code Rain data' },
       { id: 'lh', label: 'Light Houses data' },
+      { id: 'fb', label: 'FizzBuzz data' },
       { id: 'sn', label: 'Snake+ data' },
       { id: 'all', label: 'All data' },
     ],
@@ -199,6 +207,17 @@ export function render() {
   try {
     const list = patchesPane.querySelector('#patch-list');
       if (list) {
+        const sept13 = PatchEntry('2025-09-13', 1, [
+          'FizzBuzz: unified Respond button (number + words), rule toggles centered; removed Submit',
+          'Rule toggles show prefix N: Word; removed Active Rules panel; compact flex layout',
+          'Challenge via AI last response label; removed separate Challenge button; removed "AI Thinking" label',
+          'Persistent adaptive timer: rolling average (max 20s) with level-based buffer; AI turn timer hidden',
+          'Timeouts are auto-losses (no average update); modal shows N, applied rules, and correct response',
+          'Game Over modals: colored titles; backdrop click advances on win, restarts on loss; shows average time; Quit on loss',
+          'AI mistake curve by N: near 0% before 20, ramps to ~99% after 80',
+          'Start: removed big header; How To updated (adaptive timing, auto-loss); random first turn (50/50)',
+          'About: added FizzBuzz data reset; How To copy avoids storage mention',
+        ]);
         const kbEntry = PatchEntry('2025-09-12', 1, [
           'Knuckle Bones: new gallery entry, start and game screens with AI and drag-and-drop roll cup',
           'Game UI: stacked grids, per-player name/score rows, centered roll cup with animation + pause',
@@ -327,6 +346,7 @@ export function render() {
             list.prepend(kbEntry);
             list.prepend(kbEntry2);
             list.prepend(unifyLayout);
+            list.prepend(sept13);
     }
   } catch {}
   frag.append(sec);
@@ -366,12 +386,15 @@ export function render() {
       else if (id === 'about-clear-lighthouses') {
         try { removeByPrefixes(['lighthouses:']); showToast(t, 'Light Houses data reset'); } catch {}
       }
+      else if (id === 'about-clear-fizzbuzz') {
+        try { removeByPrefixes(['fb:']); showToast(t, 'FizzBuzz data cleared'); } catch {}
+      }
       else if (id === 'about-clear-snake') {
         try { removeByPrefixes(['snake:']); showToast(t, 'Snake+ data cleared'); } catch {}
       }
       else if (id === 'about-clear-all') {
         if (!confirm('Clear all data saved by this site in this browser?')) return;
-        removeByPrefixes(['timesweeper:', 'coderain:', 'lighthouses:', 'snake:']);
+        removeByPrefixes(['timesweeper:', 'coderain:', 'lighthouses:', 'snake:', 'fb:']);
         showToast(t, 'Site data cleared');
       }
     });

@@ -55,26 +55,27 @@ export function render(){
   const hudTimer = HudStat({ label: 'Timer', value: '-' });
   header.append(hudLevel.root, hudTimer.root);
 
-  // Rules panel
-  const rulesPanel = document.createElement('div');
-  rulesPanel.style.border = '1px solid var(--border)';
-  rulesPanel.style.borderRadius = 'var(--radius)';
-  rulesPanel.style.background = 'var(--bg-elev)';
-  rulesPanel.style.padding = '8px 10px';
-  const rulesTitle = document.createElement('div'); rulesTitle.textContent = 'Active Rules'; rulesTitle.style.fontWeight = '700'; rulesTitle.style.marginBottom = '6px';
-  const rulesList = document.createElement('div'); rulesList.style.display = 'flex'; rulesList.style.flexWrap = 'wrap'; rulesList.style.gap = '8px';
-  rulesPanel.append(rulesTitle, rulesList);
+  // (Removed separate Active Rules panel; rules are shown inline as toggle buttons)
 
-  // Top two half-height controls row + Buttons grid
+  // Top two half-height controls row + Actions + Values grid
   const topRow = document.createElement('div');
   topRow.style.display = 'grid';
   topRow.style.gridTemplateRows = '1fr 1fr';
   topRow.style.gap = '6px';
   topRow.style.justifyItems = 'center';
 
+  // Actions row (center the unified Respond button under the AI label)
+  const actionsRow = document.createElement('div');
+  actionsRow.style.display = 'flex';
+  actionsRow.style.justifyContent = 'center';
+  actionsRow.style.alignItems = 'center';
+  actionsRow.style.gap = '8px';
+
   const btnGrid = document.createElement('div');
-  btnGrid.style.display = 'grid';
-  btnGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(140px, 1fr))';
+  btnGrid.style.display = 'flex';
+  btnGrid.style.flexWrap = 'wrap';
+  btnGrid.style.justifyContent = 'center';
+  btnGrid.style.alignItems = 'stretch';
   btnGrid.style.gap = '8px';
 
   // Scrollable container for only the response buttons area
@@ -91,7 +92,7 @@ export function render(){
   const BUTTON_H = 48; // shrink response buttons by 25% (was 64)
   const TOP_H = 48;    // height for top-row controls to match Challenge
 
-  wrap.append(header, rulesPanel, topRow, btnScroll, sr);
+  wrap.append(header, topRow, actionsRow, btnScroll, sr);
   frag.append(sub.root, wrap, srcPane);
 
   // Game State
@@ -102,6 +103,12 @@ export function render(){
   const S = { N: 1, level: START_LEVEL, rules, turn: (Math.random() < 0.5 ? 'Human' : 'AI'), over: false };
   let pendingRuleAdd = false; // add rule after Next Level
   let levelCombos = computeAllCombos(S.rules);
+  // Selected rule keys (divisors) for Human toggle inputs
+  let selectedRuleKeys = new Set();
+  // Rolling average response-time persistence
+  let respAvgMs = loadRespAvgMs(); // defaults to 20000ms
+  let respCount = loadRespCount(); // defaults to 0
+  let lastHumanWindowMs = 0;
 
   // Timers
   const turnT = makeTimer();
@@ -160,12 +167,19 @@ export function render(){
     return 20000;
   }
   function aiDelayMs(level){ return Math.max(250, 750 - level * 40); }
-  function misplay(level){ return Math.min(0.35, 0.02 + 0.01*level); }
-  function badChallenge(level){ return Math.min(0.35, 0.02 + 0.01*level); }
-  function missedChallenge(level){ return Math.min(0.5, 0.08 + 0.02*level); }
+  // Mistake probability curve by current N: ~0 before 20, ~1 after 80
+  function mistakeProbByN(N){
+    const t = Math.max(0, Math.min(1, (N - 20) / 60));
+    const s = t * t * (3 - 2 * t); // smoothstep
+    return 0.01 + 0.98 * s; // ~1% at/below 20, ~99% at/above 80
+  }
+  function misplay(/*level*/){ return mistakeProbByN(S.N); }
+  function badChallenge(/*level*/){ return mistakeProbByN(S.N); }
+  function missedChallenge(/*level*/){ return mistakeProbByN(S.N); }
 
   function playResponse(player, text){
     if (!alive || S.over || S.turn !== player) return;
+    if (player === 'Human') recordHumanResponded();
     S.lastMove = { player, N: S.N, text, ts: Date.now() };
     S.N += 1;
     S.turn = other(player);
@@ -179,6 +193,7 @@ export function render(){
     if (!alive || S.over || S.turn !== challenger || !S.lastMove) return;
     const valid = wasValid(S.lastMove);
     if (challenger === 'Human') {
+      recordHumanResponded();
       if (!valid) { S.level += 1; pendingRuleAdd = true; endGame('Human', { kind: 'human-correct-challenge', details: buildMoveDetails(S.lastMove) }); return; }
       endGame('AI', { kind: 'wrong-challenge', details: buildMoveDetails(S.lastMove) }); return;
     }
@@ -198,16 +213,25 @@ export function render(){
     if (next) { S.rules.set(next[0], next[1]); S.level += 1; levelCombos = computeAllCombos(S.rules); }
   }
 
-  function timeoutTurn(player){ playResponse(player, ''); }
+  function timeoutTurn(player){
+    // Human no-response is an immediate loss; do not record into rolling average
+    if (player === 'Human') {
+      const details = buildMoveDetails({ player: 'Human', N: S.N, text: '' });
+      endGame('AI', { kind: 'timeout', details });
+      return;
+    }
+  }
 
   function endGame(winner, info){
     if (!alive) return;
     S.over = true; S.winner = winner;
     syncHud();
     let advanced = false;
+    let closedViaBackdrop = false;
     const modal = openModal({
       title: winner === 'Human' ? 'You Win' : 'You Lose',
       titleAlign: 'center',
+      titleVariant: winner === 'Human' ? 'primary' : 'warning',
       actionsAlign: 'center',
       body: (()=>{
         const d = document.createElement('div');
@@ -216,10 +240,11 @@ export function render(){
         const sub = document.createElement('div');
         sub.className = 'stack';
         const lvl = document.createElement('p'); lvl.textContent = `Level reached: ${S.level}`; sub.append(lvl);
+        const avgP = document.createElement('p'); avgP.textContent = `Average response time: ${fmtSecs(respAvgMs)}`; sub.append(avgP);
         if (info?.details) {
           const { N, text, expected, applied, player } = info.details;
           const rows = [];
-          if (info.kind !== 'timeout-challenged') {
+          if (info.kind !== 'timeout') {
             rows.push(`Challenged move by ${player}: ${text === '' ? '"" (empty)' : `"${text}"`}`);
           }
           rows.push(
@@ -232,13 +257,29 @@ export function render(){
         d.append(sub);
         return d;
       })(),
-      actions: [
+      actions: (
         winner === 'Human'
-          ? { label: 'Next Level', onClick: () => { advanced = true; startNextLevel(); modal.close?.(); } }
-          : { label: 'Play Again', onClick: () => { resetGame(); modal.close?.(); } },
-      ],
+          ? [
+              { label: 'Next Level', onClick: () => { advanced = true; startNextLevel(); modal.close?.(); } },
+            ]
+          : [
+              { label: 'Play Again', onClick: () => { resetGame(); modal.close?.(); } },
+              { label: 'Quit', variant: 'secondary', onClick: () => { try { modal.close?.(); } catch {}; window.location.hash = '#/gallery/fizzbuzz'; } },
+            ]
+      ),
+      onBackdropClick: () => {
+        closedViaBackdrop = true;
+        if (winner === 'Human') {
+          // Advance immediately on outside-click when you win
+          advanced = true;
+          startNextLevel();
+        } else {
+          // On a loss, outside-click restarts the game
+          resetGame();
+        }
+      },
       onClose: () => {
-        if (winner === 'Human' && !advanced) {
+        if (winner === 'Human' && !advanced && !closedViaBackdrop) {
           advanced = true;
           startNextLevel();
         }
@@ -288,18 +329,19 @@ export function render(){
   function scheduleTurn(){
     if (!alive) return;
     turnT.clear(); loopT.clear();
-    const ms = S.turn === 'Human' ? responseMs(S.level) : Math.max(300, responseMs(S.level));
+    let ms;
+    if (S.turn === 'Human') { ms = getHumanWindowMs(); lastHumanWindowMs = ms; }
+    else { ms = Math.max(300, responseMs(S.level)); }
     deadline = Date.now() + ms;
     syncHud();
     const loop = () => {
       if (!alive || S.over) return;
       const now = Date.now();
       if (now >= deadline) {
-        if (S.turn === 'Human') timeoutTurn('Human');
-        if (S.turn === 'AI') { aiTakeTurn(); }
-        return;
+        if (S.turn === 'Human') { timeoutTurn('Human'); return; }
+        // For AI: do not trigger via deadline; keep timer hidden
       }
-      hudTimer.val.textContent = fmtSecs(deadline - now);
+      hudTimer.val.textContent = (S.turn === 'Human') ? fmtSecs(deadline - now) : '---';
       loopT.after(100, loop);
     };
     loopT.after(50, loop);
@@ -325,13 +367,9 @@ export function render(){
   // UI
   function syncHud(){
     hudLevel.val.textContent = String(S.level);
-    hudTimer.val.textContent = S.over ? '-' : fmtSecs(deadline - Date.now());
+    hudTimer.val.textContent = S.over ? '-' : (S.turn === 'Human' ? fmtSecs(deadline - Date.now()) : '---');
   }
-  function syncRules(){
-    rulesList.innerHTML = '';
-    const pairs = [...S.rules.entries()].sort((a,b)=>a[0]-b[0]);
-    pairs.forEach(([k, w]) => { rulesList.append(Tag({ text: `${k}: ${w}` })); });
-  }
+  function syncRules(){ /* rules are reflected by the toggle buttons now */ }
 
   function rebuildButtons(){
     // Top two controls centered (each same height as Challenge)
@@ -352,36 +390,102 @@ export function render(){
     if (S.turn === 'AI') {
       const last = (S.lastMove && S.lastMove.player === 'Human') ? S.lastMove.text : null;
       const saidTxt = last == null ? 'Player said: -' : `Player said: ${last === '' ? '"" (empty)' : `"${last}"`}`;
-      topRow.append(mkBlock(saidTxt), mkBlock('AI Thinking'));
+      // Remove "AI Thinking" label to prevent layout jump between turns
+      topRow.append(mkBlock(saidTxt));
     } else {
       const aiMoveText = (S.lastMove && S.lastMove.player === 'AI') ? S.lastMove.text : null;
       const shown = aiMoveText == null ? '-' : (aiMoveText === '' ? '"" (empty)' : `"${aiMoveText}"`);
       const info = mkBlock(`AI last response: ${shown}`, { border: 'var(--warning, #ffcc00)', bg: 'var(--bg, #0f141f)', weight: '600', className: 'text-warning' });
+      // Turn the label into the Challenge control when challengeable
+      const canChallenge = !S.over && !!S.lastMove && S.lastMove.player === 'AI' && S.turn === 'Human';
+      if (canChallenge) {
+        try {
+          info.innerHTML = `AI last response: ${shown}<br>(Click to challenge)`;
+          info.style.cursor = 'pointer';
+          info.setAttribute('role', 'button');
+          info.tabIndex = 0;
+          const trigger = () => { if (S.turn === 'Human' && !S.over) challengeLast('Human'); };
+          info.addEventListener('click', trigger);
+          info.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger(); } });
+        } catch {}
+      }
       topRow.append(info);
-      const cWrap = document.createElement('div');
-      const challengeHtml = Button({ id: 'fb-challenge', label: 'Challenge', variant: 'secondary' });
-      cWrap.innerHTML = challengeHtml; const cBtn = cWrap.firstElementChild;
-      cBtn.style.display = 'grid'; cBtn.style.placeItems = 'center'; cBtn.style.width = 'min(300px, 100%)'; cBtn.style.minHeight = TOP_H + 'px';
-      cBtn.addEventListener('click', () => { if (S.turn === 'Human' && !S.over) challengeLast('Human'); });
-      topRow.append(cBtn);
+      // Actions moved to actionsRow below
     }
 
-    // Main buttons
+    // Build actions row (Respond, Challenge)
+    actionsRow.innerHTML = '';
+    const isHumanTurn = (S.turn === 'Human' && !S.over);
+    // Unified Respond button (acts as The Number or combined words based on selection)
+    let respondBtn; { const h = document.createElement('div'); h.innerHTML = Button({ id: 'fb-respond', label: 'The Number' });
+      respondBtn = h.firstElementChild; respondBtn.style.display='grid'; respondBtn.style.placeItems='center'; respondBtn.style.width='min(300px, 100%)'; respondBtn.style.minHeight = TOP_H + 'px';
+      respondBtn.addEventListener('click', () => {
+        if (S.turn !== 'Human' || S.over) return;
+        const keys = [...selectedRuleKeys].sort((a,b)=>a-b);
+        const text = keys.length ? keys.map(k => S.rules.get(k)).join('') : String(S.N);
+        playResponse('Human', text);
+      });
+      actionsRow.append(respondBtn); }
+    // Challenge button removed; use the clickable AI last response label instead
+
+    // Values grid (keep visible on AI turn, but disabled)
     btnGrid.innerHTML = '';
-    const opts = buildOptionsForCurrent();
-    // Limit to at most 4 columns per row; balance rows by rounding up
-    const n = opts.play.length;
-    const rows = Math.max(1, Math.ceil(n / 4));
-    const cols = Math.max(1, Math.ceil(n / rows));
-    btnGrid.style.gridTemplateColumns = `repeat(${cols}, minmax(140px, 1fr))`;
-    opts.play.forEach(item => {
-      const id = `fb-${(item.label || item.value).toString().replace(/[^a-z0-9]+/gi,'-')}`;
-      const html = Button({ id, label: item.label || item.value });
+    // Rebuild toggle inputs fresh each (re)render
+    selectedRuleKeys.clear();
+    const rulesSorted = [...S.rules.entries()].sort((a,b)=>a[0]-b[0]);
+    // Center the values row; switch to flex layout
+    btnGrid.style.display = 'flex';
+    btnGrid.style.flexWrap = 'wrap';
+    btnGrid.style.justifyContent = 'center';
+    btnGrid.style.alignItems = 'stretch';
+    btnGrid.style.maxWidth = '720px';
+    btnGrid.style.margin = '0 auto';
+    // Build a toggle button per rule
+    rulesSorted.forEach(([k, word]) => {
+      const id = `fb-tog-${k}`;
+      const html = Button({ id, label: `${k}: ${word}`, variant: 'subtle' });
       const holder = document.createElement('div'); holder.innerHTML = html; const btn = holder.firstElementChild;
-      btn.addEventListener('click', () => { if (S.turn === 'Human' && !S.over) playResponse('Human', item.value); });
+      btn.setAttribute('aria-pressed', 'false');
       btn.style.height = BUTTON_H + 'px'; btn.style.display = 'grid'; btn.style.placeItems = 'center';
+      btn.style.flex = '0 1 140px';
+      btn.style.minWidth = '120px';
+      btn.disabled = !isHumanTurn;
+      btn.setAttribute('aria-disabled', String(!isHumanTurn));
+      // Unselected/disabled: grey via .button-secondary; selected removes it for a subtle highlight
+      try { btn.classList.add('button-secondary'); } catch {}
+      btn.addEventListener('click', () => {
+        if (S.turn !== 'Human' || S.over) return;
+        const on = selectedRuleKeys.has(k);
+        if (on) {
+          selectedRuleKeys.delete(k);
+          btn.classList.add('button-secondary');
+          btn.setAttribute('aria-pressed', 'false');
+        } else {
+          selectedRuleKeys.add(k);
+          btn.classList.remove('button-secondary');
+          btn.setAttribute('aria-pressed', 'true');
+        }
+        updateRespondUI();
+      });
       btnGrid.append(btn);
     });
+    // Respond UI: update label and disabled/grey state based on selection and turn
+    function updateRespondUI(){
+      try {
+        const hasSel = selectedRuleKeys.size > 0;
+        const label = hasSel ? [...selectedRuleKeys].sort((a,b)=>a-b).map(k => S.rules.get(k)).join('') : 'The Number';
+        respondBtn.textContent = label;
+        const enabled = isHumanTurn; // allowed whenever it's the human's turn
+        respondBtn.disabled = !enabled;
+        respondBtn.setAttribute('aria-disabled', String(!enabled));
+        if (enabled) {
+          respondBtn.classList.remove('button-secondary');
+        } else {
+          if (!respondBtn.classList.contains('button-secondary')) respondBtn.classList.add('button-secondary');
+        }
+      } catch {}
+    }
+    updateRespondUI();
     sizeButtons();
   }
 
@@ -395,6 +499,38 @@ export function render(){
   function fmtSecs(ms){
     const secs = Math.max(0, ms) / 1000;
     return `${secs.toFixed(1)} s`;
+  }
+
+  // Response-time persistence helpers
+  function loadRespAvgMs(){
+    try { const v = Number(localStorage.getItem('fb:respAvgMs') || ''); return Number.isFinite(v) && v > 0 ? Math.min(20000, v) : 20000; } catch { return 20000; }
+  }
+  function loadRespCount(){
+    try { const v = Number(localStorage.getItem('fb:respCount') || ''); return Number.isFinite(v) && v >= 0 ? Math.floor(v) : 0; } catch { return 0; }
+  }
+  function saveResp(avgMs, count){
+    try { localStorage.setItem('fb:respAvgMs', String(Math.min(20000, Math.max(1, Math.floor(avgMs))))); } catch {}
+    try { localStorage.setItem('fb:respCount', String(Math.max(0, Math.floor(count)))); } catch {}
+  }
+  function getHumanWindowMs(){
+    const avg = Math.min(20000, respAvgMs);
+    const factor = 1.5 + 0.1 * ((S.level || 1) - 1);
+    return Math.round(avg * factor);
+  }
+  function recordHumanResponded(){
+    try {
+      const now = Date.now();
+      const base = lastHumanWindowMs || getHumanWindowMs();
+      const remaining = Math.max(0, deadline - now);
+      const used = Math.min(base, Math.max(0, base - remaining));
+      if (Number.isFinite(used)) {
+        const n = (respCount || 0) + 1;
+        const newAvg = (respAvgMs || 20000) + (used - (respAvgMs || 20000)) / n;
+        respAvgMs = Math.min(20000, Math.max(1, newAvg));
+        respCount = n;
+        saveResp(respAvgMs, respCount);
+      }
+    } catch {}
   }
 
   // Size the buttons scroll area so the footer remains visible; only this area scrolls
@@ -444,7 +580,7 @@ export function render(){
     switch(info?.kind){
       case 'human-correct-challenge': return 'You challenged the AI correctly.';
       case 'wrong-challenge': return 'You challenged the AI incorrectly.';
-      case 'timeout-challenged': return 'You ran out of time.'; // keep separate from the challenge event
+      case 'timeout': return 'You ran out of time.'; // human timed out
       case 'challenged-invalid-move': return 'AI challenged your move.';
       case 'ai-bad-challenge': return 'AI challenged incorrectly.';
       default: return 'Game ended.';
@@ -453,7 +589,7 @@ export function render(){
 
   function linesForOver(info){
     if (!info) return ['Game ended.'];
-    if (info.kind === 'timeout-challenged') return ['You ran out of time.'];
+    if (info.kind === 'timeout') return ['You ran out of time.'];
     if (info.kind === 'challenged-invalid-move') return ['AI challenged your move.'];
     return [ describeOver(info) ];
   }
