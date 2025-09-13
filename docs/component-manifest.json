@@ -6,7 +6,7 @@
       "kind": "html-string-factory",
       "signature": "Button({ id?, label, variant?, size?, attrs?, type? }) -> string",
       "returns": "HTML string for a styled <button>",
-      "notes": "variant: 'secondary'|'warning' supported; size: 'small'|'sm' adds .small"
+      "notes": "variants: 'secondary'|'warning'|'subtle' supported; size: 'small'|'sm' adds .small"
     },
     {
       "name": "textField",
@@ -75,9 +75,9 @@
       "name": "openModal",
       "path": "src/components/ui/modal.js",
       "kind": "dom-factory",
-      "signature": "openModal({ title, body (string|Element), actions: [{label,variant,onClick}]?, onClose? }) -> { close }",
+      "signature": "openModal({ title, body (string|Element), actions: [{label,variant,onClick}]?, actionsAlign?, titleAlign?, titleVariant?, onClose?, onBackdropClick? }) -> { close }",
       "returns": "Overlay modal; call close() to dismiss",
-      "notes": "Actions auto-close after onClick; Escape closes"
+      "notes": "Accessible dialog with focus trap and ARIA semantics; Escape and backdrop click close; closes on navigation (hashchange/popstate), skipping onClose when closed due to navigation; actions run onClick then auto-close"
     },
     {
       "name": "FaceIcon",
