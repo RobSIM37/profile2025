@@ -21,6 +21,20 @@ function sendJson(ws, obj) {
   try { ws.send(JSON.stringify(obj)); } catch (_) {}
 }
 
+// Broadcast a server time tick to all connected clients every 30 seconds.
+// Envelope follows the project convention: { intent, ok, data }
+setInterval(() => {
+  try {
+    const payload = { intent: 'system.time.tick', ok: true, data: { now: Date.now() } };
+    const str = JSON.stringify(payload);
+    for (const client of wss.clients) {
+      if (client.readyState === 1) {
+        try { client.send(str); } catch (_) {}
+      }
+    }
+  } catch (_) {}
+}, 30_000);
+
 function buildContext(ws, envelope) {
   const requestId = envelope?.message?.requestId;
   const payload = envelope?.message?.payload;
@@ -60,28 +74,31 @@ wss.on('connection', (ws) => {
     }
 
     // Expect { auth: { jwt }, message: { intent, payload, requestId? } }
+    const intent = envelope?.message?.intent;
+    const payload = envelope?.message?.payload;
     const token = envelope?.auth?.jwt || envelope?.auth?.token;
-    if (!token) {
+
+    // Allow unauthenticated bootstrap for guest token
+    const isGuestBootstrap = intent === 'system.auth.guest';
+    if (!token && !isGuestBootstrap) {
       return sendJson(ws, { ok: false, error: { code: 'auth.missing', message: 'Missing JWT' } });
     }
 
     try {
       // Cache user after first successful verify, but re-verify each message if you prefer
-      if (!ws.user) {
+      if (!ws.user && token) {
         ws.user = verifyJwt(token);
       }
     } catch (err) {
       return sendJson(ws, { ok: false, error: { code: 'auth.invalid', message: 'Invalid JWT' } });
     }
 
-    const intent = envelope?.message?.intent;
-    const payload = envelope?.message?.payload;
     if (!intent) {
       return sendJson(ws, { ok: false, error: { code: 'intent.missing', message: 'Missing intent' } });
     }
 
     // Authorization per intent
-    if (!isAuthorized(ws.user, intent)) {
+    if (!isGuestBootstrap && !isAuthorized(ws.user, intent)) {
       return sendJson(ws, { ok: false, error: { code: 'authz.denied', message: 'Not authorized' } });
     }
 

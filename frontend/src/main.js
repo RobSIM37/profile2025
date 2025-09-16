@@ -33,6 +33,8 @@ initRouter({ routes, baseTitle, beforeResolve: BEFORE_RESOLVE });
 
 // Initialize WebSocket connection (token is attached per-message)
 ws.connect();
+// Bootstrap a guest token if none present
+ws.ensureGuest && ws.ensureGuest();
 
 // Mount background Code Rain after DOM is ready
 function initRainToggle() {

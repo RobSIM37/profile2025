@@ -120,6 +120,17 @@ Messaging System (WS)
 - Auth: JWT required on every message; backend reads HS256 or RS256 keys from env (see `backend/core/security/jwt.js`).
 - Intents: Register handlers in `backend/src/registerIntents.js`; reuse claim roots from `backend/core/security/claims.js` to align FE/BE meaning.
 
+Claims & Roles
+- Claims: canonical roots live in `backend/core/security/claims.js` and match intent globs.
+- New claims: `leaderboard.read`, `leaderboard.write`, `announce`.
+- Roles map: see `backend/core/security/roles.js`.
+- Access summary:
+  - owner: `**` (all intents)
+  - admin: `leaderboard.read`, `leaderboard.write`, `announce` plus standard admin claims
+  - user: `leaderboard.read`, `leaderboard.write` plus user defaults
+  - contributor: user defaults + `contribute.**` and leaderboard read/write
+  - guest: `leaderboard.read` plus guest defaults
+
 Backend Dispatch & Rooms
 - Dispatch: `backend/index.js` parses envelope, verifies JWT, checks authz (`isAuthorized`), then routes via `core/intentionRouter`.
 - Broadcast policy: If `payload.gameId` is present and handler returns success, the server broadcasts `{ intent, ok, data, error }` to that room unless handler sets `broadcast: false`. Otherwise, a direct reply is sent to the requester.
