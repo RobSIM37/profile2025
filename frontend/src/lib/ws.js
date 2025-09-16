@@ -138,6 +138,21 @@ export class WSClient extends EventTarget {
     return p;
   }
 
+  async ensureGuest() {
+    try {
+      const tok = typeof this.getToken === 'function' ? this.getToken() : null;
+      if (tok) return { ok: true, cached: true };
+      const res = await this.send('system.auth.guest', {}, { timeout: 8000 });
+      if (res?.ok && res?.data?.token) {
+        this.setToken(res.data.token);
+        return { ok: true, issued: true };
+      }
+      return { ok: false, error: res?.error };
+    } catch (err) {
+      return { ok: false, error: { message: err?.message || 'guest bootstrap failed' } };
+    }
+  }
+
   joinRoom(idOrObj) {
     const payload = typeof idOrObj === 'string' ? { roomId: idOrObj } : (idOrObj || {});
     if (!payload.roomId && payload.gameId) {}

@@ -9,5 +9,10 @@ module.exports = {
   messageMe: 'message.me.**',
   contribute: 'contribute.**',
   update: 'update.**',
-  elevate: 'elevate.**'
+  elevate: 'elevate.**',
+  // Leaderboard permissions
+  leaderboardRead: 'leaderboard.read',
+  leaderboardWrite: 'leaderboard.write',
+  // Announcements
+  announce: 'announce'
 };

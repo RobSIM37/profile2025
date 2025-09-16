@@ -15,12 +15,16 @@ module.exports = {
     CLAIMS.message,
     CLAIMS.messageMe,
     CLAIMS.contribute,
-    CLAIMS.update
+    CLAIMS.update,
+    CLAIMS.leaderboardRead,
+    CLAIMS.leaderboardWrite,
+    CLAIMS.announce
   ],
   guest: [
     CLAIMS.system,
     CLAIMS.game,
-    CLAIMS.messageMe
+    CLAIMS.messageMe,
+    CLAIMS.leaderboardRead
   ],
   user: [
     CLAIMS.system,
@@ -28,7 +32,9 @@ module.exports = {
     CLAIMS.messageMe,
     CLAIMS.message,
     CLAIMS.chat,
-    CLAIMS.startGame
+    CLAIMS.startGame,
+    CLAIMS.leaderboardRead,
+    CLAIMS.leaderboardWrite
   ],
   contributor: [
     // User + contribute
@@ -38,6 +44,8 @@ module.exports = {
     CLAIMS.message,
     CLAIMS.chat,
     CLAIMS.startGame,
-    CLAIMS.contribute
+    CLAIMS.contribute,
+    CLAIMS.leaderboardRead,
+    CLAIMS.leaderboardWrite
   ]
 };
