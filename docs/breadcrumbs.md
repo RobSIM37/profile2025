@@ -137,6 +137,13 @@ Backend Dispatch & Rooms
 - Rooms API (server context): handlers receive `ctx` with `joinRoom(roomId)`, `leaveRoom(roomId)`, `broadcast(data, { gameId?, excludeSender? })`, `reply(data)`, and `rooms()`.
 - System intents: `system.room.join` and `system.room.leave` accept `{ roomId? , gameId? }` and never broadcast. See `backend/src/handlers/system/*.js`.
 
+Backend Structure (db and services)
+- Core: framework plumbing lives in `backend/core/**` and should remain app‑agnostic.
+- App code: feature code and handlers live under `backend/src/**`.
+- Database layer: place shared DB access in `backend/src/lib/db.js` (or `backend/src/db/index.js` if you prefer a folder). Import from handlers with `require('../lib/db')`.
+- Configuration: read credentials from env (Azure SQL + `@azure/identity`), avoid global singletons; export a small API (e.g., `getPool()`, `query(sql, params)`).
+- Optional: if many handlers need it, consider wiring a db accessor onto `ctx` later; default is to import directly in handlers.
+
 Frontend Client (vanilla JS)
 - Location: `frontend/src/lib/ws.js`
 - Initialize: import and connect once on app boot (done in `frontend/src/main.js`).
