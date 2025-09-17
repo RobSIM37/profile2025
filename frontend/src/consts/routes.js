@@ -26,6 +26,7 @@ export const routes = {
   '/contact': () => import('../views/contact.js'),
   '/rain': () => import('../views/coderain.js'),
   '/ws-test': () => import('../views/ws-test.js'),
+  '/auth': () => import('../views/auth.js'),
   '/404': async () => ({
     meta: { title: 'Not Found' },
     render: () => `

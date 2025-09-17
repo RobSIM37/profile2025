@@ -1,6 +1,7 @@
 import { initRouter } from './router.js';
 import { routes as ROUTES, beforeResolve as BEFORE_RESOLVE } from './consts/routes.js';
 import { Brand } from './components/brand.js';
+import { Tag } from './components/ui/tag.js';
 import { mountCodeRain, getEnabled, setEnabled } from './components/codeRain/index.js';
 import { RAIN_OPTIONS } from './consts/code-rain.js';
 import ws from './lib/ws.js';
@@ -35,6 +36,53 @@ initRouter({ routes, baseTitle, beforeResolve: BEFORE_RESOLVE });
 ws.connect();
 // Bootstrap a guest token if none present
 ws.ensureGuest && ws.ensureGuest();
+
+// Header auth state slot: shows Log in or a signed-in chip
+function decodeJwtPayload(token) {
+  try {
+    const parts = String(token).split('.');
+    if (parts.length < 2) return null;
+    const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(b64.padEnd(b64.length + (4 - (b64.length % 4)) % 4, '='));
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+function renderAuthSlot() {
+  const slot = document.getElementById('auth-slot');
+  if (!slot) return;
+  while (slot.firstChild) slot.removeChild(slot.firstChild);
+  let token = null;
+  try { token = localStorage.getItem('auth:jwt'); } catch {}
+  if (!token) {
+    const a = document.createElement('a');
+    a.setAttribute('data-route', '');
+    a.href = '#/auth';
+    a.textContent = 'Log in';
+    slot.append(a);
+    return;
+  }
+  const claims = decodeJwtPayload(token) || {};
+  const who = claims.sub || 'user';
+  const roles = Array.isArray(claims.roles) ? claims.roles.join(', ') : (claims.role || '');
+  const a = document.createElement('a');
+  a.setAttribute('data-route', '');
+  a.href = '#/auth';
+  a.setAttribute('title', 'View account');
+  const tag = Tag({ text: roles ? `${who} (${roles})` : who });
+  a.append(tag);
+  slot.append(a);
+}
+
+function initAuthSlot() {
+  renderAuthSlot();
+  window.addEventListener('storage', (e) => {
+    if (e && e.key === 'auth:jwt') renderAuthSlot();
+  });
+  window.addEventListener('auth:changed', renderAuthSlot);
+}
 
 // Mount background Code Rain after DOM is ready
 function initRainToggle() {
@@ -81,4 +129,11 @@ if (document.readyState === 'loading') {
   window.addEventListener('DOMContentLoaded', initSkipLinkFocus);
 } else {
   initSkipLinkFocus();
+}
+
+// Init header auth slot after DOM is ready
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initAuthSlot);
+} else {
+  initAuthSlot();
 }
