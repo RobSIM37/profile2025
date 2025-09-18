@@ -7,7 +7,7 @@ import { HudStat } from '../../../components/ui/hudStat.js';
 import { Tag } from '../../../components/ui/tag.js';
 
 export const meta = {
-  title: 'FizzBuzz �?" Game',
+  title: 'FizzBuzz',
   description: 'Human vs AI alternates on FizzBuzz; challenge-only validation with level-ups on correct human challenges.',
 };
 

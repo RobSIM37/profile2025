@@ -17,17 +17,42 @@ export function render() {
   const LS_MAX = 'snake:maxLevel';
   const LS_LAST = 'snake:lastLevel';
   const LS_BEST = 'snake:bestLen';
+  const LS_PEAK = 'snake:highestLevel';
   function loadInt(key, dflt) {
     try { const v = parseInt(localStorage.getItem(key) || ''); return Number.isFinite(v) && v > 0 ? v : dflt; } catch { return dflt; }
   }
   function saveInt(key, v) { try { localStorage.setItem(key, String(v|0)); } catch {} }
-  function clearProgress(){ try { localStorage.removeItem(LS_MAX); localStorage.removeItem(LS_LAST); } catch {} }
+  function clearProgress(){
+    try {
+      localStorage.removeItem(LS_MAX);
+      localStorage.removeItem(LS_LAST);
+      localStorage.removeItem(LS_PEAK);
+    } catch {}
+  }
+  function loadHighestLevel(){
+    const legacy = loadInt(LS_MAX, 1);
+    let storedRaw;
+    try { storedRaw = localStorage.getItem(LS_PEAK); } catch {}
+    const stored = loadInt(LS_PEAK, legacy);
+    const peak = Math.max(1, legacy, stored);
+    if (peak !== legacy) saveInt(LS_MAX, peak);
+    if (storedRaw == null || peak !== stored) saveInt(LS_PEAK, peak);
+    return peak;
+  }
 
-  let maxLevel = loadInt(LS_MAX, 1);
+  let maxLevel = loadHighestLevel();
   let currentLevel = loadInt(LS_LAST, maxLevel);
   let bestLen = loadInt(LS_BEST, 0);
   if (!currentLevel) currentLevel = 1;
   if (currentLevel > maxLevel) currentLevel = maxLevel;
+
+  function persistHighestLevel(level){
+    if (level > maxLevel){
+      maxLevel = level;
+      saveInt(LS_MAX, maxLevel);
+      saveInt(LS_PEAK, maxLevel);
+    }
+  }
 
   // --- UI: header + canvas + actions ---
   const header = document.createElement('div');
@@ -382,9 +407,9 @@ export function render() {
   }
 
   function levelUp(){
-    // Advance maxLevel only if legitimately surpassing
-    if (currentLevel === maxLevel) { maxLevel++; saveInt(LS_MAX, maxLevel); }
-    currentLevel = Math.max(currentLevel+1, 1);
+    const nextLevel = Math.max(currentLevel + 1, 1);
+    persistHighestLevel(nextLevel);
+    currentLevel = nextLevel;
     saveInt(LS_LAST, currentLevel);
     // Fluid transition: keep snake where it is, only adjust targets/speed and add obstacles
     grownThisLevel = 0;
@@ -400,9 +425,11 @@ export function render() {
   }
 
   function updateStatus(){
+    const reachedPeakLevel = currentLevel >= maxLevel && maxLevel > 0;
+    const levelText = `<span style="${reachedPeakLevel ? 'color: var(--link); font-weight: 800;' : ''}">Level ${currentLevel}</span>`;
     const isPeak = bestLen > 0 && snake.length === bestLen;
     const longest = `<span style="${isPeak ? 'color: var(--link); font-weight: 800;' : ''}">Longest: ${bestLen}</span>`;
-    status.innerHTML = `Level ${currentLevel} • ${longest}${paused ? ' • Paused' : ''}`;
+    status.innerHTML = `${levelText} &bull; ${longest}${paused ? ' &bull; Paused' : ''}`;
     canvas.setAttribute('aria-label', `Snake plus level ${currentLevel}, longest snake ${bestLen}`);
   }
 
@@ -507,8 +534,16 @@ export function render() {
   function onLevelComplete(){
     // Seamless progression: keep snake position/length/heading
     announce(`Level ${currentLevel} complete. Advancing to next level.`);
+    const prevFood = food;
     levelUp(); // adjusts targets/speed and adds obstacles, keeps snake
-    placeFood(); // spawn fresh food now that previous one was consumed
+    if (!applesAllowed()) {
+      food = -1;
+    } else if (prevFood >= 0 && !obstacles.has(prevFood) && !snakeSet.has(prevFood)) {
+      // Keep the existing apple when the new obstacle layout allows it
+      food = prevFood;
+    } else {
+      placeFood();
+    }
     updateAvailableBases();
     pendingLevelUp = false;
     updateStatus();
