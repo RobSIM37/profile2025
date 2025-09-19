@@ -205,14 +205,14 @@ export function render(){
     statsBlock.append(pSolve, pBest, pWL);
     const customNote = document.createElement('div');
     customNote.id = 'ts-custom-note';
-    customNote.className = 'hidden';
+    customNote.style.display = 'none';
     const customP = document.createElement('p'); customP.textContent = 'Custom mode: stats are not tracked.'; customNote.append(customP);
     body.append(statsBlock, customNote);
 
     // Populate stats
     if (difficulty === 'Custom') {
-      statsBlock.classList.add('hidden');
-      customNote.classList.remove('hidden');
+      statsBlock.style.display = 'none';
+      customNote.style.display = '';
     } else {
       const s = readStatsLocal();
       s.wins = (s.wins|0) + (won?1:0);
@@ -228,8 +228,8 @@ export function render(){
       lossesEl.textContent = String(s.losses||0);
       const total = (s.wins|0) + (s.losses|0);
       winpctEl.textContent = total ? `${Math.round((s.wins||0)/total*100)}%` : '0%';
-      statsBlock.classList.remove('hidden');
-      customNote.classList.add('hidden');
+      statsBlock.style.display = '';
+      customNote.style.display = 'none';
     }
 
     // Actions
