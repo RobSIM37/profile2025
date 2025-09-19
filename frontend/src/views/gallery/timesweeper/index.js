@@ -233,15 +233,10 @@ export function render(){
     }
 
     // Actions
-    const actions = won
-      ? [
-          { label: 'New Game', onClick: () => { newGame(); } },
-          { label: 'Quit', variant: 'secondary', onClick: () => { try { sessionStorage.removeItem('ts:chosen'); } catch {} location.hash = '#/gallery/timesweeper'; } },
-        ]
-      : [
-          { label: 'Continue', onClick: () => {} },
-          { label: 'Quit', variant: 'secondary', onClick: () => { try { sessionStorage.removeItem('ts:chosen'); } catch {} location.hash = '#/gallery/timesweeper'; } },
-        ];
+    const actions = [
+      { label: 'New Game', onClick: () => { newGame(); } },
+      { label: 'View Board', variant: 'secondary', onClick: () => { try { endModalHandle?.close?.(); } catch {} } },
+    ];
 
     // Open global modal
     endModalHandle = openModal({
