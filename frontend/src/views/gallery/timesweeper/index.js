@@ -48,7 +48,17 @@ export function render(){
   boardHost.className='ts-board';
   boardHost.style.setProperty('--ts-cols', '30');
 
-  wrap.append(header, boardHost);
+  const postLossBar = document.createElement('div');
+  postLossBar.className = 'ts-post-loss';
+  postLossBar.style.display = 'none';
+  const postLossBtn = document.createElement('button');
+  postLossBtn.type = 'button';
+  postLossBtn.className = 'button';
+  postLossBtn.textContent = 'New Game';
+  postLossBtn.addEventListener('click', () => { newGame(); });
+  postLossBar.append(postLossBtn);
+
+  wrap.append(header, boardHost, postLossBar);
   frag.append(sub.root, wrap, srcPane);
 
   // Prevent native context menu anywhere in the Timesweeper area (immersion)
@@ -79,6 +89,14 @@ export function render(){
   const fuseEl = wrap.querySelector('#ts-fuse');
   // Modal element handles are built when opening the modal
   let endModalHandle = null;
+
+  function hidePostLossButton(){
+    postLossBar.style.display = 'none';
+  }
+
+  function showPostLossButton(){
+    postLossBar.style.display = 'flex';
+  }
 
   const fmt = (ms)=> formatTenths(ms||0);
 
@@ -248,6 +266,10 @@ export function render(){
       actions,
       titleAlign: 'center',
       actionsAlign: 'center',
+      onClose: () => {
+        if (!won && gameOver) { showPostLossButton(); }
+        else { hidePostLossButton(); }
+      },
     });
   }
 
@@ -263,6 +285,7 @@ export function render(){
     setFuseDisplay(fuseRemainingMs, false);
     // ensure initial grid size is set
     boardHost.style.setProperty('--ts-cols', String(W));
+    hidePostLossButton();
     paint();
   }
 
