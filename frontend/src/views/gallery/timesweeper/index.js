@@ -267,7 +267,7 @@ export function render(){
       titleAlign: 'center',
       actionsAlign: 'center',
       onClose: () => {
-        if (!won && gameOver) { showPostLossButton(); }
+        if (gameOver) { showPostLossButton(); }
         else { hidePostLossButton(); }
       },
     });
