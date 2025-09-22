@@ -202,7 +202,10 @@ export function render(){
     const lossesEl = document.createElement('span'); lossesEl.id = 'ts-losses'; lossesEl.textContent = '0';
     const winpctEl = document.createElement('span'); winpctEl.id = 'ts-winpct'; winpctEl.textContent = '0%';
     pWL.append(document.createTextNode('Wins: '), winsEl, document.createTextNode(' \u00A0 Losses: '), lossesEl, document.createTextNode(' \u00A0 Win%: '), winpctEl);
-    statsBlock.append(pSolve, pBest, pWL);
+    if (won) {
+      statsBlock.append(pSolve, pBest);
+    }
+    statsBlock.append(pWL);
     const customNote = document.createElement('div');
     customNote.id = 'ts-custom-note';
     customNote.style.display = 'none';
