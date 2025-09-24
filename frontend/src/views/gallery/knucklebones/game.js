@@ -3,6 +3,7 @@ import { openModal } from '../../../components/ui/modal.js';
 import { Button } from '../../../components/ui/button.js';
 import { rngFromSeed, rollD6, createEmptyBoard, placeDie, isBoardFull, scoreBoard, getValidColumns, getOpenRow, AI_PROFILES, chooseAiMove } from './engine.js';
 import { setAppSolid } from '../../../lib/appShell.js';
+import { createDieFace } from '../../../lib/pips.js';
 
 export const meta = {
   title: 'Knuckle Bones',
@@ -100,7 +101,7 @@ export function render() {
   cup.style.overflow = 'hidden';
   cup.style.margin = '0 auto';
   cup.style.background = 'var(--bg-elev)';
-  let dieFace = makeDieFace(currentRoll, 44);
+  let dieFace = createDieFace(currentRoll, { size: 44 });
   dieFace.root.style.position = 'absolute';
   dieFace.root.style.left = '50%';
   dieFace.root.style.top = '50%';
@@ -128,7 +129,7 @@ export function render() {
       const parentNow = dieFace.root?.parentElement;
       if (parentNow) parentNow.removeChild(dieFace.root);
     } catch {}
-    dieFace = makeDieFace(val, 44);
+    dieFace = createDieFace(val, { size: 44 });
     dieFace.root.style.position = 'absolute';
     dieFace.root.style.left = '50%';
     dieFace.root.style.top = '50%';
@@ -355,7 +356,7 @@ export function render() {
         const btn = els[i];
         btn.innerHTML = '';
         if (v != null) {
-          const die = makeDieFace(v, 54); // slightly larger but still centered
+          const die = createDieFace(v, { size: 54 }); // slightly larger but still centered
           btn.appendChild(die.root);
         }
         btn.className = 'button' + (v == null ? ' button-secondary' : '');
@@ -426,7 +427,7 @@ function animateRoll(value){
       const setDie = (val) => {
         const parent = dieFace.root.parentElement;
         if (parent) parent.removeChild(dieFace.root);
-        dieFace = makeDieFace(val, 44);
+        dieFace = createDieFace(val, { size: 44 });
         dieFace.root.style.position = 'absolute';
         dieFace.root.style.left = '50%';
         dieFace.root.style.top = '50%';
@@ -478,48 +479,6 @@ function animateRoll(value){
       rollReq = requestAnimationFrame(step);
     });
   }
-  
-
-  function makeDieFace(value, size=56){
-    const NS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('width', String(size));
-    svg.setAttribute('height', String(size));
-    svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
-    const rect = document.createElementNS(NS, 'rect');
-    rect.setAttribute('x', '2'); rect.setAttribute('y', '2');
-    rect.setAttribute('width', String(size-4)); rect.setAttribute('height', String(size-4));
-    rect.setAttribute('rx', String(Math.max(4, Math.floor(size*0.18))));
-    rect.setAttribute('fill', '#ffffff');
-    rect.setAttribute('stroke', '#111111');
-    rect.setAttribute('stroke-width', '2');
-    svg.appendChild(rect);
-    const pips = [];
-    const r = Math.max(3, Math.floor(size*0.08));
-    const coords = {
-      tl: [size*0.28, size*0.28],
-      tm: [size*0.5 , size*0.28],
-      tr: [size*0.72, size*0.28],
-      ml: [size*0.28, size*0.5 ],
-      mm: [size*0.5 , size*0.5 ],
-      mr: [size*0.72, size*0.5 ],
-      bl: [size*0.28, size*0.72],
-      bm: [size*0.5 , size*0.72],
-      br: [size*0.72, size*0.72],
-    };
-    function add(name){ const [cx,cy]=coords[name]; const c=document.createElementNS(NS,'circle'); c.setAttribute('cx', String(cx)); c.setAttribute('cy', String(cy)); c.setAttribute('r', String(r)); c.setAttribute('fill','#111111'); svg.appendChild(c); pips.push(c); }
-    if (value===1) add('mm');
-    else if (value===2){ add('tl'); add('br'); }
-    else if (value===3){ add('tl'); add('mm'); add('br'); }
-    else if (value===4){ add('tl'); add('tr'); add('bl'); add('br'); }
-    else if (value===5){ add('tl'); add('tr'); add('mm'); add('bl'); add('br'); }
-    else if (value===6){ add('tl'); add('ml'); add('bl'); add('tr'); add('mr'); add('br'); }
-    const wrap = document.createElement('div');
-    wrap.style.width = `${size}px`; wrap.style.height = `${size}px`; wrap.style.display = 'grid'; wrap.style.placeItems = 'center';
-    wrap.appendChild(svg);
-    return { root: wrap, svg, rect, pips };
-  }
-
   // New game-over handler that restarts with same options
   function onGameOver(){
     window.removeEventListener('keydown', onKey);
