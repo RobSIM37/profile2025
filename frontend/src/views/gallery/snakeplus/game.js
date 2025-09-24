@@ -163,6 +163,10 @@ export function render() {
   // --- Game state ---
   let dir = { x: 1, y: 0 };
   let nextDir = dir;
+  const inputBuffer = [];
+  let bufferStep = null;
+  let stepCount = 0;
+  let mercyCountdown = 0;
   let snake = [];
   let snakeSet = new Set();
   let food = -1;
@@ -186,6 +190,12 @@ export function render() {
   function xy(i){ return { x: i % COLS, y: (i / COLS) | 0 }; }
 
   const BASE_LEN = 4;
+  function clearInputBuffer(){
+    inputBuffer.length = 0;
+    bufferStep = null;
+    nextDir = dir;
+  }
+
   function spawnSnake(){
     snake = [];
     snakeSet = new Set();
@@ -397,7 +407,10 @@ export function render() {
     grownThisLevel = 0;
     targetThisLevel = levelTarget(currentLevel);
     tickMs = levelSpeedMs(currentLevel);
+    stepCount = 0;
+    mercyCountdown = 0;
     spawnSnake();
+    clearInputBuffer();
     generateObstacles();
     computePathInPlace();
     placeFood();
@@ -412,6 +425,9 @@ export function render() {
     currentLevel = nextLevel;
     saveInt(LS_LAST, currentLevel);
     // Fluid transition: keep snake where it is, only adjust targets/speed and add obstacles
+    clearInputBuffer();
+    stepCount = 0;
+    mercyCountdown = 0;
     grownThisLevel = 0;
     targetThisLevel = levelTarget(currentLevel);
     tickMs = levelSpeedMs(currentLevel);
@@ -498,14 +514,33 @@ export function render() {
 
   function step(){
     if (!running) return;
-    // apply nextDir if not reversing
+    stepCount++;
+    nextDir = dir;
+    if (inputBuffer.length){
+      const candidate = inputBuffer.shift();
+      if (!inputBuffer.length) bufferStep = null;
+      if (candidate && !isReverse(candidate, dir)) {
+        nextDir = candidate;
+      }
+    }
     if (!isReverse(nextDir, dir)) dir = nextDir;
     const head = xy(snake[snake.length-1]);
     const nx = (head.x + dir.x + COLS) % COLS;
     const ny = (head.y + dir.y + ROWS) % ROWS;
     const ni = idx(nx, ny);
-    if (obstacles.has(ni)) return onGameOver('Hit an obstacle');
-    if (snakeSet.has(ni)) return onGameOver('Ran into yourself');
+    const hitObstacle = obstacles.has(ni);
+    const hitSelf = snakeSet.has(ni);
+    if (hitObstacle || hitSelf) {
+      if (mercyCountdown > 0) {
+        mercyCountdown = 0;
+        return onGameOver(hitObstacle ? 'Hit an obstacle' : 'Ran into yourself');
+      }
+      mercyCountdown = 1;
+      announce(hitObstacle ? 'Warning: obstacle ahead!' : 'Warning: body ahead!');
+      tickT.after(tickMs, step);
+      return;
+    }
+    mercyCountdown = 0;
     // advance
     snake.push(ni); snakeSet.add(ni);
     if (ni === food){
@@ -564,6 +599,8 @@ export function render() {
   function onGameOver(msg){
     // Pause for 3 move ticks, then drop a level and reset the board
     running = false; tickT.clear();
+    clearInputBuffer();
+    mercyCountdown = 0;
     paused = true; updateStatus();
     const waitMs = Math.max(0, tickMs * 3);
     announce(`Game over: ${msg}. Resetting soon…`);
@@ -587,15 +624,41 @@ export function render() {
   function announce(text){ sr.textContent = text; }
   function isReverse(a,b){ return a && b && (a.x === -b.x && a.y === -b.y); }
 
+  function isSameDir(a,b){ return a && b && (a.x === b.x && a.y === b.y); }
+
+  const KEY_TO_DIR = {
+    arrowup: { x: 0, y: -1 },
+    w: { x: 0, y: -1 },
+    arrowdown: { x: 0, y: 1 },
+    s: { x: 0, y: 1 },
+    arrowleft: { x: -1, y: 0 },
+    a: { x: -1, y: 0 },
+    arrowright: { x: 1, y: 0 },
+    d: { x: 1, y: 0 },
+  };
+
+  function dirFromKey(k){ return KEY_TO_DIR[k] || null; }
+
   // Controls
   function onKey(e){
-    const k = e.key.toLowerCase();
-    if (k === 'arrowup' || k === 'w') nextDir = { x: 0, y: -1 };
-    else if (k === 'arrowdown' || k === 's') nextDir = { x: 0, y: 1 };
-    else if (k === 'arrowleft' || k === 'a') nextDir = { x: -1, y: 0 };
-    else if (k === 'arrowright' || k === 'd') nextDir = { x: 1, y: 0 };
-    else return;
+    const dirKey = dirFromKey(e.key.toLowerCase());
+    if (!dirKey) return;
     e.preventDefault();
+    const gapId = stepCount;
+    if (inputBuffer.length && bufferStep !== gapId){
+      clearInputBuffer();
+    }
+    if (inputBuffer.length === 0){
+      if (isSameDir(dirKey, dir) || isReverse(dirKey, dir)) return;
+      inputBuffer.push(dirKey);
+      bufferStep = gapId;
+      nextDir = inputBuffer[0];
+      return;
+    }
+    const prev = inputBuffer[inputBuffer.length - 1];
+    if (isSameDir(dirKey, prev) || isReverse(dirKey, prev)) return;
+    inputBuffer.push(dirKey);
+    bufferStep = gapId;
   }
   document.addEventListener('keydown', onKey);
   function onCanvasClick(e){
