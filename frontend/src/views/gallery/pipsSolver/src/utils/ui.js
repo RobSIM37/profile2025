@@ -1,3 +1,5 @@
+import { createPipSVG, isValidPipValue } from '../../../../../lib/pips.js';
+
 export function ensureBaseStyles() {
   const prev = document.getElementById("pips-base-styles");
   if (prev) prev.remove();
@@ -71,8 +73,9 @@ export function ensureBaseStyles() {
     .pips-domino-half {
       display: grid; place-items: center; background: #fff; border: 1px solid #bbb; border-radius: 6px;
       font-weight: 700; color: #222; font-family: system-ui, sans-serif; user-select: none;
-      width: 48px; height: 48px;
+      width: 48px; height: 48px; position: relative;
     }
+    .pips-domino-half svg { width: 70%; height: 70%; pointer-events: none; }
 
     /* Areas list row alignment */
     .area-item { display: flex; align-items: center; gap: 8px; width: 100%; }
@@ -154,12 +157,25 @@ export function ruleLabel(rule) {
 
 export function renderDominoTile(a, b, cellSize=48) {
   const wrap = el("div", null, "pips-domino");
-  const h1 = el("div", (a===0 ? "" : String(a)), "pips-domino-half");
-  const h2 = el("div", (b===0 ? "" : String(b)), "pips-domino-half");
-  // size each half based on cellSize
-  h1.style.width = h2.style.width = `${cellSize}px`;
-  h1.style.height = h2.style.height = `${cellSize}px`;
-  wrap.append(h1, h2);
+  const pipSize = Math.max(16, Math.round(cellSize * 0.6));
+  const makeHalf = (value) => {
+    const half = el("div", null, "pips-domino-half");
+    half.style.width = `${cellSize}px`;
+    half.style.height = `${cellSize}px`;
+    half.dataset.value = String(value ?? 0);
+    const pipLabel = value === 1 ? 'pip' : 'pips';
+    half.setAttribute("aria-label", value ? `${value} ${pipLabel}` : "Blank");
+    if (isValidPipValue(value) && value > 0) {
+      const pip = createPipSVG(value, { size: pipSize, pipColor: '#111111' });
+      pip.svg.style.width = `${pipSize}px`;
+      pip.svg.style.height = `${pipSize}px`;
+      half.appendChild(pip.svg);
+    } else if (value > 0) {
+      half.textContent = String(value);
+    }
+    return half;
+  };
+  wrap.append(makeHalf(a), makeHalf(b));
   return wrap;
 }
 
@@ -169,7 +185,7 @@ export function parseDominoInput(str) {
   if (!str) return { valid, invalid };
   const tokens = str.split(",").map(s => s.trim());
   for (const tok of tokens) {
-    if (tok.length !== 2) { if (tok) invalid.append(tok); continue; }
+    if (tok.length !== 2) { if (tok) invalid.push(tok); continue; }
     const mapChar = (ch) => (ch === " " || ch === "0") ? 0 : (/^[1-6]$/.test(ch) ? Number(ch) : null);
     const a = mapChar(tok[0]);
     const b = mapChar(tok[1]);

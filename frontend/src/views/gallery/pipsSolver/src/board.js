@@ -1,3 +1,5 @@
+import { createPipSVG } from '../../../../lib/pips.js';
+
 export default class Board {
   constructor({ width = 8, height = 8, cellSize = 48, callbacks = {} } = {}) {
     this.width = width;
@@ -9,7 +11,7 @@ export default class Board {
     this.stage = null;
     this.root = null;
     this.cellEls = [];
-    this.slots = []; // [y][x] -> { c,t,r,b,l, tl,tr,bl,br }
+    this.slots = []; // [y][x] -> { c,t,r,b,l, tl,tr,bl,br, pip }
     this.solutionValues = null;
   }
 
@@ -53,11 +55,26 @@ export default class Board {
         const bl = mk("bl"),  b = mk("b"),  br = mk("br");
         cell.append(tl, t, tr, l, c, r, bl, b, br);
 
+        const pipSize = Math.max(16, Math.round(this.cellSize * 0.6));
+        const pip = createPipSVG(0, { size: pipSize, pipColor: '#111111' });
+        pip.svg.style.width = `${pipSize}px`;
+        pip.svg.style.height = `${pipSize}px`;
+        const pipWrap = document.createElement("div");
+        pipWrap.className = "pips-pip-wrap";
+        pipWrap.style.display = "grid";
+        pipWrap.style.placeItems = "center";
+        pipWrap.style.width = "100%";
+        pipWrap.style.height = "100%";
+        pipWrap.style.pointerEvents = "none";
+        pipWrap.setAttribute("aria-hidden", "true");
+        pipWrap.appendChild(pip.svg);
+        c.appendChild(pipWrap);
+
         cell.addEventListener("mousedown", (e) => { e.preventDefault(); this.callbacks?.onCellMouseDown?.(x, y, e); });
         cell.addEventListener("mouseenter", (e) => { this.callbacks?.onCellMouseEnter?.(x, y, e); });
 
         row.push(cell);
-        rowSlots.push({ c,t,r,b,l,tl,tr,bl,br });
+        rowSlots.push({ c,t,r,b,l,tl,tr,bl,br, pip });
         root.appendChild(cell);
       }
       this.cellEls.push(row);
@@ -90,10 +107,15 @@ export default class Board {
     this.solutionValues = null;
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
-        const center = this.slots[y]?.[x]?.c;
+        const slot = this.slots[y]?.[x];
+        const center = slot?.c;
         const cell = this.cellEls[y]?.[x];
         if (cell) cell.classList.remove("has-solution");
-        if (center) center.textContent = "";
+        if (slot?.pip) slot.pip.setValue(0);
+        if (center) {
+          center.removeAttribute("data-value");
+          center.removeAttribute("aria-label");
+        }
       }
     }
     this.setPlacements(null);
@@ -104,16 +126,29 @@ export default class Board {
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const k = `${x},${y}`;
-        const center = this.slots[y]?.[x]?.c;
+        const slot = this.slots[y]?.[x];
+        const center = slot?.c;
+        const pip = slot?.pip;
         const cell = this.cellEls[y]?.[x];
         if (!center || !cell) continue;
         if (sol && sol.has(k)) {
           const v = sol.get(k) ?? 0;
           cell.classList.add("has-solution");
-          center.textContent = v === 0 ? "" : String(v);
+          if (pip) pip.setValue(v);
+          if (v > 0) {
+            center.setAttribute("data-value", String(v));
+            const pipLabel = v === 1 ? 'pip' : 'pips';
+            center.setAttribute("aria-label", `${v} ${pipLabel}`);
+          } else {
+            if (pip) pip.setValue(0);
+            center.removeAttribute("data-value");
+            center.setAttribute("aria-label", "Blank");
+          }
         } else {
           cell.classList.remove("has-solution");
-          center.textContent = "";
+          if (pip) pip.setValue(0);
+          center.removeAttribute("data-value");
+          center.removeAttribute("aria-label");
         }
       }
     }
@@ -222,7 +257,9 @@ export default class Board {
       .pips-cell .slot.t  { grid-area: t;  }
       .pips-cell .slot.tr { grid-area: tr; }
       .pips-cell .slot.l  { grid-area: l;  }
-      .pips-cell .slot.c  { grid-area: c; display: grid; place-items: center; font-weight: 700; }
+      .pips-cell .slot.c  { grid-area: c; display: grid; place-items: center; }
+      .pips-cell .slot.c .pips-pip-wrap { width: 100%; height: 100%; display: grid; place-items: center; }
+      .pips-cell .slot.c .pips-pip-wrap svg { width: 70%; height: 70%; pointer-events: none; }
       .pips-cell .slot.r  { grid-area: r;  }
       .pips-cell .slot.bl { grid-area: bl; }
       .pips-cell .slot.b  { grid-area: b;  }
