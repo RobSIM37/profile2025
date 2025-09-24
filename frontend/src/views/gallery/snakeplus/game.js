@@ -166,6 +166,7 @@ export function render() {
   const inputBuffer = [];
   let bufferStep = null;
   let stepCount = 0;
+  let mercyCountdown = 0;
   let snake = [];
   let snakeSet = new Set();
   let food = -1;
@@ -407,6 +408,7 @@ export function render() {
     targetThisLevel = levelTarget(currentLevel);
     tickMs = levelSpeedMs(currentLevel);
     stepCount = 0;
+    mercyCountdown = 0;
     spawnSnake();
     clearInputBuffer();
     generateObstacles();
@@ -425,6 +427,7 @@ export function render() {
     // Fluid transition: keep snake where it is, only adjust targets/speed and add obstacles
     clearInputBuffer();
     stepCount = 0;
+    mercyCountdown = 0;
     grownThisLevel = 0;
     targetThisLevel = levelTarget(currentLevel);
     tickMs = levelSpeedMs(currentLevel);
@@ -525,8 +528,19 @@ export function render() {
     const nx = (head.x + dir.x + COLS) % COLS;
     const ny = (head.y + dir.y + ROWS) % ROWS;
     const ni = idx(nx, ny);
-    if (obstacles.has(ni)) return onGameOver('Hit an obstacle');
-    if (snakeSet.has(ni)) return onGameOver('Ran into yourself');
+    const hitObstacle = obstacles.has(ni);
+    const hitSelf = snakeSet.has(ni);
+    if (hitObstacle || hitSelf) {
+      if (mercyCountdown > 0) {
+        mercyCountdown = 0;
+        return onGameOver(hitObstacle ? 'Hit an obstacle' : 'Ran into yourself');
+      }
+      mercyCountdown = 1;
+      announce(hitObstacle ? 'Warning: obstacle ahead!' : 'Warning: body ahead!');
+      tickT.after(tickMs, step);
+      return;
+    }
+    mercyCountdown = 0;
     // advance
     snake.push(ni); snakeSet.add(ni);
     if (ni === food){
@@ -586,6 +600,7 @@ export function render() {
     // Pause for 3 move ticks, then drop a level and reset the board
     running = false; tickT.clear();
     clearInputBuffer();
+    mercyCountdown = 0;
     paused = true; updateStatus();
     const waitMs = Math.max(0, tickMs * 3);
     announce(`Game over: ${msg}. Resetting soon…`);
