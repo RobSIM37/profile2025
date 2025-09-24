@@ -1,4 +1,4 @@
-import { createPipSVG, isValidPipValue } from '../../../../lib/pips.js';
+import { createPipSVG, isValidPipValue } from '../../../../../lib/pips.js';
 
 export function ensureBaseStyles() {
   const prev = document.getElementById("pips-base-styles");
@@ -185,7 +185,7 @@ export function parseDominoInput(str) {
   if (!str) return { valid, invalid };
   const tokens = str.split(",").map(s => s.trim());
   for (const tok of tokens) {
-    if (tok.length !== 2) { if (tok) invalid.append(tok); continue; }
+    if (tok.length !== 2) { if (tok) invalid.push(tok); continue; }
     const mapChar = (ch) => (ch === " " || ch === "0") ? 0 : (/^[1-6]$/.test(ch) ? Number(ch) : null);
     const a = mapChar(tok[0]);
     const b = mapChar(tok[1]);
