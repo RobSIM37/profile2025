@@ -132,6 +132,7 @@ export function render(){
         cls += c.hidden ? ' hidden' : ' revealed';
         if (c.hidden && c.flagged) cls += c.isTimebomb ? ' tflag' : ' flagged';
         if (!c.hidden && c.isMine) cls += ' mine';
+        if (!c.hidden && c.isTimebomb) cls += ' timebomb';
         if (!c.hidden && !c.isMine && c.neighbors>0) cls += ' n' + c.neighbors;
         b.className = cls;
         b.dataset.x = String(x); b.dataset.y = String(y);
