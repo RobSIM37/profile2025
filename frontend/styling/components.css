@@ -333,6 +333,10 @@
 .ts-cell.hidden.tflag::after { content: '\2691'; color: #10b981; font-size: 16px; }
 .ts-cell.revealed { background: #f3f4f6; color: #111827; }
 .ts-cell.revealed.mine { background: #ffffff; color: #111; border-color: #ef4444; position: relative; }
+.ts-cell.revealed.mine.timebomb {
+  background: #d1fae5;
+  border-color: #10b981;
+}
 /* Use a bomb/sea‑mine icon; center perfectly */
 .ts-cell.revealed.mine::after {
   content: '💣';
