@@ -110,11 +110,32 @@ export function render() {
   const BG = '#0f141f';
   const GRID = '#1b2333';
   const SNAKE = '#7cb3ff';
+  const SNAKE_HEAD = '#ffd166';
   const FOOD = '#ff7c7c';
   const OBST = '#33425f';
   const PATH = 'rgba(230, 213, 143, 0.28)';
   const PATH_READY = 'rgba(255, 224, 102, 0.60)';
-  const DEFAULT_COLORS = { bg: BG, grid: GRID, snake: SNAKE, food: FOOD, obst: OBST, path: PATH, pathReady: PATH_READY };
+  const DEFAULT_COLORS = {
+    bg: BG,
+    grid: GRID,
+    snake: SNAKE,
+    snakeHead: SNAKE_HEAD,
+    food: FOOD,
+    obst: OBST,
+    path: PATH,
+    pathReady: PATH_READY,
+  };
+
+  const COLOR_LABELS = {
+    bg: 'background',
+    grid: 'grid',
+    snake: 'snake',
+    snakeHead: 'snake head',
+    food: 'food',
+    obst: 'obstacle',
+    path: 'path',
+    pathReady: 'path (ready)',
+  };
 
   function loadColors(){
     try {
@@ -469,13 +490,26 @@ export function render() {
     obstacles.forEach(i=>{ const p=xy(i); ctx.fillRect(p.x*cell, p.y*cell, cell, cell); });
     // food
     if (food>=0){ const p=xy(food); ctx.fillStyle = palette.food; ctx.fillRect(p.x*cell+2, p.y*cell+2, cell-4, cell-4); }
-    // snake
-    ctx.fillStyle = palette.snake;
-    for (let i=0;i<snake.length;i++){ const p=xy(snake[i]); ctx.fillRect(p.x*cell+1, p.y*cell+1, cell-2, cell-2); }
+    // snake body + head
+    if (snake.length){
+      ctx.fillStyle = palette.snake;
+      for (let i=0;i<snake.length-1;i++){
+        const p=xy(snake[i]);
+        ctx.fillRect(p.x*cell+1, p.y*cell+1, cell-2, cell-2);
+      }
+      const headIdx = snake[snake.length-1];
+      if (headIdx != null){
+        const p = xy(headIdx);
+        ctx.fillStyle = palette.snakeHead || palette.snake;
+        ctx.fillRect(p.x*cell+1, p.y*cell+1, cell-2, cell-2);
+      }
+    }
   }
 
   function pickColorForCell(i){
     const ready = pathCells.size && snake.length >= pathCells.size;
+    const headIdx = snake[snake.length-1];
+    if (headIdx === i) return 'snakeHead';
     if (snakeSet.has(i)) return 'snake';
     if (i === food && food >= 0) return 'food';
     if (obstacles.has(i)) return 'obst';
@@ -487,7 +521,8 @@ export function render() {
     colorPane.innerHTML = '';
     colorPane.style.display = 'flex';
     const label = document.createElement('span');
-    label.textContent = `Set ${key} color:`;
+    const labelKey = COLOR_LABELS[key] || key;
+    label.textContent = `Set ${labelKey} color:`;
     const input = document.createElement('input');
     input.type = 'color';
     input.value = cssToHex(palette[key] || '#ffffff');
