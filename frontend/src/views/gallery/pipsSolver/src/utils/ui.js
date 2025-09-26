@@ -58,7 +58,11 @@ export function ensureBaseStyles() {
 
     hr { border: none; border-top: 1px solid #eee; margin: 6px 0; }
 
-    .palette { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .pips-sidebar .palette {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
     .color { width: 100%; aspect-ratio: 2/1; border-radius: 6px; border: 2px solid rgba(0,0,0,0.25); cursor: pointer; background: #fff; }
     .color.is-selected { outline: 2px solid #000; outline-offset: 2px; }
 
