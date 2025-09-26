@@ -5,13 +5,11 @@ export const Modes = {
 };
 
 export const PALETTE = [
-  "#ff1744", // neon red
-  "#ff9100", // orange
-  "#ffd600", // yellow
-  "#76ff03", // light green
-  "#00c853", // dark green
-  "#40c4ff", // light blue
-  "#2979ff", // dark blue
-  "#d500f9", // purple
+  "#EB004F",
+  "#C94E00",
+  "#4C6C01",
+  "#006571",
+  "#003674",
+  "#8047B0",
 ];
 
