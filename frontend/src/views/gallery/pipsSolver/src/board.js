@@ -247,6 +247,7 @@ export default class Board {
       .pips-cell.in-puzzle  { background: tan; border: 1px solid #996; }
       .pips-cell.in-puzzle.in-area {
         background: tan;
+        background: color-mix(in srgb, var(--area-color, #996) 22%, tan 78%);
         border-color: var(--area-color, #996);
         box-shadow: 0 0 0 2px color-mix(in srgb, var(--area-color, #996) 45%, #ffffff 55%);
       }
