@@ -42,9 +42,16 @@ export default class AreasPanel {
 
     // Color palette moved below rule/target, and clicking a color adds the area
     const paletteWrap = el("div", null, "palette");
+    paletteWrap.style.display = "grid";
+    paletteWrap.style.width = "100%";
+    paletteWrap.style.gridTemplateColumns = "repeat(3, minmax(0, 1fr))";
+    paletteWrap.style.columnGap = "8px";
+    paletteWrap.style.rowGap = "8px";
     PALETTE.forEach(hex => {
       const sw = el("button", null, "color");
       sw.style.background = hex;
+      sw.style.width = "100%";
+      sw.style.aspectRatio = "2 / 1";
       if (this._selectedColor === hex) sw.classList.add("is-selected");
       sw.addEventListener("click", ()=>{
         this._selectedColor = hex;
