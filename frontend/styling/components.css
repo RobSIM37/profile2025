@@ -391,6 +391,35 @@
 .pips-sidebar .ui-field { grid-template-columns: 120px 1fr; gap: 6px 12px; }
 .pips-sidebar .ui-control { justify-self: stretch; width: 100%; }
 .pips-sidebar .ui-control > .control { width: 100%; box-sizing: border-box; }
+/* Predict Four setup: align field labels and controls */
+.pf-setup {
+  --control-w: 100%;
+  --pf-label-width: 160px;
+}
+.pf-setup .ui-field {
+  grid-template-columns: var(--pf-label-width, 160px) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+.pf-setup .ui-control {
+  justify-self: stretch;
+  width: 100%;
+  max-width: none;
+}
+.pf-setup .ui-control > .control {
+  width: 100%;
+}
+.pf-setup .pf-player-grid,
+.pf-setup .pf-scoring-grid {
+  align-items: start;
+}
+.pf-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
 /* Ensure bullet dots for About Patch list */
 #patch-list ul { list-style: disc; padding-left: 18px; }
 #patch-list li { margin-left: 0; }
@@ -413,3 +442,6 @@
 }
 /* Generic contained panel */
 .ui-panel { border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-4); background: var(--bg-elev); }
+
+
+

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Predict Four close-up with falling chip">
+  <defs>
+    <linearGradient id="pf-thumb-bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="pf-thumb-board" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="pf-thumb-chip" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fca5a5" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+    <mask id="pf-thumb-mask">
+      <rect x="80" y="58" width="160" height="120" rx="20" fill="#fff" />
+      <g fill="#000">
+        <circle cx="120" cy="102" r="26" />
+        <circle cx="160" cy="102" r="26" />
+        <circle cx="200" cy="102" r="26" />
+        <circle cx="120" cy="150" r="26" />
+        <circle cx="160" cy="150" r="26" />
+        <circle cx="200" cy="150" r="26" />
+      </g>
+    </mask>
+  </defs>
+
+  <rect width="320" height="240" fill="url(#pf-thumb-bg)" />
+
+  <!-- Subtle outer shadow -->
+  <rect x="90" y="66" width="160" height="120" rx="22" fill="#0b1120" opacity="0.45" />
+
+  <!-- Chip rendered behind the board using the same mask -->
+  <g mask="url(#pf-thumb-mask)">
+    <circle cx="160" cy="104" r="26" fill="url(#pf-thumb-chip)" />
+  </g>
+
+  <!-- Board with cutouts -->
+  <rect x="80" y="58" width="160" height="120" rx="20" fill="url(#pf-thumb-board)" mask="url(#pf-thumb-mask)" />
+
+  <!-- Receiving slot depth -->
+  <circle cx="160" cy="150" r="28" fill="none" stroke="rgba(15,23,42,0.5)" stroke-width="6" />
+  <circle cx="160" cy="150" r="22" fill="rgba(15,23,42,0.65)" />
+
+  <!-- Trailing arc hint -->
+  <path d="M160 80c0-10 8-18 18-18" stroke="#f87171" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+</svg>

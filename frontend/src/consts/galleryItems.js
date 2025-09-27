@@ -1,5 +1,11 @@
 export const GALLERY_ITEMS = [
   {
+    title: 'Predict Four',
+    tagline: 'Connect Four with predictive scoring',
+    img: 'assets/predictFourThumbnail.png',
+    link: '#/gallery/predict-four',
+  },
+  {
     title: 'Pips Solver',
     tagline: 'A tool for solving the NYT Game "Pips"',
     img: 'assets/pipsSolverThumbnail.webp',
@@ -42,7 +48,7 @@ export const GALLERY_ITEMS = [
     link: '#/gallery/knuckle-bones',
   },
   {
-    title: 'FizzBuzz — Challenge Mode',
+    title: 'FizzBuzz Challenge Mode',
     tagline: 'Human vs AI with challenge-only validation',
     img: 'assets/fizzbuzzThumbnail.svg',
     link: '#/gallery/fizzbuzz',
