@@ -1,4 +1,4 @@
-﻿// Centralized route table for the hash router
+// Centralized route table for the hash router
 // Each entry maps a path to a loader that resolves to a module
 
 import { makeBeforeResolve, allow } from '../lib/routeGuards.js';
@@ -16,6 +16,9 @@ export const routes = {
   '/gallery/light-houses': () => import('../views/gallery/lighthouses/page.js'),
   '/gallery/memory': () => import('../views/gallery/memory/page.js'),
   '/gallery/memory/game': () => import('../views/gallery/memory/game2.js'),
+  '/gallery/predict-four': () => import('../views/gallery/predictfour/page.js'),
+  '/gallery/predict-four/how-to': () => import('../views/gallery/predictfour/howto.js'),
+  '/gallery/predict-four/game': () => import('../views/gallery/predictfour/game.js'),
   '/gallery/snake-plus': () => import('../views/gallery/snakeplus/page.js'),
   '/gallery/fizzbuzz': () => import('../views/gallery/fizzbuzz/page.js'),
   '/gallery/fizzbuzz/game': () => import('../views/gallery/fizzbuzz/game.js'),
@@ -64,9 +67,13 @@ export const beforeResolve = makeBeforeResolve([
     redirect: '/gallery/memory',
   },
   {
+    match: '/gallery/predict-four/game',
+    allow: allow.sessionKey('pf:chosen'),
+    redirect: '/gallery/predict-four',
+  },
+  {
     match: '/gallery/knuckle-bones/game',
     allow: allow.sessionKey('kb:chosen'),
     redirect: '/gallery/knuckle-bones',
   },
 ]);
-
