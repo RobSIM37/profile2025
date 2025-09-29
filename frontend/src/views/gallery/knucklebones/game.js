@@ -242,7 +242,7 @@ export function render() {
     for (let r=0;r<3;r++){
       for (let c=0;c<3;c++){
         const cell = document.createElement('button');
-        cell.className = 'button';
+        cell.className = 'button button-secondary';
         cell.style.minWidth = '56px';
         cell.style.minHeight = '56px';
         cell.style.padding = '0';
@@ -250,6 +250,8 @@ export function render() {
         // Center SVG nicely within the cell
         cell.style.display = 'grid';
         cell.style.placeItems = 'center';
+        cell.style.border = '1px solid rgba(255, 255, 255, 0.9)';
+        cell.style.boxShadow = '0 0 0 2px rgba(255, 255, 255, 0.95), 0 0 0 4px rgba(0, 0, 0, 0.85)';
         cell.setAttribute('aria-label', `Row ${r+1} Column ${c+1}`);
         const colIdx = c; // for click handler referencing column
         cell.addEventListener('click', () => {
@@ -356,11 +358,14 @@ export function render() {
         const btn = els[i];
         btn.innerHTML = '';
         if (v != null) {
-          const die = createDieFace(v, { size: 54 }); // slightly larger but still centered
+          const die = createDieFace(v, { size: 54, borderColor: 'var(--primary)', borderWidth: 3 }); // slightly larger but still centered
           btn.appendChild(die.root);
         }
-        btn.className = 'button' + (v == null ? ' button-secondary' : '');
-        btn.disabled = (idx !== turn) || v != null; // only empty cells clickable, but we use column click semantics
+        const isFilled = v != null;
+        btn.className = 'button button-secondary';
+        btn.dataset.filled = isFilled ? 'true' : 'false';
+        btn.setAttribute('aria-disabled', isFilled ? 'true' : 'false');
+        btn.tabIndex = isFilled ? -1 : 0;
       }
     }
     updateHighlight();
@@ -376,9 +381,9 @@ export function render() {
     for (let r=0;r<3;r++) for (let c=0;c<3;c++){
       const i = r*3 + c;
       const btn = els[i];
-      const isValid = validCols.has(c);
-      btn.disabled = boards[idx][c][r] != null || !isValid;
-      // Remove column highlight rings; rely on enabled state only
+      const filled = boards[idx][c][r] != null;
+      btn.setAttribute('aria-disabled', filled ? 'true' : 'false');
+      btn.tabIndex = filled ? -1 : 0;
       btn.style.outline = '';
     }
     // No HUD roll display anymore
@@ -555,4 +560,5 @@ function renderKbSourceBrowser(host){
   });
   host.append(list);
 }
+
 
