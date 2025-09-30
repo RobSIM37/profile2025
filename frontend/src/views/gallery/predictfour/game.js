@@ -979,6 +979,11 @@ function finishGame(state, winnerIdx, status, hud) {
     };
   });
 
+  let pointsWinner = null;
+  const highestTotal = Math.max(...totals.map(entry => entry.total));
+  const leaders = totals.filter(entry => entry.total === highestTotal);
+  if (leaders.length === 1) pointsWinner = leaders[0];
+
   hud.panels.forEach((panel, idx) => {
     if (panel.pointsStat) {
       panel.pointsStat.val.textContent = String(totals[idx].total);
@@ -1010,18 +1015,26 @@ function finishGame(state, winnerIdx, status, hud) {
     },
   ];
 
+  const modalTitle = pointsWinner
+    ? `${pointsWinner.name} wins on points!`
+    : winner
+      ? `${winner.name} wins!`
+      : 'Game over';
+
   openModal({
-    title: winner ? `${winner.name} wins!` : 'Game over',
-    body: buildSummaryBody(totals, winnerIdx, state),
+    title: modalTitle,
+    body: buildSummaryBody(totals, winnerIdx, state, pointsWinner),
     actions: modalActions,
   });
 }
 
-function buildSummaryBody(totals, winnerIdx, state) {
+function buildSummaryBody(totals, winnerIdx, state, pointsWinner) {
   const wrap = document.createElement('div');
   wrap.className = 'stack';
   const intro = document.createElement('p');
-  if (typeof winnerIdx === 'number') {
+  if (pointsWinner) {
+    intro.textContent = `${pointsWinner.name} takes the match on total points.`;
+  } else if (typeof winnerIdx === 'number') {
     intro.textContent = 'Final scores';
     intro.style.fontWeight = '700';
   } else {
