@@ -1,6 +1,6 @@
-ï»¿# GPT Breadcrumbs
+# GPT Breadcrumbs
 
-Purpose: Re-align an AI assistant to this projectâ€™s concepts and coding standards at the start of a session. Read this file first, then follow the checklist.
+Purpose: Re-align an AI assistant to this project’s concepts and coding standards at the start of a session. Read this file first, then follow the checklist.
 
 Session Checklist
 - Read this file end-to-end before any work.
@@ -15,7 +15,7 @@ Session Checklist
 Light Houses Session Tips
 - Prefer bit-string seeds: the puzzle state is encoded in `seed` as a length `size^2` binary string. Generating a new puzzle should update the URL via `history.replaceState`.
 - For shareable links, include a lightweight signature (e.g., `sig=xmur3(salt, seed, level)`) to distinguish app-generated links from hand-edited ones.
-- Gate progression on legitimate wins only (e.g., ignore â€œone-clickâ€ seeds and unsigned URLs when advancing levels).
+- Gate progression on legitimate wins only (e.g., ignore “one-click” seeds and unsigned URLs when advancing levels).
 - Enforce play caps judiciously (e.g., max moves, minimum lights-on ratio) and communicate rules in the UI.
 
 Components & Utilities
@@ -49,7 +49,7 @@ Gallery & Assets
 - DRY: share logic and styles; no duplication across projects.
 - SRP: each module/class/function does one thing well.
 - Components: clear input/output contracts; no hidden globals; return elements/strings explicitly.
-- Elevate Reuse: prefer â€œglobalâ€ components under `src/components/ui/` when multiple views can benefit.
+- Elevate Reuse: prefer “global” components under `src/components/ui/` when multiple views can benefit.
 - Styling: use existing site tokens and classes in `styling/` (e.g., `.button`, `.button-secondary`, `.button-warning`, `.button-subtle`, `.text-warning`, `.ui-field`, `.ui-control`, `--radius`, `--border`, `--warning`).
   - Honor `prefers-reduced-motion` in animations.
 - Routing: use `src/consts/routes.js` for SPA routes; lazy-import views.
@@ -90,23 +90,25 @@ When Creating/Updating Components
 
 Patch Notes Guidance
 - Write only user-visible, intentional changes; omit in-session fixes.
-- Title format: `YYYY-MM-DD--NN` where `YYYY-MM-DD` is todayâ€™s date and `NN` is a 2â€‘digit counter that increments with each additional patch on the same day.
+- Title format: `YYYY-MM-DD--NN` where `YYYY-MM-DD` is today’s date and `NN` is a 2-digit counter that increments with each additional patch on the same day.
 - Implementation: `PatchEntry(date, iteration, [bullets])` where `date = 'YYYY-MM-DD'` and `iteration` is a number (rendered as 2 digits).
 
 Quick Notes About Existing Globals
 - `Button(options): string` - string HTML generator; variants `secondary`|`warning`|`subtle` supported. `subtle` removes the white ring (box-shadow); use for low-emphasis actions like Demo/Source tabs.
-- `makeTabs({ items, activeId, onChange }) -> { root, setActive, getActive }` â€“ tabs header utility.
-- `numberField({ id, label, value, min, max, step }) -> { wrapper, input }` â€“ standard labeled numeric field.
-- `openModal({ title, body, actions, onClose }) -> { close }` â€“ lightweight modal.
-- `FaceIcon(kind, opts) -> SVGElement` â€“ smiley/frowny icon.
-- `Card({ title, tagline, img, link, alt }): string` â€“ gallery card.
- - `makeControlsGrid({ cols?, gap? }) -> { root, addRow, getRow }` â€“ 4-column labeled control rows; supports modes 'one'|'two'|'three' to control spans.
- - `HudStat({ label, value }) -> { root, val }` â€“ small status tile.
- - `Tag({ text }) -> Element` â€“ pill-style label for chips.
+- `makeTabs({ items, activeId, onChange }) -> { root, setActive, getActive }` – tabs header utility.
+- `numberField({ id, label, value, min, max, step }) -> { wrapper, input }` – standard labeled numeric field.
+- `openModal({ title, body, actions, onClose }) -> { close }` – lightweight modal.
+- `FaceIcon(kind, opts) -> SVGElement` – smiley/frowny icon.
+- `Card({ title, tagline, img, link, alt }): string` – gallery card.
+ - `makeControlsGrid({ cols?, gap? }) -> { root, addRow, getRow }` – 4-column labeled control rows; supports modes 'one'|'two'|'three' to control spans.
+ - `HudStat({ label, value }) -> { root, val }` – small status tile.
+ - `Tag({ text }) -> Element` – pill-style label for chips.
 
 Assistant Reminders
 - Use ripgrep (`rg`) for fast code search.
 - Read files in small chunks; avoid excessive boilerplate.
 - Keep answers concise; prefer bullet lists for clarity.
 - Confirm assumptions early when scope is ambiguous.
+ - STANDING ORDER: When instructed to make a change to a specific portion of the application, do not make changes to any other portion of the application. If your plan to alter the instructed portion of the application is going to alter any other portion of the application, inform the users first and obtain consent. This should even occur in Agent (Full Access) mode.
  - STANDING ORDER: When introducing themed styles or visual behaviors, extract them into reusable global components or utility classes (e.g., ControlsGrid, .scroll-themed) and reuse across views instead of one-off, scoped tweaks.
+

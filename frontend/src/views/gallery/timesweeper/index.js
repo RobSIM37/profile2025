@@ -161,7 +161,31 @@ export function render(){
   function onCellPrimary(x,y){
     if (gameOver) return;
     const cell = board[y]?.[x]; if (!cell) return;
-    if (!firstClick && !cell.hidden) return; // allow dblclick chord to handle revealed
+    if (!cell.hidden) {
+      const hiddenNeighbors = [];
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          if (dx === 0 && dy === 0) continue;
+          const nx = x + dx;
+          const ny = y + dy;
+          const neighbor = board[ny]?.[nx];
+          if (!neighbor) continue;
+          if (neighbor.hidden) hiddenNeighbors.push(neighbor);
+        }
+      }
+      if (hiddenNeighbors.length && hiddenNeighbors.length === cell.neighbors) {
+        hiddenNeighbors.forEach((neighbor) => {
+          if (neighbor.flagged) return;
+          toggleFlag(board, neighbor.x, neighbor.y);
+          if (neighbor.isTimebomb) { fuseDefused = true; setFuseDisplay(fuseRemainingMs, true); }
+        });
+        paint();
+      } else {
+        onCellChord(x,y);
+      }
+      return;
+    }
+    if (cell.flagged) return;
     if (firstClick) {
       firstClick = false;
       layMines({x,y});
@@ -292,7 +316,6 @@ export function render(){
 
   function asEl(t){ return t && t.nodeType === 3 ? t.parentElement : t; }
   boardHost.addEventListener('click', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; onCellPrimary(b.dataset.x|0, b.dataset.y|0); });
-  boardHost.addEventListener('dblclick', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; onCellChord(b.dataset.x|0, b.dataset.y|0); });
   boardHost.addEventListener('contextmenu', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; e.preventDefault(); onCellFlag(b.dataset.x|0, b.dataset.y|0); });
 
   // Modal buttons are now handled via openModal actions
@@ -321,3 +344,5 @@ function renderTsSourceBrowser(host){
   });
   host.append(list);
 }
+
+
