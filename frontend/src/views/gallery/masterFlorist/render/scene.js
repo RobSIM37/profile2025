@@ -12,6 +12,11 @@ const SLOT_POSITIONS = [
 ];
 const SLOT_SIZE = { width: 166, height: 86 };
 const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
+const STEM_STYLES = {
+  stroke: '#2d5230',
+  fill: '#58a464',
+  width: 6,
+};
 const FLOWER_LABELS = {
   d: 'Daisy',
   p: 'Iris',
@@ -108,6 +113,8 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
+    const vaseBase = getVaseBasePoint();
+
     for (let i = 0; i < MF_DROP_ZONE_COUNT; i += 1) {
       const slot = SLOT_POSITIONS[i];
       if (!slot) continue;
@@ -119,6 +126,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       const code = normalizeSlotCode(solution[i], i);
 
       if (code) {
+        drawStem(ctx, x, y, width, height, vaseBase);
         drawSlotFlower(code, x, y, width, height);
         continue;
       }
@@ -225,7 +233,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const columnGap = 28;
     const vaseWidth = MF_CANVAS_WIDTH - (paddingX * 2) - (columnWidth + columnGap) * 2;
     const vaseX = paddingX + columnWidth + columnGap + vaseWidth / 2;
-    const vaseBaseY = MF_CANVAS_HEIGHT - 36;
+    const vaseBaseY = MF_CANVAS_HEIGHT - 16;
 
     if (!vaseSprites.ready) {
       paintFallbackVase(vaseX, vaseBaseY, vaseWidth);
@@ -237,11 +245,11 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const naturalHeight = body.naturalHeight || 1;
     const targetHeight = 220;
     const scale = Math.min(vaseWidth / naturalWidth, targetHeight / naturalHeight);
-    const scaledWidth = naturalWidth * scale;
-    const scaledHeight = naturalHeight * scale;
+    const scaledWidth = naturalWidth * scale * 1.25;
+    const scaledHeight = naturalHeight * scale * 1.25;
     const destX = vaseX - scaledWidth / 2;
     const destY = vaseBaseY - scaledHeight;
-    const lipHeight = (lip.naturalHeight || 1) * scale;
+    const lipHeight = (lip.naturalHeight || 1) * scale * 1.25;
 
     ctx.save();
     ctx.imageSmoothingEnabled = true;
@@ -292,6 +300,36 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   render();
 
   return { render, dispose };
+}
+
+function drawStem(ctx, x, y, width, height, vaseBase) {
+  const stemX = x + width / 2;
+  const stemStartY = y + height;
+  const stemEndX = vaseBase.x;
+  const stemEndY = vaseBase.y;
+
+  ctx.save();
+  ctx.strokeStyle = STEM_STYLES.stroke;
+  ctx.lineWidth = STEM_STYLES.width;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+
+  ctx.beginPath();
+  ctx.moveTo(stemX, stemStartY);
+  ctx.lineTo(stemEndX, stemEndY);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function getVaseBasePoint() {
+  const paddingX = 36;
+  const columnWidth = 150;
+  const columnGap = 28;
+  const vaseWidth = MF_CANVAS_WIDTH - (paddingX * 2) - (columnWidth + columnGap) * 2;
+  const vaseX = paddingX + columnWidth + columnGap + vaseWidth / 2;
+  const vaseBaseY = MF_CANVAS_HEIGHT - 16;
+  return { x: vaseX, y: vaseBaseY - 12 };
 }
 
 function createBackgroundSprite() {
