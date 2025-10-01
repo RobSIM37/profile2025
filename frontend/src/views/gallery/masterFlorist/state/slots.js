@@ -60,3 +60,5 @@ export const SLOT_DRAW_ORDER = [0, 2, 1, 3, 5, 4];
 export const SLOT_SIZE = { width: 166, height: 86 };
 
 export const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
+
+export const SLOT_HITBOX_SCALE = 0.5;

@@ -1,4 +1,4 @@
-import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES, SOURCE_BOXES, SOURCE_COLUMNS_META } from '../state/slots.js';
+import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES, SOURCE_BOXES, SOURCE_COLUMNS_META, SLOT_HITBOX_SCALE } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 
 const STEM_STYLES = {
@@ -63,7 +63,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     paintDropTargets(slots, hoverId, drag);
     paintFlowersLayer(slots);
     paintDragPreview(drag);
-    paintEmptySlotPlaceholders(slots, hoverId);
+    paintEmptySlotPlaceholders(slots);
   }
 
   function dispose() {
@@ -171,8 +171,20 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
   }
 
-  function paintEmptySlotPlaceholders(slots, hoverId) {
-    // Intentionally left blank for now; empty slots render nothing.
+  function paintEmptySlotPlaceholders(slots) {
+    const scale = SLOT_HITBOX_SCALE ?? 1;
+    slots.forEach((slot) => {
+      if (!slot) return;
+      const tightenedWidth = slot.width * scale;
+      const offsetX = slot.x + (slot.width - tightenedWidth) / 2;
+
+      ctx.save();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(0, 255, 0, 0.65)';
+      ctx.setLineDash([5, 4]);
+      ctx.strokeRect(offsetX, slot.y, tightenedWidth, slot.height);
+      ctx.restore();
+    });
   }
 
   function getVaseMetrics() {

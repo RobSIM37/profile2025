@@ -1,4 +1,4 @@
-import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES } from '../state/slots.js';
+import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE } from '../state/slots.js';
 import { updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag } from '../state/store.js';
 
 export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint } = {}) {
@@ -138,9 +138,11 @@ function findSlotIndex(x, y) {
   for (let i = 0; i < SLOT_POSITIONS.length; i += 1) {
     const slot = SLOT_POSITIONS[i];
     if (!slot) continue;
-    const width = slot.width ?? SLOT_SIZE.width;
-    const height = slot.height ?? SLOT_SIZE.height;
-    const left = slot.x ?? 0;
+    const baseWidth = slot.width ?? SLOT_SIZE.width;
+    const baseHeight = slot.height ?? SLOT_SIZE.height;
+    const width = baseWidth * (SLOT_HITBOX_SCALE ?? 1);
+    const height = baseHeight;
+    const left = (slot.x ?? 0) + (baseWidth - width) / 2;
     const top = slot.y ?? 0;
     const right = left + width;
     const bottom = top + height;
