@@ -2,14 +2,15 @@ import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas
 
 const LEFT_FLOWER_CODES = ['r', 'o', 'y'];
 const RIGHT_FLOWER_CODES = ['b', 'p', 'w'];
-const SLOT_LAYOUT = [
-  { row: 0, col: 0 },
-  { row: 0, col: 1 },
-  { row: 0, col: 2 },
-  { row: 1, col: 0 },
-  { row: 1, col: 1 },
-  { row: 1, col: 2 },
+const SLOT_POSITIONS = [
+  { x: 214 + 100, y: 78 },
+  { x: 397, y: 78 },
+  { x: 580 - 100, y: 78 },
+  { x: 214 + 75, y: 188 },
+  { x: 397, y: 188 },
+  { x: 580 - 75, y: 188 },
 ];
+const SLOT_SIZE = { width: 166, height: 86 };
 const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
 const FLOWER_LABELS = {
   d: 'Daisy',
@@ -102,48 +103,36 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const solution = gameState?.puzzle?.solution || [];
     const hoverId = gameState?.hoverStemId || null;
 
-    const paddingX = 36;
-    const columnWidth = 150;
-    const columnGap = 28;
-    const slotAreaX = paddingX + columnWidth + columnGap;
-    const slotAreaWidth = MF_CANVAS_WIDTH - slotAreaX * 2;
-    const slotGapX = 18;
-    const slotGapY = 24;
-    const columns = 3;
-    const slotWidth = (slotAreaWidth - slotGapX * (columns - 1)) / columns;
-    const slotHeight = 86;
-    const slotY = 48;
-
     ctx.save();
     ctx.lineWidth = 2;
-    ctx.font = '600 18px "Segoe UI", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     for (let i = 0; i < MF_DROP_ZONE_COUNT; i += 1) {
-      const layout = SLOT_LAYOUT[i] || { row: Math.floor(i / columns), col: i % columns };
-      const offsetX = layout.offsetX || 0;
-      const offsetY = layout.offsetY || 0;
-      const x = slotAreaX + layout.col * (slotWidth + slotGapX) + offsetX;
-      const y = slotY + layout.row * (slotHeight + slotGapY) + offsetY;
+      const slot = SLOT_POSITIONS[i];
+      if (!slot) continue;
+
+      const width = slot.width ?? SLOT_SIZE.width;
+      const height = slot.height ?? SLOT_SIZE.height;
+      const x = slot.x ?? 0;
+      const y = slot.y ?? 0;
       const code = normalizeSlotCode(solution[i], i);
 
       if (code) {
-        drawSlotFlower(code, x, y, slotWidth, slotHeight);
+        drawSlotFlower(code, x, y, width, height);
         continue;
       }
 
       ctx.save();
       ctx.fillStyle = COLORS.slotFill;
-      ctx.strokeStyle = COLORS.slotEmptyDash;
-      ctx.setLineDash([6, 6]);
+      const rectHover = hoverId === 'slot-' + i;
+      ctx.strokeStyle = rectHover ? COLORS.slotStroke : COLORS.slotEmptyDash;
+      ctx.setLineDash(rectHover ? [] : [6, 6]);
       const rectRadius = 16;
-      roundRect(ctx, x, y, slotWidth, slotHeight, rectRadius, true, true);
+      roundRect(ctx, x, y, width, height, rectRadius, true, true);
       ctx.fillStyle = COLORS.slotText;
       ctx.font = '500 14px "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Slot ' + (i + 1), x + slotWidth / 2, y + slotHeight / 2);
+      ctx.fillText('Slot ' + (i + 1), x + width / 2, y + height / 2);
       ctx.restore();
     }
 
@@ -214,7 +203,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
     if (img && img.complete && img.naturalWidth > 0) {
       const baseScale = Math.min(width / img.naturalWidth, height / img.naturalHeight);
-      const scaleFactor = baseScale * 1.8;
+      const scaleFactor = baseScale * 1.8 * 0.75;
       const drawWidth = img.naturalWidth * scaleFactor;
       const drawHeight = img.naturalHeight * scaleFactor;
       const drawX = x + (width - drawWidth) / 2;
