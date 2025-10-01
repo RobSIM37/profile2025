@@ -69,9 +69,9 @@ function createChatMessage(role, text) {
   wrapper.style.background = isCustomer ? 'rgba(255, 234, 167, 0.55)' : 'rgba(167, 210, 255, 0.55)';
   wrapper.style.width = 'fit-content';
   wrapper.style.maxWidth = '100%';
-  wrapper.style.justifySelf = isCustomer ? 'start' : 'end';
   wrapper.style.textAlign = isCustomer ? 'left' : 'right';
   wrapper.style.flex = '0 0 auto';
+  wrapper.style.alignSelf = isCustomer ? 'flex-start' : 'flex-end';
 
   const label = document.createElement('span');
   label.textContent = isCustomer ? 'Customer' : 'You';
@@ -79,11 +79,15 @@ function createChatMessage(role, text) {
   label.style.textTransform = 'uppercase';
   label.style.letterSpacing = '0.08em';
   label.style.opacity = '0.75';
+  label.style.textAlign = isCustomer ? 'left' : 'right';
+  label.style.justifySelf = isCustomer ? 'start' : 'end';
 
   const body = document.createElement('p');
   body.textContent = text;
   body.style.margin = '0';
   body.style.lineHeight = '1.3';
+  body.style.textAlign = isCustomer ? 'left' : 'right';
+  body.style.justifySelf = isCustomer ? 'start' : 'end';
 
   wrapper.append(label, body);
   return wrapper;

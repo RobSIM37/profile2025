@@ -145,6 +145,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
     slots.forEach((slot) => {
       if (!slot) return;
+      if (slot.code != null && slot.code !== '') return;
       const bounds = slot.clickBounds || SLOT_CLICK_BOUNDS?.[slot.index] || {};
       const width = bounds.width ?? slot.width;
       const height = bounds.height ?? slot.height;
