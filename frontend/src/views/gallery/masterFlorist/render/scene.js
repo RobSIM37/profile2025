@@ -130,6 +130,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     SLOT_DRAW_ORDER.forEach((slotIndex) => {
       const slot = slots[slotIndex];
       if (!slot || !slot.code) return;
+      if (slot.index === 3 || slot.index === 5) return;
       drawStem(ctx, slot, vaseMetrics);
     });
   }
