@@ -1,18 +1,30 @@
+import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
+
 export function createWorkingArea() {
   const workingArea = document.createElement('div');
   workingArea.className = 'mf-working-area';
   workingArea.style.position = 'relative';
   workingArea.style.display = 'flex';
   workingArea.style.alignItems = 'stretch';
-  workingArea.style.justifyContent = 'center';
+  workingArea.style.justifyContent = 'stretch';
   workingArea.style.width = '100%';
   workingArea.style.height = '100%';
   workingArea.style.minHeight = '0';
   workingArea.style.flex = '1 1 auto';
-  workingArea.style.background = 'var(--bg-elev)';
-  workingArea.style.borderRadius = 'var(--radius)';
-  workingArea.style.boxShadow = '0 0 0 1px var(--border)';
-  workingArea.style.overflow = 'hidden';
+
+  const frame = document.createElement('div');
+  frame.className = 'mf-working-frame';
+  frame.style.position = 'relative';
+  frame.style.display = 'flex';
+  frame.style.alignItems = 'stretch';
+  frame.style.justifyContent = 'stretch';
+  frame.style.width = '100%';
+  frame.style.maxHeight = '100%';
+  frame.style.aspectRatio = `${MF_CANVAS_WIDTH} / ${MF_CANVAS_HEIGHT}`;
+  frame.style.background = 'var(--bg-elev)';
+  frame.style.borderRadius = 'var(--radius)';
+  frame.style.boxShadow = '0 0 0 1px var(--border)';
+  frame.style.overflow = 'hidden';
 
   const canvasElement = document.createElement('canvas');
   canvasElement.className = 'mf-canvas';
@@ -22,7 +34,8 @@ export function createWorkingArea() {
   canvasElement.style.display = 'block';
   canvasElement.style.imageRendering = 'pixelated';
 
-  workingArea.append(canvasElement);
+  frame.append(canvasElement);
+  workingArea.append(frame);
 
-  return { workingArea, canvasHost: workingArea, canvasElement };
+  return { workingArea, canvasHost: frame, canvasElement };
 }
