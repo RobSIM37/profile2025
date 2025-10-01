@@ -1,5 +1,5 @@
 import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
-import { updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag } from '../state/store.js';
+import { hasActiveMasterFloristCustomer, updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag } from '../state/store.js';
 
 export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint } = {}) {
   if (!canvas) throw new Error('createMasterFloristCanvasController requires a canvas element.');
@@ -45,6 +45,12 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     canvas.setPointerCapture?.(event.pointerId);
     if (state.drag) return;
 
+    if (!hasActiveMasterFloristCustomer(state)) {
+      setMasterFloristDrag(state, null);
+      onStateChange?.();
+      return;
+    }
+
     const point = mapPointer(event);
     const source = findSourceBox(point.x, point.y);
     if (source) {
@@ -67,6 +73,22 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   }
 
   function handlePointerMove(event) {
+    if (!hasActiveMasterFloristCustomer(state)) {
+      let changed = false;
+      if (state.hoverStemId != null) {
+        state.hoverStemId = null;
+        changed = true;
+      }
+      if (state.drag) {
+        setMasterFloristDrag(state, null);
+        changed = true;
+      }
+      if (changed) {
+        onStateChange?.();
+      }
+      return;
+    }
+
     const point = mapPointer(event);
     const hoverIndex = findSlotIndex(point.x, point.y);
     state.hoverStemId = hoverIndex != null ? 'slot-' + hoverIndex : null;
@@ -82,6 +104,15 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
 
   function handlePointerUp(event) {
     canvas.releasePointerCapture?.(event.pointerId);
+
+    if (!hasActiveMasterFloristCustomer(state)) {
+      if (state.drag) {
+        setMasterFloristDrag(state, null);
+        onStateChange?.();
+      }
+      return;
+    }
+
     const point = mapPointer(event);
     const slotIndex = findSlotIndex(point.x, point.y);
     const drag = state.drag;
@@ -116,6 +147,13 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   }
 
   function handlePointerLeave() {
+    if (!hasActiveMasterFloristCustomer(state)) {
+      if (state.hoverStemId != null) {
+        state.hoverStemId = null;
+        onStateChange?.();
+      }
+      return;
+    }
     state.hoverStemId = null;
     onStateChange?.();
   }

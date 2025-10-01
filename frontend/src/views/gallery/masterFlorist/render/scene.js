@@ -11,6 +11,7 @@ import {
 } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 import { MASTER_FLORIST_LAYOUT } from '../state/layout.js';
+import { hasActiveMasterFloristCustomer } from '../state/store.js';
 
 const STEM_STYLES = {
   stroke: '#2d5230',
@@ -61,12 +62,18 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   function render() {
     clear();
 
-    const slots = prepareSlotStates();
-    const vaseMetrics = getVaseMetrics();
-    const hoverId = gameState?.hoverStemId || null;
-    const drag = gameState?.drag || null;
+    const hasCustomer = hasActiveMasterFloristCustomer(gameState);
+    const slots = hasCustomer ? prepareSlotStates() : [];
+    const vaseMetrics = hasCustomer ? getVaseMetrics() : null;
+    const hoverId = hasCustomer ? gameState?.hoverStemId || null : null;
+    const drag = hasCustomer ? gameState?.drag || null : null;
 
     paintWorkbench();
+
+    if (!hasCustomer) {
+      return;
+    }
+
     paintFlowerColumns(drag);
     paintVaseLip(vaseMetrics);
     paintStemsLayer(slots, vaseMetrics);

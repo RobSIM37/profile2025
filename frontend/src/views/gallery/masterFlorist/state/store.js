@@ -14,6 +14,14 @@ const DEFAULT_VIEWPORT = {
 
 const FLOWER_CODES = ['y', 'p', 'w', 'o', 'r', 'b'];
 
+function createEmptySolution() {
+  return new Array(MF_DROP_ZONE_COUNT).fill(null);
+}
+
+export function hasActiveMasterFloristCustomer(state) {
+  return Array.isArray(state?.customers) && state.customers.length > 0;
+}
+
 export function createMasterFloristState() {
   const seed = Date.now();
   return {
@@ -71,11 +79,19 @@ export function updateMasterFloristSolution(state, index, code) {
 
 export function setMasterFloristDrag(state, drag) {
   if (!state) return;
+  if (!hasActiveMasterFloristCustomer(state)) {
+    state.drag = null;
+    return;
+  }
   state.drag = drag ? { ...drag } : null;
 }
 
 export function updateMasterFloristDrag(state, updates = {}) {
   if (!state?.drag) return;
+  if (!hasActiveMasterFloristCustomer(state)) {
+    state.drag = null;
+    return;
+  }
   Object.assign(state.drag, updates);
 }
 
@@ -102,7 +118,7 @@ export function createMasterFloristPuzzle(seed) {
   }
   return {
     target,
-    solution: DEFAULT_SLOT_CODES.slice(0, MF_DROP_ZONE_COUNT),
+    solution: createEmptySolution(),
   };
 }
 
