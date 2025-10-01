@@ -209,23 +209,52 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const basePadding = benchConfig.basePadding ?? 16;
     const minWidth = vaseConfig.minWidth ?? 240;
 
-    let leftBoundary = 0;
-    let rightBoundary = MF_CANVAS_WIDTH;
+    const areaConfig = vaseConfig?.area || null;
 
-    if (columnDefs.length && columnsMeta.length) {
-      const fallbackLeft = columnsMeta[0];
-      const fallbackRight = columnsMeta[columnsMeta.length - 1];
-      const leftDef = columnDefs[0];
-      const rightDef = columnDefs[columnDefs.length - 1];
+    let leftBoundary = typeof areaConfig?.left === 'number' ? areaConfig.left : null;
+    let rightBoundary = typeof areaConfig?.right === 'number' ? areaConfig.right : null;
 
-      const leftMeta = leftDef ? columnsMeta.find((col) => col.id === leftDef.id) || fallbackLeft : fallbackLeft;
-      const rightMeta = rightDef ? columnsMeta.find((col) => col.id === rightDef.id) || fallbackRight : fallbackRight;
+    if ((leftBoundary == null || rightBoundary == null) && areaConfig) {
+      const width = typeof areaConfig.width === 'number' ? areaConfig.width : null;
+      const center = typeof areaConfig.center === 'number' ? areaConfig.center : null;
+      if (width != null) {
+        if (leftBoundary == null && center != null) {
+          leftBoundary = center - width / 2;
+        }
+        if (rightBoundary == null && center != null) {
+          rightBoundary = center + width / 2;
+        }
+        if (leftBoundary == null && rightBoundary != null) {
+          leftBoundary = rightBoundary - width;
+        }
+        if (rightBoundary == null && leftBoundary != null) {
+          rightBoundary = leftBoundary + width;
+        }
+      }
+    }
 
-      const leftGap = leftDef?.gapAfter ?? sourceColumns?.gapAfter ?? 0;
-      const rightGap = rightDef?.gapBefore ?? sourceColumns?.gapBefore ?? 0;
+    if (leftBoundary == null || rightBoundary == null) {
+      let fallbackLeft = 0;
+      let fallbackRight = MF_CANVAS_WIDTH;
 
-      leftBoundary = (leftMeta?.x ?? 0) + (leftMeta?.width ?? 0) + leftGap;
-      rightBoundary = (rightMeta?.x ?? MF_CANVAS_WIDTH) - rightGap;
+      if (columnDefs.length && columnsMeta.length) {
+        const fallbackLeftMeta = columnsMeta[0];
+        const fallbackRightMeta = columnsMeta[columnsMeta.length - 1];
+        const leftDef = columnDefs[0];
+        const rightDef = columnDefs[columnDefs.length - 1];
+
+        const leftMeta = leftDef ? columnsMeta.find((col) => col.id === leftDef.id) || fallbackLeftMeta : fallbackLeftMeta;
+        const rightMeta = rightDef ? columnsMeta.find((col) => col.id === rightDef.id) || fallbackRightMeta : fallbackRightMeta;
+
+        const leftGap = leftDef?.gapAfter ?? sourceColumns?.gapAfter ?? 0;
+        const rightGap = rightDef?.gapBefore ?? sourceColumns?.gapBefore ?? 0;
+
+        fallbackLeft = (leftMeta?.x ?? 0) + (leftMeta?.width ?? 0) + leftGap;
+        fallbackRight = (rightMeta?.x ?? MF_CANVAS_WIDTH) - rightGap;
+      }
+
+      leftBoundary = leftBoundary ?? fallbackLeft;
+      rightBoundary = rightBoundary ?? fallbackRight;
     }
 
     leftBoundary = Math.max(0, leftBoundary);

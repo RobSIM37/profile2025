@@ -32,17 +32,36 @@ export function render() {
   layout.style.maxHeight = '100%';
   layout.style.minHeight = '0';
   layout.style.gap = 'var(--space-4)';
+  layout.style.width = '100%';
+  layout.style.maxWidth = '100%';
+  layout.style.minWidth = '0';
+  layout.style.boxSizing = 'border-box';
+  layout.style.justifyItems = 'stretch';
+  layout.style.alignContent = 'stretch';
   layout.append(sub.root);
+  sub.root.style.width = '100%';
+  sub.root.style.maxWidth = '100%';
+  sub.root.style.minWidth = '0';
+  sub.root.style.boxSizing = 'border-box';
 
   const section = document.createElement('section');
   section.className = 'stack';
   section.style.display = 'grid';
-  section.style.gridTemplateRows = '1fr auto';
+  section.style.gridTemplateRows = 'auto minmax(0, 1fr)';
   section.style.rowGap = '0';
   section.style.alignItems = 'stretch';
   section.style.gap = '0';
   section.style.margin = '0';
   section.style.padding = '0';
+  section.style.width = '100%';
+  section.style.maxWidth = '100%';
+  section.style.minWidth = '0';
+  section.style.height = '100%';
+  section.style.minHeight = '0';
+  section.style.boxSizing = 'border-box';
+  section.style.justifyItems = 'stretch';
+  section.style.alignContent = 'stretch';
+  section.style.overflow = 'hidden';
 
   const customerArea = createCustomerArea();
 
@@ -93,4 +112,3 @@ export function render() {
 
   return frag;
 }
-

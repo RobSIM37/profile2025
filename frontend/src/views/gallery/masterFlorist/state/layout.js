@@ -15,6 +15,10 @@ export const MASTER_FLORIST_LAYOUT = {
     scaleMultiplier: 1.35,
     stemAnchorOffset: 12,
     minWidth: 240,
+    area: {
+      left: 214,
+      right: MF_CANVAS_WIDTH - 214,
+    },
   },
   sourceColumns: {
     top: SOURCE_AREA_TOP,
