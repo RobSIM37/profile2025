@@ -1,4 +1,4 @@
-// Centralized route table for the hash router
+﻿// Centralized route table for the hash router
 // Each entry maps a path to a loader that resolves to a module
 
 import { makeBeforeResolve, allow } from '../lib/routeGuards.js';
@@ -14,6 +14,10 @@ export const routes = {
   '/gallery/knock-it-off/how-to': () => import('../views/gallery/knockitoff/howto.js'),
   '/gallery/knock-it-off/game': () => import('../views/gallery/knockitoff/game.js'),
   '/gallery/light-houses': () => import('../views/gallery/lighthouses/page.js'),
+  '/gallery/master-florist': () => import('../views/gallery/masterFlorist/page.js'),
+  '/gallery/master-florist/setup': () => import('../views/gallery/masterFlorist/setup.js'),
+  '/gallery/master-florist/game': () => import('../views/gallery/masterFlorist/game.js'),
+  '/gallery/master-florist/how-to': () => import('../views/gallery/masterFlorist/howto.js'),
   '/gallery/memory': () => import('../views/gallery/memory/page.js'),
   '/gallery/memory/game': () => import('../views/gallery/memory/game2.js'),
   '/gallery/predict-four': () => import('../views/gallery/predictfour/page.js'),
@@ -75,5 +79,10 @@ export const beforeResolve = makeBeforeResolve([
     match: '/gallery/knuckle-bones/game',
     allow: allow.sessionKey('kb:chosen'),
     redirect: '/gallery/knuckle-bones',
+  },
+  {
+    match: '/gallery/master-florist/game',
+    allow: allow.sessionKey('mf:chosen'),
+    redirect: '/gallery/master-florist',
   },
 ]);

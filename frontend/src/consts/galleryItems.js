@@ -1,4 +1,10 @@
-export const GALLERY_ITEMS = [
+﻿export const GALLERY_ITEMS = [
+  {
+    title: 'Master Florist',
+    tagline: 'Arrange custom bouquets under pressure',
+    img: 'assets/masterFloristThumbnail.svg',
+    link: '#/gallery/master-florist',
+  },
   {
     title: 'Predict Four',
     tagline: 'Connect Four with predictive scoring',
@@ -54,4 +60,3 @@ export const GALLERY_ITEMS = [
     link: '#/gallery/fizzbuzz',
   },
 ];
-
