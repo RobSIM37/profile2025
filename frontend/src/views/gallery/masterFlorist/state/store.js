@@ -12,7 +12,7 @@ const DEFAULT_VIEWPORT = {
   devicePixelRatio: 1,
 };
 
-const FLOWER_CODES = ['d', 'p', 'w', 'o', 'r', 'b'];
+const FLOWER_CODES = ['y', 'p', 'w', 'o', 'r', 'b'];
 
 export function createMasterFloristState() {
   const seed = Date.now();

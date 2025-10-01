@@ -1,5 +1,6 @@
 import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES, SOURCE_BOXES, SOURCE_COLUMNS_META, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
+import { MASTER_FLORIST_LAYOUT } from '../state/layout.js';
 
 const STEM_STYLES = {
   stroke: '#2d5230',
@@ -82,8 +83,11 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.fillStyle = COLORS.background;
     ctx.fillRect(0, 0, MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT);
 
-    const benchHeight = 140;
+    const benchConfig = MASTER_FLORIST_LAYOUT.bench || {};
+    const benchHeight = benchConfig.height ?? 140;
     const benchY = MF_CANVAS_HEIGHT - benchHeight;
+    const trimHeight = benchConfig.trimHeight ?? 4;
+    const shadowHeight = benchConfig.shadowHeight ?? 6;
 
     if (backgroundSprite.ready) {
       ctx.drawImage(backgroundSprite.image, 0, 0, MF_CANVAS_WIDTH, benchY);
@@ -94,10 +98,10 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
     ctx.fillStyle = COLORS.benchTop;
     ctx.fillRect(0, benchY, MF_CANVAS_WIDTH, benchHeight);
-    ctx.fillRect(0, MF_CANVAS_HEIGHT - 4, MF_CANVAS_WIDTH, 4);
+    ctx.fillRect(0, MF_CANVAS_HEIGHT - trimHeight, MF_CANVAS_WIDTH, trimHeight);
 
     ctx.fillStyle = COLORS.benchShadow;
-    ctx.fillRect(0, benchY - 6, MF_CANVAS_WIDTH, 6);
+    ctx.fillRect(0, benchY - shadowHeight, MF_CANVAS_WIDTH, shadowHeight);
     ctx.restore();
   }
 
@@ -149,16 +153,30 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       const centerX = left + width / 2;
       const centerY = top + height / 2;
       const radius = Math.min(width, height) * 0.45;
+      const isActive = slot.index === hoverIndex;
+
       ctx.save();
-      ctx.globalAlpha = slot.index === hoverIndex ? 0.5 : 0.25;
+
+      ctx.globalAlpha = isActive ? 0.5 : 0.25;
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.globalAlpha = slot.index === hoverIndex ? 0.85 : 0.45;
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.globalAlpha = isActive ? 0.8 : 0.5;
+      ctx.lineWidth = isActive ? 5 : 4;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.65)';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, Math.max(radius - 1.5, 0), 0, Math.PI * 2);
+      ctx.globalAlpha = isActive ? 0.9 : 0.6;
       ctx.lineWidth = 2.5;
       ctx.strokeStyle = color;
       ctx.stroke();
+
       ctx.restore();
     });
   }
@@ -182,20 +200,55 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   }
 
   function getVaseMetrics() {
-    const paddingX = 36;
-    const columnWidth = 150;
-    const columnGap = 28;
-    const vaseWidth = MF_CANVAS_WIDTH - (paddingX * 2) - (columnWidth + columnGap) * 2;
-    const baseX = paddingX + columnWidth + columnGap + vaseWidth / 2;
-    const baseY = MF_CANVAS_HEIGHT - 16;
+    const { sourceColumns, bench, vase } = MASTER_FLORIST_LAYOUT;
+    const columnsMeta = SOURCE_COLUMNS_META;
+    const columnDefs = sourceColumns?.columns ?? [];
+    const benchConfig = bench || {};
+    const vaseConfig = vase || {};
+
+    const basePadding = benchConfig.basePadding ?? 16;
+    const minWidth = vaseConfig.minWidth ?? 240;
+
+    let leftBoundary = 0;
+    let rightBoundary = MF_CANVAS_WIDTH;
+
+    if (columnDefs.length && columnsMeta.length) {
+      const fallbackLeft = columnsMeta[0];
+      const fallbackRight = columnsMeta[columnsMeta.length - 1];
+      const leftDef = columnDefs[0];
+      const rightDef = columnDefs[columnDefs.length - 1];
+
+      const leftMeta = leftDef ? columnsMeta.find((col) => col.id === leftDef.id) || fallbackLeft : fallbackLeft;
+      const rightMeta = rightDef ? columnsMeta.find((col) => col.id === rightDef.id) || fallbackRight : fallbackRight;
+
+      const leftGap = leftDef?.gapAfter ?? sourceColumns?.gapAfter ?? 0;
+      const rightGap = rightDef?.gapBefore ?? sourceColumns?.gapBefore ?? 0;
+
+      leftBoundary = (leftMeta?.x ?? 0) + (leftMeta?.width ?? 0) + leftGap;
+      rightBoundary = (rightMeta?.x ?? MF_CANVAS_WIDTH) - rightGap;
+    }
+
+    leftBoundary = Math.max(0, leftBoundary);
+    rightBoundary = Math.min(MF_CANVAS_WIDTH, rightBoundary);
+
+    if (rightBoundary - leftBoundary < minWidth) {
+      const center = (leftBoundary + rightBoundary) / 2 || MF_CANVAS_WIDTH / 2;
+      leftBoundary = center - minWidth / 2;
+      rightBoundary = center + minWidth / 2;
+    }
+
+    const vaseWidth = Math.max(rightBoundary - leftBoundary, minWidth);
+    const baseX = leftBoundary + vaseWidth / 2;
+    const baseY = MF_CANVAS_HEIGHT - basePadding;
 
     const defaultBodyWidth = 218;
     const defaultBodyHeight = 272;
     const naturalWidth = vaseSprites.body?.naturalWidth || defaultBodyWidth;
     const naturalHeight = vaseSprites.body?.naturalHeight || defaultBodyHeight;
-    const targetHeight = 220;
+    const targetHeight = vaseConfig.targetHeight ?? 220;
     const baseScale = Math.min(vaseWidth / naturalWidth, targetHeight / naturalHeight);
-    const scale = baseScale * 1.35;
+    const scaleMultiplier = vaseConfig.scaleMultiplier ?? 1.35;
+    const scale = baseScale * scaleMultiplier;
 
     const scaledWidth = naturalWidth * scale;
     const scaledHeight = naturalHeight * scale;
@@ -203,11 +256,12 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const destY = baseY - scaledHeight;
     const lipNaturalHeight = vaseSprites.lip?.naturalHeight || 32;
     const lipHeight = lipNaturalHeight * scale;
+    const stemAnchorOffset = vaseConfig.stemAnchorOffset ?? 12;
 
     return {
       baseX,
       baseY,
-      stemAnchorY: baseY - 12,
+      stemAnchorY: baseY - stemAnchorOffset,
       scaledWidth,
       scaledHeight,
       destX,
@@ -468,3 +522,4 @@ function roundRect(context, x, y, width, height, radius, fill, stroke, styles = 
   if (stroke) context.stroke();
   context.restore();
 }
+

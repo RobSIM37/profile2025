@@ -1,31 +1,15 @@
-﻿export function createCustomerArea() {
+export function createCustomerArea() {
   const area = document.createElement('aside');
   area.className = 'mf-customer-area';
-  area.style.display = 'grid';
-  area.style.gridTemplateColumns = 'minmax(140px, 200px) minmax(0, 1fr)';
-  area.style.gap = 'var(--space-4)';
+  area.style.display = 'flex';
+  area.style.flexDirection = 'column';
   area.style.padding = 'var(--space-4)';
   area.style.background = 'var(--bg-elev)';
   area.style.borderRadius = 'var(--radius)';
   area.style.boxShadow = '0 0 0 1px var(--border)';
-  area.style.maxHeight = '255px';
-  area.style.alignSelf = 'start';
-
-  const bust = document.createElement('div');
-  bust.className = 'mf-customer-bust';
-  bust.style.display = 'grid';
-  bust.style.placeItems = 'center';
-  bust.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.1), rgba(0,0,0,0.25))';
-  bust.style.border = '2px solid rgba(0,0,0,0.35)';
-  bust.style.borderRadius = '50%';
-  bust.style.aspectRatio = '1';
-  bust.style.color = 'var(--muted)';
-  bust.style.fontWeight = '600';
-  bust.style.maxWidth = '140px';
-  bust.style.height = '140px';
-  bust.style.minHeight = '120px';
-  bust.style.margin = '0 auto';
-  bust.textContent = 'Customer';
+  area.style.maxHeight = '180px';
+  area.style.alignSelf = 'stretch';
+  area.style.margin = '0';
 
   const chatLog = document.createElement('div');
   chatLog.className = 'mf-chat-log';
@@ -36,7 +20,7 @@
   chatLog.style.background = 'rgba(0,0,0,0.15)';
   chatLog.style.borderRadius = 'calc(var(--radius) / 1.5)';
   chatLog.style.overflowY = 'auto';
-  chatLog.style.maxHeight = '230px';
+  chatLog.style.maxHeight = '120px';
   chatLog.classList.add('scroll-themed');
   chatLog.style.setProperty('--scrollbar-track', 'rgba(0, 0, 0, 0.2)');
   chatLog.style.setProperty('--scrollbar-thumb', 'rgba(255, 255, 255, 0.35)');
@@ -45,15 +29,15 @@
 
   chatLog.append(
     createChatMessage('customer', 'Need something sunny today.'),
-    createChatMessage('player', 'Attempt #1 · d r y'),
+    createChatMessage('player', 'Attempt #1 - d r y'),
     createChatMessage('customer', 'Closer! Center needs pop.'),
-    createChatMessage('player', 'Attempt #2 · d d y'),
+    createChatMessage('player', 'Attempt #2 - d d y'),
     createChatMessage('customer', 'Better, but make the middle brighter.'),
     createChatMessage('player', 'On it! Swapping the center now.'),
     createChatMessage('customer', 'Great! Snap a photo when it is ready.')
   );
 
-  area.append(bust, chatLog);
+  area.append(chatLog);
   return area;
 }
 

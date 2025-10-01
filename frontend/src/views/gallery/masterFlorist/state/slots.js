@@ -1,50 +1,4 @@
-import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
-
-const PADDING_X = 36;
-const COLUMN_WIDTH = 150;
-const COLUMN_TOP = 160;
-const COLUMN_BOTTOM = MF_CANVAS_HEIGHT - 44;
-const COLUMN_HEIGHT = COLUMN_BOTTOM - COLUMN_TOP;
-const BOX_GAP = 16;
-const BOXES_PER_COLUMN = 3;
-const BOX_WIDTH = COLUMN_WIDTH - BOX_GAP * 2;
-const BOX_HEIGHT = (COLUMN_HEIGHT - BOX_GAP * (BOXES_PER_COLUMN + 1)) / BOXES_PER_COLUMN;
-
-const LEFT_CODES = ['r', 'o', 'y'];
-const RIGHT_CODES = ['b', 'p', 'w'];
-
-const COLUMN_CONFIGS = [
-  {
-    id: 'left',
-    x: PADDING_X,
-    y: COLUMN_TOP,
-    width: COLUMN_WIDTH,
-    height: COLUMN_HEIGHT,
-    codes: LEFT_CODES,
-  },
-  {
-    id: 'right',
-    x: MF_CANVAS_WIDTH - PADDING_X - COLUMN_WIDTH,
-    y: COLUMN_TOP,
-    width: COLUMN_WIDTH,
-    height: COLUMN_HEIGHT,
-    codes: RIGHT_CODES,
-  },
-];
-
-export const SOURCE_BOXES = COLUMN_CONFIGS.flatMap(({ id: columnId, x, y, codes }) =>
-  codes.map((code, index) => ({
-    column: columnId,
-    columnIndex: index,
-    code,
-    x: x + BOX_GAP,
-    y: y + BOX_GAP + index * (BOX_HEIGHT + BOX_GAP),
-    width: BOX_WIDTH,
-    height: BOX_HEIGHT,
-  })),
-);
-
-export const SOURCE_COLUMNS_META = COLUMN_CONFIGS.map(({ codes, ...meta }) => meta);
+import { MASTER_FLORIST_LAYOUT } from './layout.js';
 
 export const SLOT_SIZE = { width: 166, height: 86 };
 
@@ -71,3 +25,45 @@ export const SLOT_CLICK_BOUNDS = [
 export const SLOT_DRAW_ORDER = [0, 2, 1, 3, 5, 4];
 
 export const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
+
+const SOURCE_COLUMNS_CONFIG = MASTER_FLORIST_LAYOUT.sourceColumns || {};
+const COLUMN_DEFS = SOURCE_COLUMNS_CONFIG.columns || [];
+const DEFAULT_COLUMN_TOP = SOURCE_COLUMNS_CONFIG.top ?? 0;
+const DEFAULT_COLUMN_BOTTOM = SOURCE_COLUMNS_CONFIG.bottom ?? DEFAULT_COLUMN_TOP;
+const DEFAULT_COLUMN_HEIGHT = Math.max(DEFAULT_COLUMN_BOTTOM - DEFAULT_COLUMN_TOP, 0);
+const DEFAULT_GAP_Y = SOURCE_COLUMNS_CONFIG.gapY ?? 0;
+const DEFAULT_PADDING_X = SOURCE_COLUMNS_CONFIG.paddingX ?? 0;
+const DEFAULT_GAP_BEFORE = SOURCE_COLUMNS_CONFIG.gapBefore ?? 0;
+const DEFAULT_GAP_AFTER = SOURCE_COLUMNS_CONFIG.gapAfter ?? 0;
+
+export const SOURCE_BOXES = COLUMN_DEFS.flatMap((column) => {
+  const codes = Array.isArray(column.codes) ? column.codes : [];
+  if (!codes.length) return [];
+  const columnTop = column.y ?? DEFAULT_COLUMN_TOP;
+  const columnHeight = column.height ?? DEFAULT_COLUMN_HEIGHT;
+  const gapY = column.gapY ?? DEFAULT_GAP_Y;
+  const padX = column.paddingX ?? DEFAULT_PADDING_X;
+  const availableHeight = Math.max(columnHeight - gapY * (codes.length + 1), 0);
+  const boxHeight = codes.length ? availableHeight / codes.length : 0;
+  const boxWidth = Math.max(column.width - padX * 2, 0);
+
+  return codes.map((code, index) => ({
+    column: column.id,
+    columnIndex: index,
+    code,
+    x: column.x + padX,
+    y: columnTop + gapY + index * (boxHeight + gapY),
+    width: boxWidth,
+    height: boxHeight,
+  }));
+});
+
+export const SOURCE_COLUMNS_META = COLUMN_DEFS.map((column) => ({
+  id: column.id,
+  x: column.x,
+  y: column.y ?? DEFAULT_COLUMN_TOP,
+  width: column.width,
+  height: column.height ?? DEFAULT_COLUMN_HEIGHT,
+  gapBefore: column.gapBefore ?? DEFAULT_GAP_BEFORE,
+  gapAfter: column.gapAfter ?? DEFAULT_GAP_AFTER,
+}));

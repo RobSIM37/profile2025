@@ -1,4 +1,4 @@
-﻿import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from './constants.js';
+import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from './constants.js';
 
 export function createMasterFloristCanvasSizer({ canvas, container, onResize } = {}) {
   if (!canvas) throw new Error('createMasterFloristCanvasSizer requires a canvas element.');
@@ -26,7 +26,7 @@ export function createMasterFloristCanvasSizer({ canvas, container, onResize } =
     const availableHeight = hostRect.height || MF_CANVAS_HEIGHT;
     const aspect = MF_CANVAS_WIDTH / MF_CANVAS_HEIGHT;
     const maxWidthByHeight = availableHeight * aspect;
-    const displayWidth = Math.max(1, Math.min(availableWidth, maxWidthByHeight, MF_CANVAS_WIDTH));
+    const displayWidth = Math.max(1, Math.min(availableWidth, maxWidthByHeight));
     const displayHeight = displayWidth / aspect;
 
     canvas.style.width = `${displayWidth}px`;

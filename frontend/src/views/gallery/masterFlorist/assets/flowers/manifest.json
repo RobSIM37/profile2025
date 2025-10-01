@@ -19,31 +19,31 @@
     {
       "name": "Iris",
       "file": "iris.png",
-      "colors": "purple",
+      "color": "purple",
       "code": "p"
     },
     {
       "name": "Lily",
       "file": "lily.png",
-      "colors": "white",
+      "color": "white",
       "code": "w"
     },
     {
       "name": "Marigold",
       "file": "marigold.png",
-      "colors": "orange",
+      "color": "orange",
       "code": "o"
     },
     {
       "name": "Rose",
       "file": "rose.png",
-      "colors": "red",
+      "color": "red",
       "code": "r"
     },
     {
       "name": "Violet",
       "file": "violet.png",
-      "colors": "blue",
+      "color": "blue",
       "code": "b"
     }
   ]

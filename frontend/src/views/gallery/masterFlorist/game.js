@@ -1,4 +1,4 @@
-﻿import { createCustomerArea } from './components/customerArea.js';
+import { createCustomerArea } from './components/customerArea.js';
 import { createWorkingArea } from './components/workingArea.js';
 import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 import { setAppSolid } from '../../../lib/appShell.js';
@@ -37,8 +37,10 @@ export function render() {
   const section = document.createElement('section');
   section.className = 'stack';
   section.style.display = 'grid';
-  section.style.gridTemplateRows = 'minmax(220px, max-content) auto';
-  section.style.gap = 'var(--space-5)';
+  section.style.gridTemplateRows = '1fr auto';
+  section.style.rowGap = '0';
+  section.style.alignItems = 'stretch';
+  section.style.gap = '0';
   section.style.margin = '0';
   section.style.padding = '0';
 
@@ -46,7 +48,7 @@ export function render() {
 
   const { workingArea, canvasHost, canvasElement } = createWorkingArea();
 
-  section.append(customerArea, workingArea);
+  section.append(workingArea, customerArea);
   layout.append(section);
   frag.append(layout);
 
@@ -91,3 +93,4 @@ export function render() {
 
   return frag;
 }
+
