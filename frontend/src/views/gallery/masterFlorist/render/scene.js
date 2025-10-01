@@ -1,4 +1,14 @@
-import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES, SOURCE_BOXES, SOURCE_COLUMNS_META, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
+import {
+  SLOT_POSITIONS,
+  SLOT_DRAW_ORDER,
+  SLOT_SIZE,
+  DEFAULT_SLOT_CODES,
+  SOURCE_BOXES,
+  SOURCE_COLUMNS_META,
+  SLOT_HITBOX_SCALE,
+  SLOT_CLICK_BOUNDS,
+  SOURCE_CONTAINER,
+} from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 import { MASTER_FLORIST_LAYOUT } from '../state/layout.js';
 
@@ -348,17 +358,35 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   }, {});
 
   function paintFlowerColumns(drag) {
-    SOURCE_COLUMNS_META.forEach((column) => {
-      const boxes = SOURCE_BOXES_BY_COLUMN[column.id] || [];
-      if (!boxes.length) return;
+    const columnEntries = SOURCE_COLUMNS_META.map((column) => ({
+      column,
+      boxes: SOURCE_BOXES_BY_COLUMN[column.id] || [],
+    })).filter((entry) => entry.boxes.length);
 
-      roundRect(ctx, column.x, column.y, column.width, column.height, 18, true, true, {
+    if (!columnEntries.length) {
+      return;
+    }
+
+    if (SOURCE_CONTAINER) {
+      const { x, y, width, height, cornerRadius } = SOURCE_CONTAINER;
+      roundRect(ctx, x, y, width, height, cornerRadius ?? 18, true, true, {
         fillStyle: COLORS.columnFill,
         strokeStyle: COLORS.columnStroke,
       });
+    } else {
+      columnEntries.forEach(({ column }) => {
+        roundRect(ctx, column.x, column.y, column.width, column.height, 18, true, true, {
+          fillStyle: COLORS.columnFill,
+          strokeStyle: COLORS.columnStroke,
+        });
+      });
+    }
 
+    columnEntries.forEach(({ boxes }) => {
       boxes.forEach((box) => {
-        const hideFlower = Boolean(drag && drag.sourceColumn === box.column && drag.sourceIndex === box.columnIndex);
+        const hideFlower = Boolean(
+          drag && drag.sourceColumn === box.column && drag.sourceIndex === box.columnIndex,
+        );
         drawFlowerBox(box.x, box.y, box.width, box.height, box.code, { hideFlower });
       });
     });

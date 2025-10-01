@@ -36,6 +36,28 @@ const DEFAULT_PADDING_X = SOURCE_COLUMNS_CONFIG.paddingX ?? 0;
 const DEFAULT_GAP_BEFORE = SOURCE_COLUMNS_CONFIG.gapBefore ?? 0;
 const DEFAULT_GAP_AFTER = SOURCE_COLUMNS_CONFIG.gapAfter ?? 0;
 
+const SOURCE_CONTAINER_CONFIG = SOURCE_COLUMNS_CONFIG.container || null;
+const DEFAULT_CONTAINER_TOP = SOURCE_CONTAINER_CONFIG?.y ?? DEFAULT_COLUMN_TOP;
+const DEFAULT_CONTAINER_HEIGHT =
+  SOURCE_CONTAINER_CONFIG?.height ??
+  Math.max(
+    (SOURCE_CONTAINER_CONFIG?.bottom ?? SOURCE_COLUMNS_CONFIG.bottom ?? DEFAULT_COLUMN_BOTTOM) -
+      DEFAULT_CONTAINER_TOP,
+    0,
+  );
+
+export const SOURCE_CONTAINER = SOURCE_CONTAINER_CONFIG
+  ? {
+      x: SOURCE_CONTAINER_CONFIG.x ?? 0,
+      y: SOURCE_CONTAINER_CONFIG.y ?? DEFAULT_CONTAINER_TOP,
+      width: SOURCE_CONTAINER_CONFIG.width ?? 0,
+      height: SOURCE_CONTAINER_CONFIG.height ?? DEFAULT_CONTAINER_HEIGHT,
+      paddingX: SOURCE_CONTAINER_CONFIG.paddingX ?? 0,
+      paddingY: SOURCE_CONTAINER_CONFIG.paddingY ?? 0,
+      cornerRadius: SOURCE_CONTAINER_CONFIG.cornerRadius ?? 24,
+    }
+  : null;
+
 export const SOURCE_BOXES = COLUMN_DEFS.flatMap((column) => {
   const codes = Array.isArray(column.codes) ? column.codes : [];
   if (!codes.length) return [];
