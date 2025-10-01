@@ -3,12 +3,12 @@ import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas
 const LEFT_FLOWER_CODES = ['r', 'o', 'y'];
 const RIGHT_FLOWER_CODES = ['b', 'p', 'w'];
 const SLOT_POSITIONS = [
-  { x: 214 + 100, y: 78, stemOffsetX: 50 },
-  { x: 397, y: 78 },
-  { x: 580 - 100, y: 78, stemOffsetX: -50 },
-  { x: 214 + 75, y: 188, stemOffsetX: 50 },
-  { x: 397, y: 188 },
-  { x: 580 - 75, y: 188, stemOffsetX: -50 },
+  { x: 214 + 100, y: 78, stemOffsetX: 20 },
+  { x: 397, y: 43 },
+  { x: 580 - 100, y: 78, stemOffsetX: -20 },
+  { x: 214 + 75 + 30, y: 168, stemOffsetX: 50 },
+  { x: 397, y: 133 },
+  { x: 580 - 75 - 30, y: 168, stemOffsetX: -50 },
 ];
 const SLOT_DRAW_ORDER = [0, 2, 1, 3, 5, 4];
 const SLOT_SIZE = { width: 166, height: 86 };
@@ -176,7 +176,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const naturalHeight = vaseSprites.body?.naturalHeight || defaultBodyHeight;
     const targetHeight = 220;
     const baseScale = Math.min(vaseWidth / naturalWidth, targetHeight / naturalHeight);
-    const scale = baseScale * 1.25;
+    const scale = baseScale * 1.35;
 
     const scaledWidth = naturalWidth * scale;
     const scaledHeight = naturalHeight * scale;
