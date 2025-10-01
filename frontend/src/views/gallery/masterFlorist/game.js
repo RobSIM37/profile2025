@@ -37,11 +37,8 @@ export function render() {
   const section = document.createElement('section');
   section.className = 'stack';
   section.style.display = 'grid';
-  section.style.gridTemplateRows = 'minmax(220px, max-content) minmax(0, 1fr)';
+  section.style.gridTemplateRows = 'minmax(220px, max-content) auto';
   section.style.gap = 'var(--space-5)';
-  section.style.height = '100%';
-  section.style.maxHeight = '100%';
-  section.style.minHeight = '0';
   section.style.margin = '0';
   section.style.padding = '0';
 

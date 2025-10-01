@@ -1,7 +1,16 @@
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
 
-const LEFT_FLOWER_CODES = ['d', 'p', 'w'];
-const RIGHT_FLOWER_CODES = ['o', 'r', 'b'];
+const LEFT_FLOWER_CODES = ['r', 'o', 'y'];
+const RIGHT_FLOWER_CODES = ['b', 'p', 'w'];
+const SLOT_LAYOUT = [
+  { row: 0, col: 0 },
+  { row: 0, col: 1 },
+  { row: 0, col: 2 },
+  { row: 1, col: 0 },
+  { row: 1, col: 1 },
+  { row: 1, col: 2 },
+];
+const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
 const FLOWER_LABELS = {
   d: 'Daisy',
   p: 'Iris',
@@ -9,7 +18,18 @@ const FLOWER_LABELS = {
   o: 'Marigold',
   r: 'Rose',
   b: 'Violet',
+  y: 'Daisy',
 };
+
+const FLOWER_DEFS = [
+  { code: 'd', color: '#f9e678', src: '../assets/flowers/daisy.png' },
+  { code: 'y', color: '#f9e678', src: '../assets/flowers/daisy.png' },
+  { code: 'p', color: '#b39deb', src: '../assets/flowers/iris.png' },
+  { code: 'w', color: '#f4f2eb', src: '../assets/flowers/lily.png' },
+  { code: 'o', color: '#f4b270', src: '../assets/flowers/marigold.png' },
+  { code: 'r', color: '#f2857a', src: '../assets/flowers/rose.png' },
+  { code: 'b', color: '#9aa7f7', src: '../assets/flowers/violet.png' },
+];
 
 const COLORS = {
   background: '#f6f1ed',
@@ -22,9 +42,11 @@ const COLORS = {
   columnFill: 'rgba(39, 32, 27, 0.12)',
   columnStroke: 'rgba(39, 32, 27, 0.25)',
   columnText: '#443128',
-  vaseBody: '#b1d5e8',
-  vaseLip: '#6f9db2',
 };
+
+const vaseSprites = createVaseSprites();
+const flowerSprites = createFlowerSprites();
+const backgroundSprite = createBackgroundSprite();
 
 export function createMasterFloristRenderer({ canvas, state } = {}) {
   if (!canvas) throw new Error('createMasterFloristRenderer requires a canvas element.');
@@ -60,8 +82,16 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const benchHeight = 140;
     const benchY = MF_CANVAS_HEIGHT - benchHeight;
 
+    if (backgroundSprite.ready) {
+      ctx.drawImage(backgroundSprite.image, 0, 0, MF_CANVAS_WIDTH, benchY);
+    } else {
+      ctx.fillStyle = COLORS.background;
+      ctx.fillRect(0, 0, MF_CANVAS_WIDTH, benchY);
+    }
+
     ctx.fillStyle = COLORS.benchTop;
     ctx.fillRect(0, benchY, MF_CANVAS_WIDTH, benchHeight);
+    ctx.fillRect(0, MF_CANVAS_HEIGHT - 4, MF_CANVAS_WIDTH, 4);
 
     ctx.fillStyle = COLORS.benchShadow;
     ctx.fillRect(0, benchY - 6, MF_CANVAS_WIDTH, 6);
@@ -76,10 +106,11 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const columnWidth = 150;
     const columnGap = 28;
     const slotAreaX = paddingX + columnWidth + columnGap;
-    const slotAreaWidth = MF_CANVAS_WIDTH - (slotAreaX * 2);
-    const slotGap = 14;
-    const totalGap = slotGap * (MF_DROP_ZONE_COUNT - 1);
-    const slotWidth = (slotAreaWidth - totalGap) / MF_DROP_ZONE_COUNT;
+    const slotAreaWidth = MF_CANVAS_WIDTH - slotAreaX * 2;
+    const slotGapX = 18;
+    const slotGapY = 24;
+    const columns = 3;
+    const slotWidth = (slotAreaWidth - slotGapX * (columns - 1)) / columns;
     const slotHeight = 86;
     const slotY = 48;
 
@@ -90,28 +121,30 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.textBaseline = 'middle';
 
     for (let i = 0; i < MF_DROP_ZONE_COUNT; i += 1) {
-      const x = slotAreaX + i * (slotWidth + slotGap);
-      const y = slotY;
-      const rectHover = hoverId === 'slot-' + i;
-      const rectRadius = 16;
+      const layout = SLOT_LAYOUT[i] || { row: Math.floor(i / columns), col: i % columns };
+      const offsetX = layout.offsetX || 0;
+      const offsetY = layout.offsetY || 0;
+      const x = slotAreaX + layout.col * (slotWidth + slotGapX) + offsetX;
+      const y = slotY + layout.row * (slotHeight + slotGapY) + offsetY;
+      const code = normalizeSlotCode(solution[i], i);
+
+      if (code) {
+        drawSlotFlower(code, x, y, slotWidth, slotHeight);
+        continue;
+      }
 
       ctx.save();
       ctx.fillStyle = COLORS.slotFill;
-      ctx.strokeStyle = rectHover ? COLORS.slotStroke : COLORS.slotEmptyDash;
-      ctx.setLineDash(rectHover ? [] : [6, 6]);
+      ctx.strokeStyle = COLORS.slotEmptyDash;
+      ctx.setLineDash([6, 6]);
+      const rectRadius = 16;
       roundRect(ctx, x, y, slotWidth, slotHeight, rectRadius, true, true);
+      ctx.fillStyle = COLORS.slotText;
+      ctx.font = '500 14px "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Slot ' + (i + 1), x + slotWidth / 2, y + slotHeight / 2);
       ctx.restore();
-
-      const code = typeof solution[i] === 'string' && solution[i].length ? solution[i].toUpperCase() : null;
-      if (code) {
-        ctx.fillStyle = COLORS.slotText;
-        ctx.font = '700 28px "Segoe UI", sans-serif';
-        ctx.fillText(code, x + slotWidth / 2, y + slotHeight / 2);
-      } else {
-        ctx.fillStyle = COLORS.slotText;
-        ctx.font = '500 14px "Segoe UI", sans-serif';
-        ctx.fillText('Slot ' + (i + 1), x + slotWidth / 2, y + slotHeight / 2);
-      }
     }
 
     ctx.restore();
@@ -149,16 +182,51 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
   function drawFlowerBox(x, y, width, height, code) {
     ctx.save();
-    roundRect(ctx, x, y, width, height, 14, true, true, { fillStyle: 'rgba(255, 255, 255, 0.65)', strokeStyle: 'rgba(0, 0, 0, 0.15)' });
+    const meta = flowerSprites.meta[code];
+    const fillColor = meta?.color || 'rgba(255, 255, 255, 0.65)';
+    roundRect(ctx, x, y, width, height, 14, true, true, { fillStyle: fillColor, strokeStyle: 'rgba(0, 0, 0, 0.18)' });
 
-    ctx.fillStyle = COLORS.columnText;
-    ctx.font = '600 15px "Segoe UI", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(FLOWER_LABELS[code] || code.toUpperCase(), x + width / 2, y + height * 0.3);
+    const img = flowerSprites.images[code];
+    if (img && img.complete && img.naturalWidth > 0) {
+      const padding = 12;
+      const availableWidth = width - padding * 2;
+      const availableHeight = height - padding * 2;
+      const scale = Math.min(availableWidth / img.naturalWidth, availableHeight / img.naturalHeight);
+      const drawWidth = img.naturalWidth * scale;
+      const drawHeight = img.naturalHeight * scale;
+      const drawX = x + (width - drawWidth) / 2;
+      const drawY = y + (height - drawHeight) / 2;
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+    } else {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      ctx.beginPath();
+      ctx.arc(x + width / 2, y + height / 2, Math.min(width, height) / 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    ctx.font = '700 36px "Segoe UI", sans-serif';
-    ctx.fillText(code.toUpperCase(), x + width / 2, y + height * 0.68);
+    ctx.restore();
+  }
+
+  function drawSlotFlower(code, x, y, width, height) {
+    ctx.save();
+    const img = flowerSprites.images[code];
+    const padding = 10;
+
+    if (img && img.complete && img.naturalWidth > 0) {
+      const baseScale = Math.min(width / img.naturalWidth, height / img.naturalHeight);
+      const scaleFactor = baseScale * 1.8;
+      const drawWidth = img.naturalWidth * scaleFactor;
+      const drawHeight = img.naturalHeight * scaleFactor;
+      const drawX = x + (width - drawWidth) / 2;
+      const drawY = y + (height - drawHeight) / 2;
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+    } else {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      ctx.beginPath();
+      ctx.arc(x + width / 2, y + height / 2, Math.min(width, height) / 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     ctx.restore();
   }
 
@@ -167,12 +235,37 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const columnWidth = 150;
     const columnGap = 28;
     const vaseWidth = MF_CANVAS_WIDTH - (paddingX * 2) - (columnWidth + columnGap) * 2;
-    const vaseHeight = 220;
     const vaseX = paddingX + columnWidth + columnGap + vaseWidth / 2;
     const vaseBaseY = MF_CANVAS_HEIGHT - 36;
 
+    if (!vaseSprites.ready) {
+      paintFallbackVase(vaseX, vaseBaseY, vaseWidth);
+      return;
+    }
+
+    const { lip, body } = vaseSprites;
+    const naturalWidth = body.naturalWidth || 1;
+    const naturalHeight = body.naturalHeight || 1;
+    const targetHeight = 220;
+    const scale = Math.min(vaseWidth / naturalWidth, targetHeight / naturalHeight);
+    const scaledWidth = naturalWidth * scale;
+    const scaledHeight = naturalHeight * scale;
+    const destX = vaseX - scaledWidth / 2;
+    const destY = vaseBaseY - scaledHeight;
+    const lipHeight = (lip.naturalHeight || 1) * scale;
+
     ctx.save();
-    ctx.fillStyle = COLORS.vaseBody;
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(lip, destX, destY, scaledWidth, lipHeight);
+    ctx.drawImage(body, destX, destY, scaledWidth, scaledHeight);
+    ctx.restore();
+  }
+
+  function paintFallbackVase(vaseX, vaseBaseY, vaseWidth) {
+    const vaseHeight = 220;
+
+    ctx.save();
+    ctx.fillStyle = '#b1d5e8';
     ctx.beginPath();
     ctx.moveTo(vaseX - vaseWidth * 0.25, vaseBaseY);
     ctx.lineTo(vaseX - vaseWidth * 0.18, vaseBaseY - vaseHeight * 0.6);
@@ -180,13 +273,6 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.quadraticCurveTo(vaseX + vaseWidth * 0.2, vaseBaseY - vaseHeight * 0.9, vaseX + vaseWidth * 0.18, vaseBaseY - vaseHeight * 0.6);
     ctx.lineTo(vaseX + vaseWidth * 0.25, vaseBaseY);
     ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = COLORS.vaseLip;
-    const lipWidth = vaseWidth * 0.4;
-    const lipHeight = 18;
-    ctx.beginPath();
-    ctx.ellipse(vaseX, vaseBaseY - vaseHeight + lipHeight / 2, lipWidth / 2, lipHeight / 2, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -217,4 +303,77 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   render();
 
   return { render, dispose };
+}
+
+function createBackgroundSprite() {
+  const image = new Image();
+  image.decoding = 'async';
+  image.src = new URL('../assets/background.png', import.meta.url).href;
+
+  let ready = false;
+  image.addEventListener('load', () => {
+    ready = true;
+  }, { once: true });
+
+  return { image, get ready() { return ready; } };
+}
+
+function normalizeSlotCode(value, index) {
+  if (typeof value === 'string') {
+    const code = value.toLowerCase();
+    if (code === 'n') {
+      return null;
+    }
+    if (code.length) {
+      return code;
+    }
+  } else if (value) {
+    return String(value);
+  }
+  return DEFAULT_SLOT_CODES[index] || null;
+}
+
+function createVaseSprites() {
+  const lip = new Image();
+  const body = new Image();
+  lip.decoding = 'async';
+  body.decoding = 'async';
+  lip.src = new URL('../assets/flowers/vaseLip.png', import.meta.url).href;
+  body.src = new URL('../assets/flowers/vase.png', import.meta.url).href;
+
+  let loaded = 0;
+  let ready = false;
+
+  function markReady() {
+    loaded += 1;
+    if (loaded >= 2) {
+      ready = true;
+    }
+  }
+
+  lip.addEventListener('load', markReady, { once: true });
+  body.addEventListener('load', markReady, { once: true });
+
+  return {
+    lip,
+    body,
+    get ready() {
+      return ready;
+    },
+  };
+}
+
+function createFlowerSprites() {
+  const images = {};
+  const meta = {};
+
+  FLOWER_DEFS.forEach(({ code, color, src }) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = new URL(src, import.meta.url).href;
+    images[code] = img;
+    meta[code] = { color };
+  });
+
+  return { images, meta };
 }
