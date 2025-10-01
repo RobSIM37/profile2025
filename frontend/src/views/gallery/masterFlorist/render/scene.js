@@ -3,12 +3,12 @@ import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas
 const LEFT_FLOWER_CODES = ['r', 'o', 'y'];
 const RIGHT_FLOWER_CODES = ['b', 'p', 'w'];
 const SLOT_POSITIONS = [
-  { x: 214 + 100, y: 78 },
+  { x: 214 + 100, y: 78, stemOffsetX: 50 },
   { x: 397, y: 78 },
-  { x: 580 - 100, y: 78 },
-  { x: 214 + 75, y: 188 },
+  { x: 580 - 100, y: 78, stemOffsetX: -50 },
+  { x: 214 + 75, y: 188, stemOffsetX: 50 },
   { x: 397, y: 188 },
-  { x: 580 - 75, y: 188 },
+  { x: 580 - 75, y: 188, stemOffsetX: -50 },
 ];
 const SLOT_SIZE = { width: 166, height: 86 };
 const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
@@ -65,8 +65,8 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     clear();
     paintWorkbench();
     paintFlowerColumns();
-    paintSlots();
     paintVase();
+    paintSlots();
   }
 
   function dispose() {
@@ -126,7 +126,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       const code = normalizeSlotCode(solution[i], i);
 
       if (code) {
-        drawStem(ctx, x, y, width, height, vaseBase);
+        drawStem(ctx, x, y, width, height, vaseBase, slot.stemOffsetX || 0);
         drawSlotFlower(code, x, y, width, height);
         continue;
       }
@@ -302,10 +302,10 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   return { render, dispose };
 }
 
-function drawStem(ctx, x, y, width, height, vaseBase) {
+function drawStem(ctx, x, y, width, height, vaseBase, offsetX = 0) {
   const stemX = x + width / 2;
   const stemStartY = y + height;
-  const stemEndX = vaseBase.x;
+  const stemEndX = vaseBase.x + offsetX;
   const stemEndY = vaseBase.y;
 
   ctx.save();
