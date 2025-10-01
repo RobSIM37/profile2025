@@ -1,18 +1,8 @@
-import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
+import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES } from '../state/slots.js';
+import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 
 const LEFT_FLOWER_CODES = ['r', 'o', 'y'];
 const RIGHT_FLOWER_CODES = ['b', 'p', 'w'];
-const SLOT_POSITIONS = [
-  { x: 214 + 100, y: 78, stemOffsetX: 20 },
-  { x: 397, y: 43 },
-  { x: 580 - 100, y: 78, stemOffsetX: -20 },
-  { x: 214 + 75 + 30, y: 168, stemOffsetX: 50 },
-  { x: 397, y: 133 },
-  { x: 580 - 75 - 30, y: 168, stemOffsetX: -50 },
-];
-const SLOT_DRAW_ORDER = [0, 2, 1, 3, 5, 4];
-const SLOT_SIZE = { width: 166, height: 86 };
-const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
 const STEM_STYLES = {
   stroke: '#2d5230',
   width: 6,
@@ -358,6 +348,9 @@ function createBackgroundSprite() {
 }
 
 function normalizeSlotCode(value, index) {
+  if (value === null) {
+    return null;
+  }
   if (typeof value === 'string') {
     const code = value.toLowerCase();
     if (code === 'n') {
@@ -366,7 +359,7 @@ function normalizeSlotCode(value, index) {
     if (code.length) {
       return code;
     }
-  } else if (value) {
+  } else if (value !== undefined) {
     return String(value);
   }
   return DEFAULT_SLOT_CODES[index] || null;

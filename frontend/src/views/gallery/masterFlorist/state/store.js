@@ -1,5 +1,6 @@
 ﻿import { getCustomerLineup } from '../assets/customers/lineup.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
+import { DEFAULT_SLOT_CODES } from './slots.js';
 
 const DEFAULT_VIEWPORT = {
   width: MF_CANVAS_WIDTH,
@@ -85,7 +86,7 @@ export function createMasterFloristPuzzle(seed) {
   }
   return {
     target,
-    solution: new Array(MF_DROP_ZONE_COUNT).fill(null),
+    solution: DEFAULT_SLOT_CODES.slice(0, MF_DROP_ZONE_COUNT),
   };
 }
 

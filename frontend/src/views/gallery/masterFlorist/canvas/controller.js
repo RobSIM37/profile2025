@@ -1,4 +1,5 @@
-﻿import { MF_CANVAS_WIDTH, MF_DROP_ZONE_COUNT } from './constants.js';
+import { SLOT_POSITIONS, SLOT_SIZE } from '../state/slots.js';
+import { updateMasterFloristSolution } from '../state/store.js';
 
 export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint } = {}) {
   if (!canvas) throw new Error('createMasterFloristCanvasController requires a canvas element.');
@@ -45,14 +46,30 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
 
   function handlePointerMove(event) {
     const point = mapPointer(event);
-    state.hoverStemId = inferStemFromPoint(point.x, point.y);
+    const hoverIndex = findSlotIndex(point.x, point.y);
+    state.hoverStemId = hoverIndex != null ? 'slot-' + hoverIndex : null;
     onStateChange?.();
   }
 
   function handlePointerUp(event) {
     canvas.releasePointerCapture?.(event.pointerId);
     const point = mapPointer(event);
-    state.pendingDrops.push({ x: point.x, y: point.y, at: Date.now() });
+    const slotIndex = findSlotIndex(point.x, point.y);
+    let handled = false;
+
+    if (slotIndex != null && Array.isArray(state?.puzzle?.solution)) {
+      const current = state.puzzle.solution[slotIndex];
+      if (current != null) {
+        updateMasterFloristSolution(state, slotIndex, null);
+        handled = true;
+        announce('Removed flower from slot ' + (slotIndex + 1));
+      }
+    }
+
+    if (!handled) {
+      state.pendingDrops.push({ x: point.x, y: point.y, at: Date.now() });
+    }
+
     onStateChange?.();
   }
 
@@ -74,9 +91,20 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   return { mount, unmount, reset };
 }
 
-function inferStemFromPoint(x, y) {
+function findSlotIndex(x, y) {
   if (x == null || y == null) return null;
-  const zoneWidth = MF_CANVAS_WIDTH / MF_DROP_ZONE_COUNT;
-  const index = Math.max(0, Math.min(MF_DROP_ZONE_COUNT - 1, Math.floor(x / zoneWidth)));
-  return `slot-${index}`;
+  for (let i = 0; i < SLOT_POSITIONS.length; i += 1) {
+    const slot = SLOT_POSITIONS[i];
+    if (!slot) continue;
+    const width = slot.width ?? SLOT_SIZE.width;
+    const height = slot.height ?? SLOT_SIZE.height;
+    const left = slot.x ?? 0;
+    const top = slot.y ?? 0;
+    const right = left + width;
+    const bottom = top + height;
+    if (x >= left && x <= right && y >= top && y <= bottom) {
+      return i;
+    }
+  }
+  return null;
 }
