@@ -63,9 +63,9 @@ export const SLOT_CLICK_BOUNDS = [
   { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
   { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
   { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
-  { width: 83, height: SLOT_SIZE.height, offsetX: 36.5, offsetY: 0 },
-  { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
-  { width: 83, height: SLOT_SIZE.height, offsetX: 46.5, offsetY: 0 },
+  { width: 83, height: SLOT_SIZE.height + 6, offsetX: 36.5, offsetY: -6 },
+  { width: 83, height: SLOT_SIZE.height + 6, offsetX: 41.5, offsetY: -6 },
+  { width: 83, height: SLOT_SIZE.height + 6, offsetX: 46.5, offsetY: -6 },
 ];
 
 export const SLOT_DRAW_ORDER = [0, 2, 1, 3, 5, 4];

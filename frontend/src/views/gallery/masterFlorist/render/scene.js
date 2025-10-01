@@ -177,24 +177,8 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
   }
 
-  function paintEmptySlotPlaceholders(slots) {
-    slots.forEach((slot) => {
-      if (!slot) return;
-      const bounds = slot.clickBounds || SLOT_CLICK_BOUNDS?.[slot.index] || {};
-      const width = bounds.width ?? slot.width * (SLOT_HITBOX_SCALE ?? 1);
-      const height = bounds.height ?? slot.height;
-      const offsetX = bounds.offsetX != null ? bounds.offsetX : (slot.width - width) / 2;
-      const offsetY = bounds.offsetY ?? 0;
-      const left = slot.x + offsetX;
-      const top = slot.y + offsetY;
-
-      ctx.save();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(0, 255, 0, 0.65)';
-      ctx.setLineDash([5, 4]);
-      ctx.strokeRect(left, top, width, height);
-      ctx.restore();
-    });
+  function paintEmptySlotPlaceholders() {
+    // Dev hitbox outlines disabled.
   }
 
   function getVaseMetrics() {
