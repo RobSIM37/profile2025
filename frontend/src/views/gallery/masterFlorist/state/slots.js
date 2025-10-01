@@ -46,6 +46,10 @@ export const SOURCE_BOXES = COLUMN_CONFIGS.flatMap(({ id: columnId, x, y, codes 
 
 export const SOURCE_COLUMNS_META = COLUMN_CONFIGS.map(({ codes, ...meta }) => meta);
 
+export const SLOT_SIZE = { width: 166, height: 86 };
+
+export const SLOT_HITBOX_SCALE = 0.5;
+
 export const SLOT_POSITIONS = [
   { x: 314, y: 78, stemOffsetX: 50 },
   { x: 397, y: 43 },
@@ -55,10 +59,15 @@ export const SLOT_POSITIONS = [
   { x: 475, y: 168, stemOffsetX: -20 },
 ];
 
+export const SLOT_CLICK_BOUNDS = [
+  { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
+  { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
+  { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
+  { width: 83, height: SLOT_SIZE.height, offsetX: 36.5, offsetY: 0 },
+  { width: 83, height: SLOT_SIZE.height, offsetX: 41.5, offsetY: 0 },
+  { width: 83, height: SLOT_SIZE.height, offsetX: 46.5, offsetY: 0 },
+];
+
 export const SLOT_DRAW_ORDER = [0, 2, 1, 3, 5, 4];
 
-export const SLOT_SIZE = { width: 166, height: 86 };
-
 export const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
-
-export const SLOT_HITBOX_SCALE = 0.5;

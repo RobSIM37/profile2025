@@ -1,4 +1,4 @@
-import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE } from '../state/slots.js';
+import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
 import { updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag } from '../state/store.js';
 
 export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint } = {}) {
@@ -135,18 +135,29 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
 
 function findSlotIndex(x, y) {
   if (x == null || y == null) return null;
+  const slotsPerRow = SLOT_POSITIONS.length / 2;
   for (let i = 0; i < SLOT_POSITIONS.length; i += 1) {
     const slot = SLOT_POSITIONS[i];
+    const bounds = SLOT_CLICK_BOUNDS?.[i];
     if (!slot) continue;
     const baseWidth = slot.width ?? SLOT_SIZE.width;
     const baseHeight = slot.height ?? SLOT_SIZE.height;
-    const width = baseWidth * (SLOT_HITBOX_SCALE ?? 1);
-    const height = baseHeight;
-    const left = (slot.x ?? 0) + (baseWidth - width) / 2;
-    const top = slot.y ?? 0;
+    const width = bounds?.width ?? baseWidth * (SLOT_HITBOX_SCALE ?? 1);
+    const height = bounds?.height ?? baseHeight;
+    const offsetX = bounds?.offsetX ?? (baseWidth - width) / 2;
+    const offsetY = bounds?.offsetY ?? 0;
+    const left = (slot.x ?? 0) + offsetX;
+    const top = (slot.y ?? 0) + offsetY;
     const right = left + width;
     const bottom = top + height;
-    if (x >= left && x <= right && y >= top && y <= bottom) {
+    const columnIndex = slotsPerRow ? i % slotsPerRow : i;
+    const rowIndex = slotsPerRow ? Math.floor(i / slotsPerRow) : 0;
+    const lastColumn = slotsPerRow ? columnIndex === slotsPerRow - 1 : true;
+    const totalRows = slotsPerRow ? Math.ceil(SLOT_POSITIONS.length / slotsPerRow) : 1;
+    const lastRow = rowIndex === totalRows - 1;
+    const withinX = x >= left && (lastColumn ? x <= right : x < right);
+    const withinY = y >= top && (lastRow ? y <= bottom : y < bottom);
+    if (withinX && withinY) {
       return i;
     }
   }

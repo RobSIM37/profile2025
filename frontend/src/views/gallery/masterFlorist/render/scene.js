@@ -1,4 +1,4 @@
-import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES, SOURCE_BOXES, SOURCE_COLUMNS_META, SLOT_HITBOX_SCALE } from '../state/slots.js';
+import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES, SOURCE_BOXES, SOURCE_COLUMNS_META, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 
 const STEM_STYLES = {
@@ -112,6 +112,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       height: slot.height ?? SLOT_SIZE.height,
       code: normalizeSlotCode(solution[index], index),
       stemOffsetX: slot.stemOffsetX ?? 0,
+      clickBounds: SLOT_CLICK_BOUNDS[index] || null,
     }));
   }
 
@@ -140,9 +141,14 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
     slots.forEach((slot) => {
       if (!slot) return;
-      const radius = Math.min(slot.width, slot.height) * 0.45;
-      const centerX = slot.x + slot.width / 2;
-      const centerY = slot.y + slot.height / 2;
+      const bounds = slot.clickBounds || SLOT_CLICK_BOUNDS?.[slot.index] || {};
+      const width = bounds.width ?? slot.width;
+      const height = bounds.height ?? slot.height;
+      const left = slot.x + (bounds.offsetX ?? (slot.width - width) / 2);
+      const top = slot.y + (bounds.offsetY ?? 0);
+      const centerX = left + width / 2;
+      const centerY = top + height / 2;
+      const radius = Math.min(width, height) * 0.45;
       ctx.save();
       ctx.globalAlpha = slot.index === hoverIndex ? 0.5 : 0.25;
       ctx.fillStyle = color;
@@ -172,17 +178,21 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   }
 
   function paintEmptySlotPlaceholders(slots) {
-    const scale = SLOT_HITBOX_SCALE ?? 1;
     slots.forEach((slot) => {
       if (!slot) return;
-      const tightenedWidth = slot.width * scale;
-      const offsetX = slot.x + (slot.width - tightenedWidth) / 2;
+      const bounds = slot.clickBounds || SLOT_CLICK_BOUNDS?.[slot.index] || {};
+      const width = bounds.width ?? slot.width * (SLOT_HITBOX_SCALE ?? 1);
+      const height = bounds.height ?? slot.height;
+      const offsetX = bounds.offsetX != null ? bounds.offsetX : (slot.width - width) / 2;
+      const offsetY = bounds.offsetY ?? 0;
+      const left = slot.x + offsetX;
+      const top = slot.y + offsetY;
 
       ctx.save();
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'rgba(0, 255, 0, 0.65)';
       ctx.setLineDash([5, 4]);
-      ctx.strokeRect(offsetX, slot.y, tightenedWidth, slot.height);
+      ctx.strokeRect(left, top, width, height);
       ctx.restore();
     });
   }
