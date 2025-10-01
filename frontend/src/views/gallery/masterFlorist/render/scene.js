@@ -10,11 +10,11 @@ const SLOT_POSITIONS = [
   { x: 397, y: 188 },
   { x: 580 - 75, y: 188, stemOffsetX: -50 },
 ];
+const SLOT_DRAW_ORDER = [0, 2, 1, 3, 5, 4];
 const SLOT_SIZE = { width: 166, height: 86 };
 const DEFAULT_SLOT_CODES = ['r', 'o', 'y', 'b', 'p', 'w'];
 const STEM_STYLES = {
   stroke: '#2d5230',
-  fill: '#58a464',
   width: 6,
 };
 const FLOWER_LABELS = {
@@ -63,10 +63,18 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
   function render() {
     clear();
+
+    const slots = prepareSlotStates();
+    const vaseMetrics = getVaseMetrics();
+    const hoverId = gameState?.hoverStemId || null;
+
     paintWorkbench();
     paintFlowerColumns();
-    paintVase();
-    paintSlots();
+    paintVaseLip(vaseMetrics);
+    paintStemsLayer(slots, vaseMetrics);
+    paintVaseBody(vaseMetrics);
+    paintFlowersLayer(slots);
+    paintEmptySlotPlaceholders(slots, hoverId);
   }
 
   function dispose() {
@@ -104,46 +112,130 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
   }
 
-  function paintSlots() {
+  function prepareSlotStates() {
     const solution = gameState?.puzzle?.solution || [];
-    const hoverId = gameState?.hoverStemId || null;
 
-    ctx.save();
-    ctx.lineWidth = 2;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    return SLOT_POSITIONS.map((slot, index) => ({
+      index,
+      x: slot.x ?? 0,
+      y: slot.y ?? 0,
+      width: slot.width ?? SLOT_SIZE.width,
+      height: slot.height ?? SLOT_SIZE.height,
+      code: normalizeSlotCode(solution[index], index),
+      stemOffsetX: slot.stemOffsetX ?? 0,
+    }));
+  }
 
-    const vaseBase = getVaseBasePoint();
+  function paintStemsLayer(slots, vaseMetrics) {
+    SLOT_DRAW_ORDER.forEach((slotIndex) => {
+      const slot = slots[slotIndex];
+      if (!slot || !slot.code) return;
+      drawStem(ctx, slot, vaseMetrics);
+    });
+  }
 
-    for (let i = 0; i < MF_DROP_ZONE_COUNT; i += 1) {
-      const slot = SLOT_POSITIONS[i];
-      if (!slot) continue;
+  function paintFlowersLayer(slots) {
+    SLOT_DRAW_ORDER.forEach((slotIndex) => {
+      const slot = slots[slotIndex];
+      if (!slot || !slot.code) return;
+      drawSlotFlower(slot.code, slot.x, slot.y, slot.width, slot.height);
+    });
+  }
 
-      const width = slot.width ?? SLOT_SIZE.width;
-      const height = slot.height ?? SLOT_SIZE.height;
-      const x = slot.x ?? 0;
-      const y = slot.y ?? 0;
-      const code = normalizeSlotCode(solution[i], i);
-
-      if (code) {
-        drawStem(ctx, x, y, width, height, vaseBase, slot.stemOffsetX || 0);
-        drawSlotFlower(code, x, y, width, height);
-        continue;
-      }
+  function paintEmptySlotPlaceholders(slots, hoverId) {
+    slots.forEach((slot) => {
+      if (!slot || slot.code) return;
+      const rectRadius = 16;
+      const isHover = hoverId === 'slot-' + slot.index;
 
       ctx.save();
       ctx.fillStyle = COLORS.slotFill;
-      const rectHover = hoverId === 'slot-' + i;
-      ctx.strokeStyle = rectHover ? COLORS.slotStroke : COLORS.slotEmptyDash;
-      ctx.setLineDash(rectHover ? [] : [6, 6]);
-      const rectRadius = 16;
-      roundRect(ctx, x, y, width, height, rectRadius, true, true);
+      ctx.strokeStyle = isHover ? COLORS.slotStroke : COLORS.slotEmptyDash;
+      ctx.setLineDash(isHover ? [] : [6, 6]);
+      roundRect(ctx, slot.x, slot.y, slot.width, slot.height, rectRadius, true, true);
       ctx.fillStyle = COLORS.slotText;
       ctx.font = '500 14px "Segoe UI", sans-serif';
-      ctx.fillText('Slot ' + (i + 1), x + width / 2, y + height / 2);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Slot ' + (slot.index + 1), slot.x + slot.width / 2, slot.y + slot.height / 2);
       ctx.restore();
-    }
+    });
+  }
 
+  function getVaseMetrics() {
+    const paddingX = 36;
+    const columnWidth = 150;
+    const columnGap = 28;
+    const vaseWidth = MF_CANVAS_WIDTH - (paddingX * 2) - (columnWidth + columnGap) * 2;
+    const baseX = paddingX + columnWidth + columnGap + vaseWidth / 2;
+    const baseY = MF_CANVAS_HEIGHT - 16;
+
+    const defaultBodyWidth = 218;
+    const defaultBodyHeight = 272;
+    const naturalWidth = vaseSprites.body?.naturalWidth || defaultBodyWidth;
+    const naturalHeight = vaseSprites.body?.naturalHeight || defaultBodyHeight;
+    const targetHeight = 220;
+    const baseScale = Math.min(vaseWidth / naturalWidth, targetHeight / naturalHeight);
+    const scale = baseScale * 1.25;
+
+    const scaledWidth = naturalWidth * scale;
+    const scaledHeight = naturalHeight * scale;
+    const destX = baseX - scaledWidth / 2;
+    const destY = baseY - scaledHeight;
+    const lipNaturalHeight = vaseSprites.lip?.naturalHeight || 32;
+    const lipHeight = lipNaturalHeight * scale;
+
+    return {
+      baseX,
+      baseY,
+      stemAnchorY: baseY - 12,
+      scaledWidth,
+      scaledHeight,
+      destX,
+      destY,
+      lipHeight,
+      scale,
+    };
+  }
+
+  function paintVaseLip(metrics) {
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    if (vaseSprites.ready) {
+      ctx.drawImage(vaseSprites.lip, metrics.destX, metrics.destY, metrics.scaledWidth, metrics.lipHeight);
+    } else {
+      ctx.fillStyle = '#6f9db2';
+      ctx.beginPath();
+      ctx.ellipse(metrics.baseX, metrics.destY + metrics.lipHeight / 2, metrics.scaledWidth / 2, metrics.lipHeight / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function paintVaseBody(metrics) {
+    if (vaseSprites.ready) {
+      ctx.save();
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(vaseSprites.body, metrics.destX, metrics.destY, metrics.scaledWidth, metrics.scaledHeight);
+      ctx.restore();
+    } else {
+      paintFallbackVaseBody(metrics);
+    }
+  }
+
+  function paintFallbackVaseBody(metrics) {
+    const { baseX, baseY, scaledWidth, scaledHeight, destY } = metrics;
+
+    ctx.save();
+    ctx.fillStyle = '#b1d5e8';
+    ctx.beginPath();
+    ctx.moveTo(baseX - scaledWidth * 0.25, baseY);
+    ctx.lineTo(baseX - scaledWidth * 0.18, baseY - scaledHeight * 0.6);
+    ctx.quadraticCurveTo(baseX - scaledWidth * 0.2, destY, baseX, destY);
+    ctx.quadraticCurveTo(baseX + scaledWidth * 0.2, destY, baseX + scaledWidth * 0.18, baseY - scaledHeight * 0.6);
+    ctx.lineTo(baseX + scaledWidth * 0.25, baseY);
+    ctx.closePath();
+    ctx.fill();
     ctx.restore();
   }
 
@@ -207,7 +299,6 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   function drawSlotFlower(code, x, y, width, height) {
     ctx.save();
     const img = flowerSprites.images[code];
-    const padding = 10;
 
     if (img && img.complete && img.naturalWidth > 0) {
       const baseScale = Math.min(width / img.naturalWidth, height / img.naturalHeight);
@@ -227,109 +318,29 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
   }
 
-  function paintVase() {
-    const paddingX = 36;
-    const columnWidth = 150;
-    const columnGap = 28;
-    const vaseWidth = MF_CANVAS_WIDTH - (paddingX * 2) - (columnWidth + columnGap) * 2;
-    const vaseX = paddingX + columnWidth + columnGap + vaseWidth / 2;
-    const vaseBaseY = MF_CANVAS_HEIGHT - 16;
-
-    if (!vaseSprites.ready) {
-      paintFallbackVase(vaseX, vaseBaseY, vaseWidth);
-      return;
-    }
-
-    const { lip, body } = vaseSprites;
-    const naturalWidth = body.naturalWidth || 1;
-    const naturalHeight = body.naturalHeight || 1;
-    const targetHeight = 220;
-    const scale = Math.min(vaseWidth / naturalWidth, targetHeight / naturalHeight);
-    const scaledWidth = naturalWidth * scale * 1.25;
-    const scaledHeight = naturalHeight * scale * 1.25;
-    const destX = vaseX - scaledWidth / 2;
-    const destY = vaseBaseY - scaledHeight;
-    const lipHeight = (lip.naturalHeight || 1) * scale * 1.25;
+  function drawStem(ctx, slot, vaseMetrics) {
+    const stemX = slot.x + slot.width / 2;
+    const stemStartY = slot.y + slot.height;
+    const stemEndX = vaseMetrics.baseX + (slot.stemOffsetX || 0);
+    const stemEndY = vaseMetrics.stemAnchorY;
 
     ctx.save();
-    ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(lip, destX, destY, scaledWidth, lipHeight);
-    ctx.drawImage(body, destX, destY, scaledWidth, scaledHeight);
-    ctx.restore();
-  }
+    ctx.strokeStyle = STEM_STYLES.stroke;
+    ctx.lineWidth = STEM_STYLES.width;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
 
-  function paintFallbackVase(vaseX, vaseBaseY, vaseWidth) {
-    const vaseHeight = 220;
-
-    ctx.save();
-    ctx.fillStyle = '#b1d5e8';
     ctx.beginPath();
-    ctx.moveTo(vaseX - vaseWidth * 0.25, vaseBaseY);
-    ctx.lineTo(vaseX - vaseWidth * 0.18, vaseBaseY - vaseHeight * 0.6);
-    ctx.quadraticCurveTo(vaseX - vaseWidth * 0.2, vaseBaseY - vaseHeight * 0.9, vaseX, vaseBaseY - vaseHeight);
-    ctx.quadraticCurveTo(vaseX + vaseWidth * 0.2, vaseBaseY - vaseHeight * 0.9, vaseX + vaseWidth * 0.18, vaseBaseY - vaseHeight * 0.6);
-    ctx.lineTo(vaseX + vaseWidth * 0.25, vaseBaseY);
-    ctx.closePath();
-    ctx.fill();
+    ctx.moveTo(stemX, stemStartY);
+    ctx.lineTo(stemEndX, stemEndY);
+    ctx.stroke();
+
     ctx.restore();
-  }
-
-  function roundRect(context, x, y, width, height, radius, fill, stroke, styles = {}) {
-    const r = Math.min(radius, width / 2, height / 2);
-    context.save();
-    if (styles.fillStyle) context.fillStyle = styles.fillStyle;
-    if (styles.strokeStyle) context.strokeStyle = styles.strokeStyle;
-
-    context.beginPath();
-    context.moveTo(x + r, y);
-    context.lineTo(x + width - r, y);
-    context.quadraticCurveTo(x + width, y, x + width, y + r);
-    context.lineTo(x + width, y + height - r);
-    context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
-    context.lineTo(x + r, y + height);
-    context.quadraticCurveTo(x, y + height, x, y + height - r);
-    context.lineTo(x, y + r);
-    context.quadraticCurveTo(x, y, x + r, y);
-    context.closePath();
-
-    if (fill) context.fill();
-    if (stroke) context.stroke();
-    context.restore();
   }
 
   render();
 
   return { render, dispose };
-}
-
-function drawStem(ctx, x, y, width, height, vaseBase, offsetX = 0) {
-  const stemX = x + width / 2;
-  const stemStartY = y + height;
-  const stemEndX = vaseBase.x + offsetX;
-  const stemEndY = vaseBase.y;
-
-  ctx.save();
-  ctx.strokeStyle = STEM_STYLES.stroke;
-  ctx.lineWidth = STEM_STYLES.width;
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
-
-  ctx.beginPath();
-  ctx.moveTo(stemX, stemStartY);
-  ctx.lineTo(stemEndX, stemEndY);
-  ctx.stroke();
-
-  ctx.restore();
-}
-
-function getVaseBasePoint() {
-  const paddingX = 36;
-  const columnWidth = 150;
-  const columnGap = 28;
-  const vaseWidth = MF_CANVAS_WIDTH - (paddingX * 2) - (columnWidth + columnGap) * 2;
-  const vaseX = paddingX + columnWidth + columnGap + vaseWidth / 2;
-  const vaseBaseY = MF_CANVAS_HEIGHT - 16;
-  return { x: vaseX, y: vaseBaseY - 12 };
 }
 
 function createBackgroundSprite() {
@@ -403,4 +414,27 @@ function createFlowerSprites() {
   });
 
   return { images, meta };
+}
+
+function roundRect(context, x, y, width, height, radius, fill, stroke, styles = {}) {
+  const r = Math.min(radius, width / 2, height / 2);
+  context.save();
+  if (styles.fillStyle) context.fillStyle = styles.fillStyle;
+  if (styles.strokeStyle) context.strokeStyle = styles.strokeStyle;
+
+  context.beginPath();
+  context.moveTo(x + r, y);
+  context.lineTo(x + width - r, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + r);
+  context.lineTo(x + width, y + height - r);
+  context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+  context.lineTo(x + r, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - r);
+  context.lineTo(x, y + r);
+  context.quadraticCurveTo(x, y, x + r, y);
+  context.closePath();
+
+  if (fill) context.fill();
+  if (stroke) context.stroke();
+  context.restore();
 }
