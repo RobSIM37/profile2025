@@ -22,6 +22,7 @@ export function createMasterFloristState() {
     benchSlots: buildBenchSlots(),
     hoverStemId: null,
     pendingDrops: [],
+    drag: null,
     clock: { tick: 0, elapsedMs: 0, deltaMs: 0 },
     viewport: { ...DEFAULT_VIEWPORT },
     puzzle: createMasterFloristPuzzle(seed),
@@ -37,6 +38,7 @@ export function resetMasterFloristState(state) {
   });
   state.hoverStemId = null;
   state.pendingDrops = [];
+  state.drag = null;
   state.clock = { tick: 0, elapsedMs: 0, deltaMs: 0 };
   state.viewport = { ...DEFAULT_VIEWPORT };
   state.puzzle = createMasterFloristPuzzle(freshSeed);
@@ -60,7 +62,21 @@ export function updateMasterFloristViewport(state, metrics = {}) {
 export function updateMasterFloristSolution(state, index, code) {
   if (!state?.puzzle) return;
   if (index < 0 || index >= state.puzzle.solution.length) return;
-  state.puzzle.solution[index] = typeof code === 'string' && code.length ? code : null;
+  if (typeof code === 'string' && code.length) {
+    state.puzzle.solution[index] = code.toLowerCase();
+  } else {
+    state.puzzle.solution[index] = null;
+  }
+}
+
+export function setMasterFloristDrag(state, drag) {
+  if (!state) return;
+  state.drag = drag ? { ...drag } : null;
+}
+
+export function updateMasterFloristDrag(state, updates = {}) {
+  if (!state?.drag) return;
+  Object.assign(state.drag, updates);
 }
 
 export function collapseMasterFloristSolution(solution = []) {

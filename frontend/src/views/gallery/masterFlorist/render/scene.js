@@ -1,22 +1,10 @@
-import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES } from '../state/slots.js';
+import { SLOT_POSITIONS, SLOT_DRAW_ORDER, SLOT_SIZE, DEFAULT_SLOT_CODES, SOURCE_BOXES, SOURCE_COLUMNS_META } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 
-const LEFT_FLOWER_CODES = ['r', 'o', 'y'];
-const RIGHT_FLOWER_CODES = ['b', 'p', 'w'];
 const STEM_STYLES = {
   stroke: '#2d5230',
   width: 6,
 };
-const FLOWER_LABELS = {
-  d: 'Daisy',
-  p: 'Iris',
-  w: 'Lily',
-  o: 'Marigold',
-  r: 'Rose',
-  b: 'Violet',
-  y: 'Daisy',
-};
-
 const FLOWER_DEFS = [
   { code: 'd', color: '#f9e678', src: '../assets/flowers/daisy.png' },
   { code: 'y', color: '#f9e678', src: '../assets/flowers/daisy.png' },
@@ -26,6 +14,14 @@ const FLOWER_DEFS = [
   { code: 'r', color: '#f2857a', src: '../assets/flowers/rose.png' },
   { code: 'b', color: '#9aa7f7', src: '../assets/flowers/violet.png' },
 ];
+
+const FLOWER_META_BY_CODE = FLOWER_DEFS.reduce((acc, def) => {
+  const entry = { ...def };
+  const lower = def.code.toLowerCase();
+  acc[lower] = entry;
+  acc[def.code.toUpperCase()] = entry;
+  return acc;
+}, Object.create(null));
 
 const COLORS = {
   background: '#f6f1ed',
@@ -57,13 +53,16 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const slots = prepareSlotStates();
     const vaseMetrics = getVaseMetrics();
     const hoverId = gameState?.hoverStemId || null;
+    const drag = gameState?.drag || null;
 
     paintWorkbench();
-    paintFlowerColumns();
+    paintFlowerColumns(drag);
     paintVaseLip(vaseMetrics);
     paintStemsLayer(slots, vaseMetrics);
     paintVaseBody(vaseMetrics);
+    paintDropTargets(slots, hoverId, drag);
     paintFlowersLayer(slots);
+    paintDragPreview(drag);
     paintEmptySlotPlaceholders(slots, hoverId);
   }
 
@@ -133,24 +132,47 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     });
   }
 
-  function paintEmptySlotPlaceholders(slots, hoverId) {
-    slots.forEach((slot) => {
-      if (!slot || slot.code) return;
-      const rectRadius = 16;
-      const isHover = hoverId === 'slot-' + slot.index;
+  function paintDropTargets(slots, hoverId, drag) {
+    if (!drag) return;
+    const meta = getFlowerMeta(drag.code);
+    const color = meta.color || 'rgba(255, 255, 255, 0.45)';
+    const hoverIndex = typeof hoverId === 'string' && hoverId.startsWith('slot-') ? Number(hoverId.slice(5)) : null;
 
+    slots.forEach((slot) => {
+      if (!slot) return;
+      const radius = Math.min(slot.width, slot.height) * 0.45;
+      const centerX = slot.x + slot.width / 2;
+      const centerY = slot.y + slot.height / 2;
       ctx.save();
-      ctx.fillStyle = COLORS.slotFill;
-      ctx.strokeStyle = isHover ? COLORS.slotStroke : COLORS.slotEmptyDash;
-      ctx.setLineDash(isHover ? [] : [6, 6]);
-      roundRect(ctx, slot.x, slot.y, slot.width, slot.height, rectRadius, true, true);
-      ctx.fillStyle = COLORS.slotText;
-      ctx.font = '500 14px "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Slot ' + (slot.index + 1), slot.x + slot.width / 2, slot.y + slot.height / 2);
+      ctx.globalAlpha = slot.index === hoverIndex ? 0.5 : 0.25;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = slot.index === hoverIndex ? 0.85 : 0.45;
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = color;
+      ctx.stroke();
       ctx.restore();
     });
+  }
+
+  function paintDragPreview(drag) {
+    if (!drag || drag.x == null || drag.y == null) return;
+    const width = drag.width ?? SLOT_SIZE.width;
+    const height = drag.height ?? SLOT_SIZE.height;
+    const offsetX = drag.offsetX ?? width / 2;
+    const offsetY = drag.offsetY ?? height / 2;
+    const drawX = drag.x - offsetX;
+    const drawY = drag.y - offsetY;
+    ctx.save();
+    ctx.globalAlpha = 0.75;
+    drawSlotFlower(drag.code, drawX, drawY, width, height);
+    ctx.restore();
+  }
+
+  function paintEmptySlotPlaceholders(slots, hoverId) {
+    // Intentionally left blank for now; empty slots render nothing.
   }
 
   function getVaseMetrics() {
@@ -230,58 +252,61 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
   }
 
-  function paintFlowerColumns() {
-    const paddingX = 36;
-    const columnWidth = 150;
-    const columnTop = 160;
-    const columnBottom = MF_CANVAS_HEIGHT - 44;
-    const columnHeight = columnBottom - columnTop;
+  const SOURCE_BOXES_BY_COLUMN = SOURCE_BOXES.reduce((acc, box) => {
+    (acc[box.column] ||= []).push(box);
+    return acc;
+  }, {});
 
-    ctx.save();
-    drawFlowerColumn(paddingX, columnTop, columnWidth, columnHeight, LEFT_FLOWER_CODES);
-    drawFlowerColumn(MF_CANVAS_WIDTH - paddingX - columnWidth, columnTop, columnWidth, columnHeight, RIGHT_FLOWER_CODES);
-    ctx.restore();
-  }
+  function paintFlowerColumns(drag) {
+    SOURCE_COLUMNS_META.forEach((column) => {
+      const boxes = SOURCE_BOXES_BY_COLUMN[column.id] || [];
+      if (!boxes.length) return;
 
-  function drawFlowerColumn(x, y, width, height, codes) {
-    ctx.save();
-    roundRect(ctx, x, y, width, height, 18, true, true, { fillStyle: COLORS.columnFill, strokeStyle: COLORS.columnStroke });
+      roundRect(ctx, column.x, column.y, column.width, column.height, 18, true, true, {
+        fillStyle: COLORS.columnFill,
+        strokeStyle: COLORS.columnStroke,
+      });
 
-    const boxGap = 16;
-    const boxHeight = (height - boxGap * (codes.length + 1)) / codes.length;
-    const boxWidth = width - boxGap * 2;
-
-    codes.forEach((code, index) => {
-      const bx = x + boxGap;
-      const by = y + boxGap + index * (boxHeight + boxGap);
-      drawFlowerBox(bx, by, boxWidth, boxHeight, code);
+      boxes.forEach((box) => {
+        const hideFlower = Boolean(drag && drag.sourceColumn === box.column && drag.sourceIndex === box.columnIndex);
+        drawFlowerBox(box.x, box.y, box.width, box.height, box.code, { hideFlower });
+      });
     });
-
-    ctx.restore();
   }
 
-  function drawFlowerBox(x, y, width, height, code) {
+  function getFlowerMeta(code) {
+    if (!code) return {};
+    const key = typeof code === 'string' ? code.toLowerCase() : code;
+    return FLOWER_META_BY_CODE[key] || {};
+  }
+
+  function drawFlowerBox(x, y, width, height, code, options = {}) {
+    const { hideFlower = false } = options;
+    const meta = getFlowerMeta(code);
+    const fillColor = meta.color || 'rgba(255, 255, 255, 0.65)';
+
     ctx.save();
-    const meta = flowerSprites.meta[code];
-    const fillColor = meta?.color || 'rgba(255, 255, 255, 0.65)';
     roundRect(ctx, x, y, width, height, 14, true, true, { fillStyle: fillColor, strokeStyle: 'rgba(0, 0, 0, 0.18)' });
 
-    const img = flowerSprites.images[code];
-    if (img && img.complete && img.naturalWidth > 0) {
-      const padding = 12;
-      const availableWidth = width - padding * 2;
-      const availableHeight = height - padding * 2;
-      const scale = Math.min(availableWidth / img.naturalWidth, availableHeight / img.naturalHeight);
-      const drawWidth = img.naturalWidth * scale;
-      const drawHeight = img.naturalHeight * scale;
-      const drawX = x + (width - drawWidth) / 2;
-      const drawY = y + (height - drawHeight) / 2;
-      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-    } else {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-      ctx.beginPath();
-      ctx.arc(x + width / 2, y + height / 2, Math.min(width, height) / 4, 0, Math.PI * 2);
-      ctx.fill();
+    if (!hideFlower) {
+      const normalizedCode = typeof code === 'string' ? code.toLowerCase() : code;
+      const img = flowerSprites.images[normalizedCode];
+      if (img && img.complete && img.naturalWidth > 0) {
+        const padding = 12;
+        const availableWidth = width - padding * 2;
+        const availableHeight = height - padding * 2;
+        const scale = Math.min(availableWidth / img.naturalWidth, availableHeight / img.naturalHeight);
+        const drawWidth = img.naturalWidth * scale;
+        const drawHeight = img.naturalHeight * scale;
+        const drawX = x + (width - drawWidth) / 2;
+        const drawY = y + (height - drawHeight) / 2;
+        ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+      } else {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+        ctx.beginPath();
+        ctx.arc(x + width / 2, y + height / 2, Math.min(width, height) / 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     ctx.restore();
@@ -289,7 +314,8 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
   function drawSlotFlower(code, x, y, width, height) {
     ctx.save();
-    const img = flowerSprites.images[code];
+    const normalizedCode = typeof code === 'string' ? code.toLowerCase() : '';
+    const img = flowerSprites.images[normalizedCode];
 
     if (img && img.complete && img.naturalWidth > 0) {
       const baseScale = Math.min(width / img.naturalWidth, height / img.naturalHeight);
@@ -403,8 +429,12 @@ function createFlowerSprites() {
     const img = new Image();
     img.decoding = 'async';
     img.src = new URL(src, import.meta.url).href;
-    images[code] = img;
-    meta[code] = { color };
+    const lower = code.toLowerCase();
+    const upper = code.toUpperCase();
+    images[lower] = img;
+    images[upper] = img;
+    meta[lower] = { color };
+    meta[upper] = meta[lower];
   });
 
   return { images, meta };
