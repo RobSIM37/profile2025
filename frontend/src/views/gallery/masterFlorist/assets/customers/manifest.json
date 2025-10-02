@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-10-02T14:06:50.5670899-04:00",
+  "generatedAt": "2025-10-02T16:41:40.2751746-04:00",
   "sourceFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\sprite-sheets",
   "outputFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\customers",
   "files": [
@@ -1565,8 +1565,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 217,
-        "height": 312
+        "width": 228,
+        "height": 313
       }
     },
     {
@@ -1592,7 +1592,7 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 217,
+        "width": 229,
         "height": 306
       }
     },
@@ -1619,7 +1619,7 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 219,
+        "width": 230,
         "height": 297
       }
     },
