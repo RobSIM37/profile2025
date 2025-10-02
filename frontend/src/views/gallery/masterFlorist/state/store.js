@@ -1,4 +1,3 @@
-import { getCustomerLineup } from '../assets/customers/lineup.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
 
 const DEFAULT_VIEWPORT = {
@@ -18,17 +17,13 @@ function createEmptySolution() {
 }
 
 export function hasActiveMasterFloristCustomer(state) {
-  if (state?.customerParade) {
-    return Boolean(state.customerParade.activeId);
-  }
-  return Array.isArray(state?.customers) && state.customers.length > 0;
+  return Boolean(state?.customerParade?.activeId);
 }
 
 export function createMasterFloristState() {
   const seed = Date.now();
   return {
     seed,
-    customers: getCustomerLineup(),
     hoverStemId: null,
     pendingDrops: [],
     drag: null,
@@ -43,7 +38,6 @@ export function createMasterFloristState() {
 export function resetMasterFloristState(state) {
   const freshSeed = Date.now();
   state.seed = freshSeed;
-  state.customers = getCustomerLineup();
   state.hoverStemId = null;
   state.pendingDrops = [];
   state.drag = null;

@@ -131,7 +131,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     }
 
     const { benchY } = getBenchMetrics();
-    const overlap = 5;
+    const overlap = 7;
     const ordered = actors.slice().sort((a, b) => {
       const priority = (actor) => {
         if (actor?.state === 'activeIdle' || actor?.state === 'activeTalking') return 3;
@@ -168,7 +168,8 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       }
       const width = frame.width || img.naturalWidth;
       const height = frame.height || img.naturalHeight;
-      const top = benchY - height + overlap;
+      const bobOffset = actor?.bobOffset || 0;
+      const top = benchY - height + overlap + bobOffset;
       const left = (actor?.x ?? 0) - width / 2;
 
       ctx.save();
@@ -667,3 +668,6 @@ function roundRect(context, x, y, width, height, radius, fill, stroke, styles = 
   if (stroke) context.stroke();
   context.restore();
 }
+
+
+

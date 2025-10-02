@@ -7,7 +7,7 @@ import { createMasterFloristCanvasController } from './canvas/controller.js';
 import { createMasterFloristRenderer } from './render/scene.js';
 import { createMasterFloristCanvasSizer } from './canvas/sizer.js';
 import { createMasterFloristLoop } from './loop/ticker.js';
-import { loadCustomerSpriteLibrary } from './assets/customers/sprites.js';
+import { loadCustomerSpriteLibrary } from './state/spriteLibrary.js';
 import { initializeCustomerParade, updateCustomerParade, disposeCustomerParade } from './state/customers.js';
 
 export const meta = {

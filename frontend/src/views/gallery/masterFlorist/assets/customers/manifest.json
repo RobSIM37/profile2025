@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-10-02T06:38:34.7941068-04:00",
+  "generatedAt": "2025-10-02T09:50:47.3037086-04:00",
   "sourceFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\sprite-sheets",
   "outputFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\customers",
   "files": [
@@ -8,8 +8,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 183,
-        "height": 323
+        "width": 180,
+        "height": 321
       }
     },
     {
@@ -17,8 +17,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 323
+        "width": 199,
+        "height": 321
       }
     },
     {
@@ -26,8 +26,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 196,
-        "height": 323
+        "width": 194,
+        "height": 321
       }
     },
     {
@@ -35,8 +35,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 178,
-        "height": 319
+        "width": 176,
+        "height": 316
       }
     },
     {
@@ -44,8 +44,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 194,
-        "height": 319
+        "width": 192,
+        "height": 317
       }
     },
     {
@@ -53,8 +53,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 200,
-        "height": 319
+        "width": 199,
+        "height": 317
       }
     },
     {
@@ -62,8 +62,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 179,
-        "height": 305
+        "width": 177,
+        "height": 303
       }
     },
     {
@@ -71,8 +71,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 195,
-        "height": 304
+        "width": 194,
+        "height": 302
       }
     },
     {
@@ -80,8 +80,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 304
+        "width": 195,
+        "height": 301
       }
     },
     {
@@ -89,8 +89,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 172,
-        "height": 288
+        "width": 170,
+        "height": 286
       }
     },
     {
@@ -98,8 +98,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 194,
-        "height": 290
+        "width": 191,
+        "height": 288
       }
     },
     {
@@ -107,8 +107,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 194,
-        "height": 291
+        "width": 192,
+        "height": 289
       }
     },
     {
@@ -116,8 +116,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 169,
-        "height": 288
+        "width": 166,
+        "height": 286
       }
     },
     {
@@ -125,8 +125,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 194,
-        "height": 289
+        "width": 192,
+        "height": 287
       }
     },
     {
@@ -134,8 +134,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 194,
-        "height": 289
+        "width": 190,
+        "height": 287
       }
     },
     {
@@ -143,8 +143,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 169,
-        "height": 286
+        "width": 167,
+        "height": 284
       }
     },
     {
@@ -152,8 +152,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 194,
-        "height": 287
+        "width": 191,
+        "height": 285
       }
     },
     {
@@ -161,8 +161,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 194,
-        "height": 287
+        "width": 190,
+        "height": 284
       }
     },
     {
@@ -170,8 +170,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 193,
-        "height": 290
+        "width": 190,
+        "height": 287
       }
     },
     {
@@ -179,8 +179,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 206,
-        "height": 290
+        "width": 193,
+        "height": 288
       }
     },
     {
@@ -188,8 +188,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 210,
-        "height": 290
+        "width": 194,
+        "height": 287
       }
     },
     {
@@ -197,8 +197,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 190,
-        "height": 286
+        "width": 187,
+        "height": 284
       }
     },
     {
@@ -206,8 +206,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 191,
-        "height": 285
+        "width": 189,
+        "height": 282
       }
     },
     {
@@ -215,8 +215,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 194,
-        "height": 286
+        "width": 191,
+        "height": 284
       }
     },
     {
@@ -224,8 +224,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 188,
-        "height": 283
+        "width": 186,
+        "height": 279
       }
     },
     {
@@ -233,8 +233,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 191,
-        "height": 282
+        "width": 189,
+        "height": 280
       }
     },
     {
@@ -242,8 +242,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 194,
-        "height": 283
+        "width": 192,
+        "height": 280
       }
     },
     {
@@ -251,8 +251,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 175,
-        "height": 297
+        "width": 172,
+        "height": 295
       }
     },
     {
@@ -260,8 +260,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 202,
-        "height": 297
+        "width": 199,
+        "height": 295
       }
     },
     {
@@ -269,8 +269,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 201,
-        "height": 297
+        "width": 199,
+        "height": 295
       }
     },
     {
@@ -278,8 +278,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 174,
-        "height": 299
+        "width": 172,
+        "height": 296
       }
     },
     {
@@ -287,8 +287,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 299
+        "width": 199,
+        "height": 296
       }
     },
     {
@@ -296,8 +296,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 199,
-        "height": 299
+        "width": 197,
+        "height": 296
       }
     },
     {
@@ -305,8 +305,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 173,
-        "height": 300
+        "width": 171,
+        "height": 296
       }
     },
     {
@@ -314,8 +314,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 200,
-        "height": 300
+        "width": 198,
+        "height": 297
       }
     },
     {
@@ -323,8 +323,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 199,
-        "height": 300
+        "width": 197,
+        "height": 297
       }
     },
     {
@@ -332,8 +332,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 194,
-        "height": 314
+        "width": 192,
+        "height": 312
       }
     },
     {
@@ -341,8 +341,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 195,
-        "height": 314
+        "width": 193,
+        "height": 312
       }
     },
     {
@@ -350,8 +350,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 193,
-        "height": 314
+        "width": 191,
+        "height": 312
       }
     },
     {
@@ -359,8 +359,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 189,
-        "height": 305
+        "width": 187,
+        "height": 303
       }
     },
     {
@@ -368,8 +368,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 190,
-        "height": 305
+        "width": 186,
+        "height": 302
       }
     },
     {
@@ -377,8 +377,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 191,
-        "height": 305
+        "width": 189,
+        "height": 302
       }
     },
     {
@@ -386,8 +386,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 186,
-        "height": 294
+        "width": 184,
+        "height": 291
       }
     },
     {
@@ -395,8 +395,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 189,
-        "height": 294
+        "width": 187,
+        "height": 291
       }
     },
     {
@@ -404,8 +404,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 191,
-        "height": 294
+        "width": 188,
+        "height": 292
       }
     },
     {
@@ -413,8 +413,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 171,
-        "height": 312
+        "width": 168,
+        "height": 309
       }
     },
     {
@@ -422,8 +422,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 199,
-        "height": 312
+        "width": 197,
+        "height": 309
       }
     },
     {
@@ -431,8 +431,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 312
+        "width": 194,
+        "height": 309
       }
     },
     {
@@ -440,8 +440,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 176,
-        "height": 306
+        "width": 173,
+        "height": 304
       }
     },
     {
@@ -449,8 +449,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 198,
-        "height": 307
+        "width": 196,
+        "height": 304
       }
     },
     {
@@ -458,8 +458,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 198,
-        "height": 308
+        "width": 196,
+        "height": 305
       }
     },
     {
@@ -467,8 +467,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 174,
-        "height": 300
+        "width": 172,
+        "height": 297
       }
     },
     {
@@ -476,8 +476,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 198,
-        "height": 300
+        "width": 196,
+        "height": 298
       }
     },
     {
@@ -485,8 +485,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 198,
-        "height": 301
+        "width": 196,
+        "height": 298
       }
     },
     {
@@ -494,8 +494,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 199,
-        "height": 301
+        "width": 197,
+        "height": 298
       }
     },
     {
@@ -503,8 +503,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 197,
-        "height": 300
+        "width": 194,
+        "height": 298
       }
     },
     {
@@ -512,8 +512,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 299
+        "width": 194,
+        "height": 297
       }
     },
     {
@@ -521,8 +521,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 196,
-        "height": 293
+        "width": 194,
+        "height": 291
       }
     },
     {
@@ -530,8 +530,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 197,
-        "height": 295
+        "width": 194,
+        "height": 292
       }
     },
     {
@@ -539,8 +539,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 195,
-        "height": 295
+        "width": 193,
+        "height": 293
       }
     },
     {
@@ -548,8 +548,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 192,
-        "height": 292
+        "width": 190,
+        "height": 289
       }
     },
     {
@@ -557,8 +557,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 194,
-        "height": 292
+        "width": 191,
+        "height": 290
       }
     },
     {
@@ -566,8 +566,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 194,
-        "height": 293
+        "width": 192,
+        "height": 290
       }
     },
     {
@@ -575,8 +575,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 179,
-        "height": 304
+        "width": 176,
+        "height": 302
       }
     },
     {
@@ -584,8 +584,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 197,
-        "height": 306
+        "width": 195,
+        "height": 303
       }
     },
     {
@@ -593,8 +593,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 196,
-        "height": 305
+        "width": 193,
+        "height": 303
       }
     },
     {
@@ -602,8 +602,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 178,
-        "height": 298
+        "width": 175,
+        "height": 295
       }
     },
     {
@@ -611,8 +611,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 195,
-        "height": 298
+        "width": 193,
+        "height": 295
       }
     },
     {
@@ -620,8 +620,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 194,
-        "height": 298
+        "width": 191,
+        "height": 295
       }
     },
     {
@@ -629,8 +629,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 180,
-        "height": 293
+        "width": 176,
+        "height": 291
       }
     },
     {
@@ -638,8 +638,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 195,
-        "height": 294
+        "width": 193,
+        "height": 292
       }
     },
     {
@@ -647,8 +647,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 295
+        "width": 193,
+        "height": 293
       }
     },
     {
@@ -656,8 +656,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 179,
-        "height": 290
+        "width": 176,
+        "height": 286
       }
     },
     {
@@ -665,8 +665,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 195,
-        "height": 289
+        "width": 193,
+        "height": 286
       }
     },
     {
@@ -674,8 +674,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 195,
-        "height": 289
+        "width": 192,
+        "height": 287
       }
     },
     {
@@ -683,8 +683,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 180,
-        "height": 280
+        "width": 177,
+        "height": 277
       }
     },
     {
@@ -692,8 +692,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 193,
-        "height": 280
+        "width": 191,
+        "height": 277
       }
     },
     {
@@ -701,8 +701,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 193,
-        "height": 280
+        "width": 191,
+        "height": 277
       }
     },
     {
@@ -710,8 +710,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 179,
-        "height": 273
+        "width": 176,
+        "height": 271
       }
     },
     {
@@ -719,8 +719,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 192,
-        "height": 275
+        "width": 190,
+        "height": 271
       }
     },
     {
@@ -728,8 +728,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 273
+        "width": 193,
+        "height": 271
       }
     },
     {
@@ -737,8 +737,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 169,
-        "height": 308
+        "width": 167,
+        "height": 306
       }
     },
     {
@@ -746,8 +746,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 199,
-        "height": 312
+        "width": 197,
+        "height": 309
       }
     },
     {
@@ -755,8 +755,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 201,
-        "height": 312
+        "width": 199,
+        "height": 310
       }
     },
     {
@@ -764,8 +764,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 172,
-        "height": 302
+        "width": 170,
+        "height": 299
       }
     },
     {
@@ -773,8 +773,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 203,
-        "height": 303
+        "width": 196,
+        "height": 299
       }
     },
     {
@@ -782,8 +782,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 301
+        "width": 195,
+        "height": 298
       }
     },
     {
@@ -791,8 +791,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 168,
-        "height": 296
+        "width": 166,
+        "height": 294
       }
     },
     {
@@ -800,8 +800,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 199,
-        "height": 297
+        "width": 196,
+        "height": 295
       }
     },
     {
@@ -809,8 +809,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 199,
-        "height": 297
+        "width": 195,
+        "height": 295
       }
     },
     {
@@ -818,8 +818,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 187,
-        "height": 317
+        "width": 185,
+        "height": 314
       }
     },
     {
@@ -827,8 +827,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 316
+        "width": 199,
+        "height": 314
       }
     },
     {
@@ -836,8 +836,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 201,
-        "height": 317
+        "width": 199,
+        "height": 314
       }
     },
     {
@@ -845,8 +845,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 200,
-        "height": 312
+        "width": 179,
+        "height": 309
       }
     },
     {
@@ -854,8 +854,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 314
+        "width": 198,
+        "height": 312
       }
     },
     {
@@ -863,8 +863,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 196,
-        "height": 312
+        "width": 194,
+        "height": 310
       }
     },
     {
@@ -872,8 +872,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 184,
-        "height": 311
+        "width": 181,
+        "height": 308
       }
     },
     {
@@ -881,8 +881,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 197,
-        "height": 312
+        "width": 195,
+        "height": 309
       }
     },
     {
@@ -890,8 +890,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 200,
-        "height": 313
+        "width": 197,
+        "height": 310
       }
     },
     {
@@ -899,8 +899,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 176,
-        "height": 300
+        "width": 174,
+        "height": 298
       }
     },
     {
@@ -908,8 +908,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 197,
-        "height": 298
+        "width": 194,
+        "height": 296
       }
     },
     {
@@ -917,8 +917,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 198,
-        "height": 299
+        "width": 195,
+        "height": 296
       }
     },
     {
@@ -926,8 +926,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 174,
-        "height": 289
+        "width": 169,
+        "height": 286
       }
     },
     {
@@ -935,8 +935,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 289
+        "width": 199,
+        "height": 287
       }
     },
     {
@@ -944,8 +944,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 290
+        "width": 194,
+        "height": 288
       }
     },
     {
@@ -953,8 +953,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 171,
-        "height": 284
+        "width": 168,
+        "height": 282
       }
     },
     {
@@ -962,8 +962,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 285
+        "width": 199,
+        "height": 283
       }
     },
     {
@@ -971,8 +971,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 200,
-        "height": 285
+        "width": 197,
+        "height": 283
       }
     },
     {
@@ -980,8 +980,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 171,
-        "height": 297
+        "width": 169,
+        "height": 295
       }
     },
     {
@@ -989,8 +989,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 298
+        "width": 199,
+        "height": 295
       }
     },
     {
@@ -998,8 +998,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 197,
-        "height": 297
+        "width": 195,
+        "height": 295
       }
     },
     {
@@ -1007,8 +1007,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 168,
-        "height": 300
+        "width": 165,
+        "height": 297
       }
     },
     {
@@ -1016,8 +1016,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 199,
-        "height": 299
+        "width": 196,
+        "height": 297
       }
     },
     {
@@ -1025,8 +1025,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 198,
-        "height": 299
+        "width": 196,
+        "height": 297
       }
     },
     {
@@ -1034,8 +1034,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 169,
-        "height": 291
+        "width": 167,
+        "height": 290
       }
     },
     {
@@ -1043,8 +1043,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 199,
-        "height": 292
+        "width": 197,
+        "height": 289
       }
     },
     {
@@ -1052,8 +1052,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 200,
-        "height": 292
+        "width": 198,
+        "height": 291
       }
     },
     {
@@ -1061,8 +1061,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 200,
-        "height": 347
+        "width": 198,
+        "height": 346
       }
     },
     {
@@ -1070,7 +1070,7 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 218,
+        "width": 216,
         "height": 346
       }
     },
@@ -1079,8 +1079,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 207,
-        "height": 346
+        "width": 206,
+        "height": 345
       }
     },
     {
@@ -1088,8 +1088,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 198,
-        "height": 341
+        "width": 197,
+        "height": 339
       }
     },
     {
@@ -1097,8 +1097,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 215,
-        "height": 338
+        "width": 213,
+        "height": 336
       }
     },
     {
@@ -1106,7 +1106,7 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 208,
+        "width": 206,
         "height": 337
       }
     },
@@ -1116,7 +1116,7 @@
       "pose": "walking",
       "size": {
         "width": 192,
-        "height": 294
+        "height": 328
       }
     },
     {
@@ -1124,8 +1124,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 217,
-        "height": 294
+        "width": 211,
+        "height": 328
       }
     },
     {
@@ -1133,8 +1133,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 208,
-        "height": 294
+        "width": 212,
+        "height": 328
       }
     },
     {
@@ -1142,8 +1142,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 200,
-        "height": 289
+        "width": 197,
+        "height": 287
       }
     },
     {
@@ -1151,8 +1151,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 209,
-        "height": 290
+        "width": 207,
+        "height": 287
       }
     },
     {
@@ -1160,8 +1160,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 205,
-        "height": 291
+        "width": 204,
+        "height": 287
       }
     },
     {
@@ -1169,8 +1169,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 196,
-        "height": 288
+        "width": 194,
+        "height": 286
       }
     },
     {
@@ -1178,8 +1178,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 211,
-        "height": 288
+        "width": 208,
+        "height": 286
       }
     },
     {
@@ -1187,8 +1187,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 206,
-        "height": 288
+        "width": 205,
+        "height": 286
       }
     },
     {
@@ -1196,8 +1196,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 195,
-        "height": 288
+        "width": 192,
+        "height": 285
       }
     },
     {
@@ -1205,8 +1205,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 211,
-        "height": 288
+        "width": 209,
+        "height": 286
       }
     },
     {
@@ -1214,8 +1214,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 209,
-        "height": 288
+        "width": 208,
+        "height": 286
       }
     },
     {
@@ -1223,8 +1223,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 211,
-        "height": 305
+        "width": 209,
+        "height": 302
       }
     },
     {
@@ -1232,8 +1232,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 230,
-        "height": 319
+        "width": 214,
+        "height": 303
       }
     },
     {
@@ -1241,8 +1241,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 206,
-        "height": 303
+        "width": 205,
+        "height": 301
       }
     },
     {
@@ -1250,8 +1250,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 195,
-        "height": 297
+        "width": 193,
+        "height": 295
       }
     },
     {
@@ -1259,8 +1259,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 223,
-        "height": 313
+        "width": 200,
+        "height": 294
       }
     },
     {
@@ -1268,8 +1268,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 202,
-        "height": 296
+        "width": 200,
+        "height": 294
       }
     },
     {
@@ -1277,8 +1277,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 194,
-        "height": 297
+        "width": 192,
+        "height": 295
       }
     },
     {
@@ -1286,8 +1286,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 222,
-        "height": 303
+        "width": 199,
+        "height": 293
       }
     },
     {
@@ -1295,8 +1295,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 201,
-        "height": 298
+        "width": 198,
+        "height": 295
       }
     },
     {
@@ -1304,8 +1304,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 170,
-        "height": 259
+        "width": 168,
+        "height": 256
       }
     },
     {
@@ -1313,8 +1313,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 202,
-        "height": 282
+        "width": 189,
+        "height": 257
       }
     },
     {
@@ -1322,8 +1322,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 207,
-        "height": 270
+        "width": 188,
+        "height": 257
       }
     },
     {
@@ -1331,8 +1331,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 171,
-        "height": 259
+        "width": 169,
+        "height": 257
       }
     },
     {
@@ -1340,8 +1340,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 202,
-        "height": 289
+        "width": 189,
+        "height": 257
       }
     },
     {
@@ -1349,8 +1349,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 192,
-        "height": 259
+        "width": 189,
+        "height": 257
       }
     },
     {
@@ -1358,8 +1358,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 168,
-        "height": 261
+        "width": 166,
+        "height": 258
       }
     },
     {
@@ -1367,8 +1367,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 201,
-        "height": 283
+        "width": 189,
+        "height": 258
       }
     },
     {
@@ -1376,8 +1376,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 191,
-        "height": 260
+        "width": 189,
+        "height": 257
       }
     },
     {
@@ -1385,8 +1385,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 220,
-        "height": 324
+        "width": 218,
+        "height": 321
       }
     },
     {
@@ -1394,8 +1394,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 217,
-        "height": 320
+        "width": 215,
+        "height": 317
       }
     },
     {
@@ -1403,8 +1403,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 208,
-        "height": 320
+        "width": 207,
+        "height": 317
       }
     },
     {
@@ -1412,8 +1412,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 204,
-        "height": 313
+        "width": 202,
+        "height": 309
       }
     },
     {
@@ -1421,8 +1421,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 214,
-        "height": 310
+        "width": 211,
+        "height": 308
       }
     },
     {
@@ -1430,8 +1430,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 210,
-        "height": 309
+        "width": 209,
+        "height": 307
       }
     },
     {
@@ -1439,8 +1439,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 204,
-        "height": 310
+        "width": 202,
+        "height": 308
       }
     },
     {
@@ -1448,8 +1448,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 215,
-        "height": 310
+        "width": 212,
+        "height": 308
       }
     },
     {
@@ -1457,8 +1457,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 212,
-        "height": 308
+        "width": 211,
+        "height": 306
       }
     },
     {
@@ -1466,8 +1466,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 214,
-        "height": 328
+        "width": 189,
+        "height": 300
       }
     },
     {
@@ -1475,8 +1475,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 219,
-        "height": 308
+        "width": 218,
+        "height": 306
       }
     },
     {
@@ -1485,7 +1485,7 @@
       "pose": "talking",
       "size": {
         "width": 227,
-        "height": 309
+        "height": 306
       }
     },
     {
@@ -1493,8 +1493,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 209,
-        "height": 326
+        "width": 182,
+        "height": 289
       }
     },
     {
@@ -1502,8 +1502,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 219,
-        "height": 292
+        "width": 218,
+        "height": 289
       }
     },
     {
@@ -1512,7 +1512,7 @@
       "pose": "talking",
       "size": {
         "width": 227,
-        "height": 292
+        "height": 290
       }
     },
     {
@@ -1520,8 +1520,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 196,
-        "height": 314
+        "width": 172,
+        "height": 289
       }
     },
     {
@@ -1529,8 +1529,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 220,
-        "height": 292
+        "width": 219,
+        "height": 290
       }
     },
     {
@@ -1538,8 +1538,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 227,
-        "height": 292
+        "width": 219,
+        "height": 289
       }
     },
     {
@@ -1547,8 +1547,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 207,
-        "height": 316
+        "width": 205,
+        "height": 312
       }
     },
     {
@@ -1556,8 +1556,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 233,
-        "height": 315
+        "width": 230,
+        "height": 312
       }
     },
     {
@@ -1565,8 +1565,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 218,
-        "height": 314
+        "width": 217,
+        "height": 312
       }
     },
     {
@@ -1574,8 +1574,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 212,
-        "height": 308
+        "width": 210,
+        "height": 306
       }
     },
     {
@@ -1583,8 +1583,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 235,
-        "height": 307
+        "width": 232,
+        "height": 305
       }
     },
     {
@@ -1592,8 +1592,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 219,
-        "height": 309
+        "width": 217,
+        "height": 306
       }
     },
     {
@@ -1601,8 +1601,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 211,
-        "height": 302
+        "width": 209,
+        "height": 300
       }
     },
     {
@@ -1610,8 +1610,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 233,
-        "height": 299
+        "width": 231,
+        "height": 297
       }
     },
     {
@@ -1619,8 +1619,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 220,
-        "height": 299
+        "width": 219,
+        "height": 297
       }
     },
     {
@@ -1628,8 +1628,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 191,
-        "height": 279
+        "width": 189,
+        "height": 276
       }
     },
     {
@@ -1637,8 +1637,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 209,
-        "height": 279
+        "width": 206,
+        "height": 277
       }
     },
     {
@@ -1646,8 +1646,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 204,
-        "height": 279
+        "width": 203,
+        "height": 277
       }
     },
     {
@@ -1655,8 +1655,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 192,
-        "height": 277
+        "width": 190,
+        "height": 274
       }
     },
     {
@@ -1664,8 +1664,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 209,
-        "height": 278
+        "width": 206,
+        "height": 276
       }
     },
     {
@@ -1673,8 +1673,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 205,
-        "height": 278
+        "width": 204,
+        "height": 275
       }
     },
     {
@@ -1682,8 +1682,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 189,
-        "height": 277
+        "width": 187,
+        "height": 273
       }
     },
     {
@@ -1691,8 +1691,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 210,
-        "height": 277
+        "width": 208,
+        "height": 275
       }
     },
     {
@@ -1700,8 +1700,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 207,
-        "height": 278
+        "width": 206,
+        "height": 275
       }
     },
     {
@@ -1709,8 +1709,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 173,
-        "height": 287
+        "width": 171,
+        "height": 285
       }
     },
     {
@@ -1718,8 +1718,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 212,
-        "height": 305
+        "width": 206,
+        "height": 285
       }
     },
     {
@@ -1727,8 +1727,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 209,
-        "height": 287
+        "width": 206,
+        "height": 285
       }
     },
     {
@@ -1736,8 +1736,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 171,
-        "height": 286
+        "width": 169,
+        "height": 284
       }
     },
     {
@@ -1745,8 +1745,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 213,
-        "height": 305
+        "width": 207,
+        "height": 282
       }
     },
     {
@@ -1754,8 +1754,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 210,
-        "height": 285
+        "width": 208,
+        "height": 283
       }
     },
     {
@@ -1763,8 +1763,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 176,
-        "height": 288
+        "width": 174,
+        "height": 286
       }
     },
     {
@@ -1772,8 +1772,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 212,
-        "height": 290
+        "width": 207,
+        "height": 285
       }
     },
     {
@@ -1781,8 +1781,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 210,
-        "height": 287
+        "width": 208,
+        "height": 285
       }
     },
     {
@@ -1790,8 +1790,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 186,
-        "height": 287
+        "width": 184,
+        "height": 282
       }
     },
     {
@@ -1799,8 +1799,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 208,
-        "height": 285
+        "width": 206,
+        "height": 282
       }
     },
     {
@@ -1808,8 +1808,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 211,
-        "height": 285
+        "width": 207,
+        "height": 283
       }
     },
     {
@@ -1817,8 +1817,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 191,
-        "height": 286
+        "width": 188,
+        "height": 283
       }
     },
     {
@@ -1826,8 +1826,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 214,
-        "height": 285
+        "width": 212,
+        "height": 283
       }
     },
     {
@@ -1835,8 +1835,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 214,
-        "height": 285
+        "width": 212,
+        "height": 283
       }
     },
     {
@@ -1844,8 +1844,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 188,
-        "height": 277
+        "width": 186,
+        "height": 275
       }
     },
     {
@@ -1853,8 +1853,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 215,
-        "height": 277
+        "width": 212,
+        "height": 274
       }
     },
     {
@@ -1862,8 +1862,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 218,
-        "height": 277
+        "width": 214,
+        "height": 275
       }
     },
     {
@@ -1871,8 +1871,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 197,
-        "height": 297
+        "width": 195,
+        "height": 295
       }
     },
     {
@@ -1880,8 +1880,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 229,
-        "height": 297
+        "width": 214,
+        "height": 295
       }
     },
     {
@@ -1889,8 +1889,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 219,
-        "height": 297
+        "width": 218,
+        "height": 295
       }
     },
     {
@@ -1898,8 +1898,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 193,
-        "height": 294
+        "width": 191,
+        "height": 291
       }
     },
     {
@@ -1907,8 +1907,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 228,
-        "height": 294
+        "width": 214,
+        "height": 291
       }
     },
     {
@@ -1916,8 +1916,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 218,
-        "height": 294
+        "width": 217,
+        "height": 291
       }
     },
     {
@@ -1925,8 +1925,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 198,
-        "height": 291
+        "width": 196,
+        "height": 288
       }
     },
     {
@@ -1934,8 +1934,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 228,
-        "height": 296
+        "width": 213,
+        "height": 288
       }
     },
     {
@@ -1943,8 +1943,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 216,
-        "height": 291
+        "width": 215,
+        "height": 289
       }
     },
     {
@@ -1952,8 +1952,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 190,
-        "height": 293
+        "width": 188,
+        "height": 290
       }
     },
     {
@@ -1961,8 +1961,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 230,
-        "height": 304
+        "width": 211,
+        "height": 292
       }
     },
     {
@@ -1970,8 +1970,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 209,
-        "height": 294
+        "width": 208,
+        "height": 291
       }
     },
     {
@@ -1979,8 +1979,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 184,
-        "height": 294
+        "width": 182,
+        "height": 292
       }
     },
     {
@@ -1988,8 +1988,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 213,
-        "height": 294
+        "width": 209,
+        "height": 292
       }
     },
     {
@@ -1997,8 +1997,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 210,
-        "height": 294
+        "width": 209,
+        "height": 292
       }
     },
     {
@@ -2006,8 +2006,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 177,
-        "height": 291
+        "width": 175,
+        "height": 287
       }
     },
     {
@@ -2015,8 +2015,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 213,
-        "height": 291
+        "width": 211,
+        "height": 288
       }
     },
     {
@@ -2024,8 +2024,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 211,
-        "height": 291
+        "width": 210,
+        "height": 288
       }
     },
     {
@@ -2033,8 +2033,8 @@
       "mood": "happy",
       "pose": "walking",
       "size": {
-        "width": 191,
-        "height": 307
+        "width": 189,
+        "height": 305
       }
     },
     {
@@ -2042,8 +2042,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 219,
-        "height": 307
+        "width": 216,
+        "height": 305
       }
     },
     {
@@ -2051,8 +2051,8 @@
       "mood": "happy",
       "pose": "talking",
       "size": {
-        "width": 214,
-        "height": 307
+        "width": 213,
+        "height": 305
       }
     },
     {
@@ -2060,8 +2060,8 @@
       "mood": "neutral",
       "pose": "walking",
       "size": {
-        "width": 181,
-        "height": 303
+        "width": 179,
+        "height": 299
       }
     },
     {
@@ -2069,8 +2069,8 @@
       "mood": "neutral",
       "pose": "idle",
       "size": {
-        "width": 219,
-        "height": 303
+        "width": 217,
+        "height": 300
       }
     },
     {
@@ -2078,8 +2078,8 @@
       "mood": "neutral",
       "pose": "talking",
       "size": {
-        "width": 216,
-        "height": 303
+        "width": 214,
+        "height": 299
       }
     },
     {
@@ -2087,8 +2087,8 @@
       "mood": "angry",
       "pose": "walking",
       "size": {
-        "width": 185,
-        "height": 303
+        "width": 183,
+        "height": 301
       }
     },
     {
@@ -2096,8 +2096,8 @@
       "mood": "angry",
       "pose": "idle",
       "size": {
-        "width": 217,
-        "height": 303
+        "width": 215,
+        "height": 301
       }
     },
     {
@@ -2105,8 +2105,8 @@
       "mood": "angry",
       "pose": "talking",
       "size": {
-        "width": 217,
-        "height": 303
+        "width": 214,
+        "height": 301
       }
     }
   ]

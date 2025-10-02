@@ -2,13 +2,16 @@ import { MF_CANVAS_WIDTH } from '../canvas/constants.js';
 import { MASTER_FLORIST_LAYOUT } from './layout.js';
 import { resetMasterFloristSolution } from './store.js';
 
-const ACTIVE_IDLE_MS = 2_000;
-const ACTIVE_TALK_MS = 10_000;
+const ACTIVE_IDLE_MS = 0;
+const ACTIVE_TALK_MS = 5_000;
 const TALK_TOGGLE_MS = 150;
 const QUEUE_IDLE_RANGE = [2_500, 4_500];
 const QUEUE_WALK_RANGE = [900, 1_600];
 const NOTICE_DELAY_RANGE = [300, 1_200];
 const WALK_SPEED = 320; // px per second
+const WALK_BOB_TRIGGER_MS = 500;
+const WALK_BOB_DURATION_MS = 250;
+const WALK_BOB_OFFSET_PX = 8;
 const SPAWN_INTERVAL_MS = 900;
 const MAX_VISIBLE_CUSTOMERS = 5;
 const BASE_PERSONAL_SPACE = 140;
@@ -83,6 +86,8 @@ export function updateCustomerParade(state, info = {}) {
   if (!parade.activeId && !parade.pendingActiveId) {
     promoteNext(parade);
   }
+
+  trimQueue(parade);
 }
 
 export function disposeCustomerParade(state) {
@@ -95,21 +100,120 @@ export function disposeCustomerParade(state) {
   state.customerParade = null;
 }
 
+function countQueueActors(queue = []) {
+  if (!Array.isArray(queue)) return 0;
+  return queue.reduce((count, actor) => (actor ? count + 1 : count), 0);
+}
+
+function findFirstEmptyQueueSlot(queue = []) {
+  if (!Array.isArray(queue)) return -1;
+  for (let i = 0; i < queue.length; i += 1) {
+    if (!queue[i]) return i;
+  }
+  return -1;
+}
+
+function trimQueue(parade) {
+  if (!Array.isArray(parade?.queue)) return;
+  while (parade.queue.length > 0 && parade.queue[parade.queue.length - 1] == null) {
+    parade.queue.pop();
+  }
+}
+
+function computeQueueSpacing(parade) {
+  const count = Math.max(Array.isArray(parade?.queue) ? parade.queue.length : 0, 1);
+  return Math.max(
+    parade.queueSpacingMin,
+    parade.queueSpacingBase - Math.max(0, count - 1) * parade.queueSpacingStep,
+  );
+}
+
+function getQueueAnchor(parade, index) {
+  if (index == null || index < 0) {
+    return QUEUE_START_X;
+  }
+  const spacing = computeQueueSpacing(parade);
+  return QUEUE_START_X + spacing * index;
+}
+
+function isFrontSlotEmpty(parade, index) {
+  if (!Array.isArray(parade?.queue) || index == null || index <= 0) return false;
+  const front = parade.queue[index - 1];
+  return !front || front.state !== 'queued';
+}
+
+function countQueuePresence(parade) {
+  const base = countQueueActors(parade?.queue);
+  if (!Array.isArray(parade?.actors)) return base;
+  return base + parade.actors.reduce((sum, actor) => {
+    if (actor && actor.state === 'advancing' && typeof actor.queueTargetIndex === 'number' && actor.queueTargetIndex >= 0) {
+      return sum + 1;
+    }
+    return sum;
+  }, 0);
+}
+
+function resetWalkBob(actor) {
+  if (!actor) return;
+  actor.bobOffset = 0;
+  actor.bobTimerMs = 0;
+  actor.bobActiveMs = 0;
+  actor.bobIsActive = false;
+}
+
+function updateWalkBob(actor, deltaMs) {
+  if (!actor) return;
+  if (actor.pose !== 'walking') {
+    resetWalkBob(actor);
+    return;
+  }
+  actor.bobTimerMs += deltaMs;
+  if (actor.bobIsActive) {
+    actor.bobActiveMs += deltaMs;
+    if (actor.bobActiveMs >= WALK_BOB_DURATION_MS) {
+      actor.bobIsActive = false;
+      actor.bobActiveMs = 0;
+      actor.bobTimerMs = 0;
+      actor.bobOffset = 0;
+    } else {
+      actor.bobOffset = WALK_BOB_OFFSET_PX;
+    }
+  } else if (actor.bobTimerMs >= WALK_BOB_TRIGGER_MS) {
+    actor.bobIsActive = true;
+    actor.bobActiveMs = 0;
+    actor.bobOffset = WALK_BOB_OFFSET_PX;
+  } else {
+    actor.bobOffset = 0;
+  }
+}
+
 function ensureQueueStocked(parade) {
+  if (!Array.isArray(parade.queue)) parade.queue = [];
   const desired = parade.maxVisible;
   if (desired <= 0) return;
   if (parade.spawnCooldownMs > 0) return;
-  const inPlay = parade.queue.length + (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
-  if (inPlay >= desired) return;
 
-  const entry = nextEntry(parade);
-  if (!entry) return;
+  const activeCount = (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
+  if (countQueuePresence(parade) + activeCount >= desired) return;
 
-  const actor = createActor(entry);
-  parade.actors.push(actor);
-  parade.queue.push(actor);
-  parade.queueDirty = true;
-  parade.spawnCooldownMs = parade.spawnIntervalMs;
+  while (countQueuePresence(parade) + activeCount < desired) {
+    const entry = nextEntry(parade);
+    if (!entry) break;
+    const actor = createActor(entry);
+    const slotIndex = findFirstEmptyQueueSlot(parade.queue);
+    if (slotIndex === -1) {
+      parade.queue.push(actor);
+      actor.queueIndex = parade.queue.length - 1;
+    } else {
+      parade.queue[slotIndex] = actor;
+      actor.queueIndex = slotIndex;
+    }
+    parade.actors.push(actor);
+    parade.queueDirty = true;
+    parade.spawnCooldownMs = parade.spawnIntervalMs;
+  }
+
+  trimQueue(parade);
 }
 
 function nextEntry(parade) {
@@ -143,6 +247,8 @@ function createActor(entry) {
     talkElapsed: 0,
     pendingActive: false,
     chatAnnounced: false,
+    queueIndex: null,
+    queueTargetIndex: null,
     queue: {
       desiredX: SPAWN_X,
       needsAdvance: false,
@@ -152,47 +258,56 @@ function createActor(entry) {
       idleDuration: randomBetween(QUEUE_IDLE_RANGE),
       walkDuration: randomBetween(QUEUE_WALK_RANGE),
     },
+    bobOffset: 0,
+    bobTimerMs: 0,
+    bobActiveMs: 0,
+    bobIsActive: false,
   };
 }
 
 function layoutQueue(parade, soft) {
-  if (!parade.queue.length) return;
-  const count = parade.queue.length;
-  const spacing = Math.max(
-    parade.queueSpacingMin,
-    parade.queueSpacingBase - Math.max(0, count - 1) * parade.queueSpacingStep,
-  );
+  if (!Array.isArray(parade.queue) || parade.queue.length === 0) return;
+  const spacing = computeQueueSpacing(parade);
 
   let anchor = QUEUE_START_X;
   parade.queue.forEach((actor, index) => {
-    if (!actor) return;
+    const slotX = anchor;
+    if (!actor) {
+      anchor += spacing;
+      return;
+    }
+
     actor.renderOrder = index;
     actor.queueIndex = index;
-    if (actor.pendingActive) {
-      anchor += spacing;
-      return;
+
+    const desiredX = slotX;
+    const currentDesired = actor.queue.desiredX;
+    if (!soft || Math.abs((currentDesired ?? desiredX) - desiredX) >= 0.5) {
+      actor.queue.desiredX = desiredX;
+      if (actor.state === 'entering') {
+        actor.targetX = desiredX;
+      }
     }
 
-    const current = actor.queue.desiredX;
-    if (soft && Math.abs((current ?? anchor) - anchor) < 0.5) {
-      anchor += spacing;
-      return;
+    if (actor.state === 'queued') {
+      const frontEmpty = isFrontSlotEmpty(parade, index);
+      if (frontEmpty && !actor.queue.needsAdvance) {
+        actor.queue.needsAdvance = true;
+        actor.queue.noticeElapsed = 0;
+        actor.queue.noticeDelayMs = randomBetween(NOTICE_DELAY_RANGE);
+      } else if (!frontEmpty && actor.queue.needsAdvance) {
+        actor.queue.needsAdvance = false;
+        actor.queue.noticeElapsed = 0;
+      }
     }
 
-    actor.queue.desiredX = anchor;
-    if (actor.state === 'entering') {
-      actor.targetX = anchor;
-    } else if (actor.state === 'queued') {
-      actor.queue.needsAdvance = true;
-      actor.queue.noticeElapsed = 0;
-      actor.queue.noticeDelayMs = randomBetween(NOTICE_DELAY_RANGE);
-    }
     anchor += spacing;
   });
 }
 
 function advanceActor(parade, actor, deltaMs) {
   actor.timeInState += deltaMs;
+  updateWalkBob(actor, deltaMs);
 
   switch (actor.state) {
     case 'entering':
@@ -240,14 +355,22 @@ function handleArrival(parade, actor) {
   }
 
   if (actor.state === 'advancing') {
+    const targetIndex = actor.queueTargetIndex;
+    actor.queueTargetIndex = null;
     if (actor.pendingActive) {
       actor.pendingActive = false;
       beginActiveIdle(parade, actor);
-    } else {
+    } else if (targetIndex != null && targetIndex >= 0) {
+      parade.queue[targetIndex] = actor;
+      actor.queueIndex = targetIndex;
       actor.state = 'queued';
       actor.pose = 'idle';
       resetQueuePose(actor);
+    } else {
+      actor.state = 'queued';
     }
+    parade.queueDirty = true;
+    trimQueue(parade);
     return;
   }
 
@@ -256,20 +379,39 @@ function handleArrival(parade, actor) {
   }
 }
 
-function updateQueued(actor, deltaMs) {
+function updateQueued(parade, actor, deltaMs) {
   const queue = actor.queue;
   queue.poseTimer += deltaMs;
+
+  let poseChanged = false;
 
   if (actor.pose === 'idle') {
     if (queue.poseTimer >= queue.idleDuration) {
       actor.pose = 'walking';
+      resetWalkBob(actor);
       queue.poseTimer = 0;
       queue.walkDuration = randomBetween(QUEUE_WALK_RANGE);
+      poseChanged = true;
     }
   } else if (queue.poseTimer >= queue.walkDuration) {
     actor.pose = 'idle';
+    resetWalkBob(actor);
     queue.poseTimer = 0;
     queue.idleDuration = randomBetween(QUEUE_IDLE_RANGE);
+    poseChanged = true;
+  }
+
+  const slotIndex = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
+  const frontEmpty = isFrontSlotEmpty(parade, slotIndex);
+  if (poseChanged && actor.state === 'queued') {
+    if (frontEmpty) {
+      queue.needsAdvance = true;
+      queue.noticeElapsed = 0;
+      queue.noticeDelayMs = randomBetween(NOTICE_DELAY_RANGE);
+    } else if (queue.needsAdvance) {
+      queue.needsAdvance = false;
+      queue.noticeElapsed = 0;
+    }
   }
 
   if (queue.needsAdvance) {
@@ -277,7 +419,17 @@ function updateQueued(actor, deltaMs) {
     if (actor.pose === 'walking' && queue.noticeElapsed >= queue.noticeDelayMs) {
       queue.needsAdvance = false;
       actor.state = 'advancing';
-      actor.targetX = queue.desiredX;
+      const currentIndex = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
+      const targetIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+      actor.queueTargetIndex = targetIndex;
+      if (currentIndex >= 0 && parade.queue[currentIndex] === actor) {
+        parade.queue[currentIndex] = null;
+      }
+      actor.queueIndex = null;
+      const anchor = getQueueAnchor(parade, targetIndex);
+      actor.queue.desiredX = anchor;
+      actor.targetX = anchor;
+      parade.queueDirty = true;
       actor.timeInState = 0;
     }
   }
@@ -285,6 +437,9 @@ function updateQueued(actor, deltaMs) {
 
 function beginActiveIdle(parade, actor) {
   parade.activeId = actor.id;
+  resetWalkBob(actor);
+  actor.queueIndex = null;
+  actor.queueTargetIndex = null;
   parade.pendingActiveId = null;
   actor.state = 'activeIdle';
   actor.pose = 'idle';
@@ -302,6 +457,7 @@ function beginActiveIdle(parade, actor) {
 
 function startActiveTalking(parade, actor) {
   actor.state = 'activeTalking';
+  resetWalkBob(actor);
   actor.pose = 'talking';
   actor.timeInState = 0;
   actor.talkElapsed = 0;
@@ -324,6 +480,9 @@ function updateActiveTalking(parade, actor, deltaMs) {
 
 function beginDeparture(parade, actor) {
   parade.activeId = null;
+  resetWalkBob(actor);
+  actor.queueIndex = null;
+  actor.queueTargetIndex = null;
   actor.state = 'departing';
   actor.pose = 'walking';
   actor.targetX = EXIT_X;
@@ -337,8 +496,14 @@ function beginDeparture(parade, actor) {
 }
 
 function promoteNext(parade) {
-  const next = parade.queue.shift();
-  if (!next) return;
+  if (parade.activeId || parade.pendingActiveId) return;
+  if (!Array.isArray(parade.queue)) return;
+  const nextIndex = parade.queue.findIndex((actor) => actor);
+  if (nextIndex === -1) return;
+  const next = parade.queue[nextIndex];
+  parade.queue[nextIndex] = null;
+  next.queueIndex = null;
+  next.queueTargetIndex = -1;
   parade.pendingActiveId = next.id;
   next.pendingActive = true;
   next.state = 'advancing';
@@ -346,11 +511,21 @@ function promoteNext(parade) {
   next.targetX = ACTIVE_ANCHOR_X;
   next.timeInState = 0;
   parade.queueDirty = true;
+  trimQueue(parade);
 }
 
 function dropActor(parade, actor, index) {
   parade.actors.splice(index, 1);
-  parade.queue = parade.queue.filter((entry) => entry !== actor);
+  if (Array.isArray(parade.queue)) {
+    const slotIndex = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
+    if (slotIndex >= 0) {
+      parade.queue[slotIndex] = null;
+    } else {
+      parade.queue = parade.queue.filter((entry) => entry !== actor);
+    }
+  }
+  actor.queueIndex = null;
+  actor.queueTargetIndex = null;
 
   if (parade.activeId === actor.id) {
     parade.activeId = null;
@@ -359,10 +534,12 @@ function dropActor(parade, actor, index) {
   if (parade.pendingActiveId === actor.id) {
     parade.pendingActiveId = null;
   }
+  trimQueue(parade);
 }
 
 function resetQueuePose(actor) {
   const queue = actor.queue;
+  resetWalkBob(actor);
   queue.poseTimer = 0;
   queue.idleDuration = randomBetween(QUEUE_IDLE_RANGE);
   queue.walkDuration = randomBetween(QUEUE_WALK_RANGE);
@@ -391,3 +568,7 @@ function randomBetween(range) {
   if (!Number.isFinite(max) || max <= min) return min;
   return min + Math.random() * (max - min);
 }
+
+
+
+

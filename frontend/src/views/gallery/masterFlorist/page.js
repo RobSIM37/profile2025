@@ -1,4 +1,4 @@
-﻿import { renderSetupPane, meta as setupMeta } from './setup.js';
+import { renderSetupPane, meta as setupMeta } from './setup.js';
 import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 
 export const meta = {

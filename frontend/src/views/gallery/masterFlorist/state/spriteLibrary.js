@@ -7,7 +7,7 @@ export function loadCustomerSpriteLibrary() {
 }
 
 async function fetchCustomerManifest() {
-  const url = new URL('./manifest.json', import.meta.url);
+  const url = new URL('../assets/customers/manifest.json', import.meta.url);
   const response = await fetch(url.href, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Failed to load customer manifest (${response.status})`);
@@ -18,7 +18,7 @@ async function fetchCustomerManifest() {
 async function buildLibrary(manifest) {
   const sheets = new Map();
   const frames = [];
-  const manifestUrl = new URL('./manifest.json', import.meta.url);
+  const manifestUrl = new URL('../assets/customers/manifest.json', import.meta.url);
 
   manifest?.files?.forEach((entry) => {
     const parsed = parseFrame(entry?.fileName);
