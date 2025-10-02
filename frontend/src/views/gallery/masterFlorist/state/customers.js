@@ -5,9 +5,8 @@ import { resetMasterFloristSolution } from './store.js';
 const ACTIVE_IDLE_MS = 0;
 const ACTIVE_TALK_MS = 5_000;
 const TALK_TOGGLE_MS = 150;
-const QUEUE_IDLE_RANGE = [2_500, 4_500];
-const QUEUE_WALK_RANGE = [900, 1_600];
-const NOTICE_DELAY_RANGE = [300, 1_200];
+const QUEUE_ADVANCE_DELAY_RANGE = [1_000, 5_000];
+const QUEUE_SETTLE_EPSILON = 1.5;
 const WALK_SPEED = 320; // px per second
 const WALK_BOB_TRIGGER_MS = 500;
 const WALK_BOB_DURATION_MS = 250;
@@ -54,6 +53,7 @@ export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
     mouthToggleMs: TALK_TOGGLE_MS,
     maxVisible: Math.min(MAX_VISIBLE_CUSTOMERS, entries.length + 1),
     queueDirty: true,
+    queueSpacingSnapshot: BASE_PERSONAL_SPACE,
   };
 }
 
@@ -68,12 +68,7 @@ export function updateCustomerParade(state, info = {}) {
   parade.spawnCooldownMs = Math.max(0, parade.spawnCooldownMs - deltaMs);
 
   ensureQueueStocked(parade);
-  if (parade.queueDirty) {
-    layoutQueue(parade, false);
-    parade.queueDirty = false;
-  } else {
-    layoutQueue(parade, true);
-  }
+  applyQueueLayout(parade);
 
   for (let i = parade.actors.length - 1; i >= 0; i -= 1) {
     const actor = parade.actors[i];
@@ -87,7 +82,6 @@ export function updateCustomerParade(state, info = {}) {
     promoteNext(parade);
   }
 
-  trimQueue(parade);
 }
 
 export function disposeCustomerParade(state) {
@@ -98,59 +92,6 @@ export function disposeCustomerParade(state) {
   state.customerParade.pendingActiveId = null;
   state.customerParade.rootState = null;
   state.customerParade = null;
-}
-
-function countQueueActors(queue = []) {
-  if (!Array.isArray(queue)) return 0;
-  return queue.reduce((count, actor) => (actor ? count + 1 : count), 0);
-}
-
-function findFirstEmptyQueueSlot(queue = []) {
-  if (!Array.isArray(queue)) return -1;
-  for (let i = 0; i < queue.length; i += 1) {
-    if (!queue[i]) return i;
-  }
-  return -1;
-}
-
-function trimQueue(parade) {
-  if (!Array.isArray(parade?.queue)) return;
-  while (parade.queue.length > 0 && parade.queue[parade.queue.length - 1] == null) {
-    parade.queue.pop();
-  }
-}
-
-function computeQueueSpacing(parade) {
-  const count = Math.max(Array.isArray(parade?.queue) ? parade.queue.length : 0, 1);
-  return Math.max(
-    parade.queueSpacingMin,
-    parade.queueSpacingBase - Math.max(0, count - 1) * parade.queueSpacingStep,
-  );
-}
-
-function getQueueAnchor(parade, index) {
-  if (index == null || index < 0) {
-    return QUEUE_START_X;
-  }
-  const spacing = computeQueueSpacing(parade);
-  return QUEUE_START_X + spacing * index;
-}
-
-function isFrontSlotEmpty(parade, index) {
-  if (!Array.isArray(parade?.queue) || index == null || index <= 0) return false;
-  const front = parade.queue[index - 1];
-  return !front || front.state !== 'queued';
-}
-
-function countQueuePresence(parade) {
-  const base = countQueueActors(parade?.queue);
-  if (!Array.isArray(parade?.actors)) return base;
-  return base + parade.actors.reduce((sum, actor) => {
-    if (actor && actor.state === 'advancing' && typeof actor.queueTargetIndex === 'number' && actor.queueTargetIndex >= 0) {
-      return sum + 1;
-    }
-    return sum;
-  }, 0);
 }
 
 function resetWalkBob(actor) {
@@ -187,40 +128,173 @@ function updateWalkBob(actor, deltaMs) {
   }
 }
 
+function computeQueueSpacing(parade, countOverride) {
+  const base = parade?.queueSpacingBase ?? BASE_PERSONAL_SPACE;
+  const min = parade?.queueSpacingMin ?? MIN_PERSONAL_SPACE;
+  const step = parade?.queueSpacingStep ?? PERSONAL_SPACE_STEP;
+  const count = Math.max(countOverride ?? (Array.isArray(parade?.queue) ? parade.queue.length : 0), 1);
+  return Math.max(min, base - Math.max(0, count - 1) * step);
+}
+
+function getQueueAnchor(parade, index, spacingOverride) {
+  const spacing = spacingOverride ?? computeQueueSpacing(parade);
+  return QUEUE_START_X + spacing * Math.max(index, 0);
+}
+
+function createQueueState(anchorX = SPAWN_X) {
+  return {
+    mode: 'waiting',
+    elapsedMs: 0,
+    delayMs: randomBetween(QUEUE_ADVANCE_DELAY_RANGE),
+    restX: anchorX,
+  };
+}
+
+function ensureQueueState(actor, anchorX) {
+  if (!actor || typeof actor !== 'object') return null;
+  if (!actor.queue || typeof actor.queue !== 'object') {
+    actor.queue = createQueueState(anchorX ?? SPAWN_X);
+  }
+  if (anchorX != null) {
+    actor.queue.restX = Math.min(actor.queue.restX ?? anchorX, anchorX);
+  }
+  return actor.queue;
+}
+
+function nextEntry(parade) {
+  if (!parade) return null;
+
+  const source = Array.isArray(parade.sourceEntries) ? parade.sourceEntries : [];
+  if (!Array.isArray(parade.pendingEntries) || parade.pendingEntries.length === 0) {
+    parade.pendingEntries = source.slice();
+  }
+
+  if (!Array.isArray(parade.pendingEntries) || parade.pendingEntries.length === 0) {
+    return null;
+  }
+
+  return parade.pendingEntries.shift() || null;
+}
+
 function ensureQueueStocked(parade) {
-  if (!Array.isArray(parade.queue)) parade.queue = [];
+  if (!parade) return;
+  if (!Array.isArray(parade.queue)) {
+    parade.queue = [];
+  }
   const desired = parade.maxVisible;
   if (desired <= 0) return;
   if (parade.spawnCooldownMs > 0) return;
 
   const activeCount = (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
-  if (countQueuePresence(parade) + activeCount >= desired) return;
+  if (parade.queue.length + activeCount >= desired) return;
 
-  while (countQueuePresence(parade) + activeCount < desired) {
+  while (parade.queue.length + activeCount < desired) {
     const entry = nextEntry(parade);
     if (!entry) break;
     const actor = createActor(entry);
-    const slotIndex = findFirstEmptyQueueSlot(parade.queue);
-    if (slotIndex === -1) {
-      parade.queue.push(actor);
-      actor.queueIndex = parade.queue.length - 1;
-    } else {
-      parade.queue[slotIndex] = actor;
-      actor.queueIndex = slotIndex;
-    }
+    actor.state = 'entering';
+    actor.pose = 'walking';
+    actor.x = SPAWN_X;
+    actor.queueIndex = parade.queue.length;
+    const spacing = computeQueueSpacing(parade, actor.queueIndex + 1);
+    const anchor = getQueueAnchor(parade, actor.queueIndex, spacing);
+    actor.targetX = anchor;
+    ensureQueueState(actor, anchor);
     parade.actors.push(actor);
+    parade.queue.push(actor);
     parade.queueDirty = true;
     parade.spawnCooldownMs = parade.spawnIntervalMs;
+    break;
   }
-
-  trimQueue(parade);
 }
 
-function nextEntry(parade) {
-  if (!parade.pendingEntries || parade.pendingEntries.length === 0) {
-    parade.pendingEntries = parade.sourceEntries.slice();
+function applyQueueLayout(parade) {
+  if (!parade) return;
+  if (!Array.isArray(parade.queue)) {
+    parade.queue = [];
   }
-  return parade.pendingEntries.shift() || null;
+  parade.queue = parade.queue.filter((actor) => actor && typeof actor === 'object' && !actor.remove);
+  const spacing = computeQueueSpacing(parade);
+  parade.queueSpacingSnapshot = spacing;
+  parade.queueDirty = false;
+  parade.queue.forEach((actor, index) => {
+    actor.queueIndex = index;
+    const anchor = getQueueAnchor(parade, index, spacing);
+    const queue = ensureQueueState(actor, anchor);
+    if (actor.state === 'entering') {
+      actor.targetX = anchor;
+    }
+    if (actor.state === 'queued' && queue.mode !== 'advancing') {
+      queue.restX = Math.min(queue.restX ?? anchor, anchor);
+    }
+  });
+}
+
+function slideActorTowards(actor, targetX, deltaMs) {
+  const currentX = actor.x ?? SPAWN_X;
+  if (targetX >= currentX) {
+    actor.x = currentX;
+    return true;
+  }
+  const step = actor.speed * (deltaMs / 1000);
+  if (step <= 0) {
+    return false;
+  }
+  const delta = currentX - targetX;
+  if (delta <= step) {
+    actor.x = targetX;
+    return true;
+  }
+  actor.x = currentX - step;
+  return false;
+}
+
+function startQueueAdvance(actor) {
+  const queue = ensureQueueState(actor);
+  queue.mode = 'advancing';
+  queue.elapsedMs = 0;
+  actor.pose = 'walking';
+  resetWalkBob(actor);
+}
+
+function updateQueued(parade, actor, deltaMs) {
+  const queue = ensureQueueState(actor);
+  const index = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
+  if (index < 0) return;
+
+  const spacing = parade.queueSpacingSnapshot ?? computeQueueSpacing(parade);
+  const anchor = getQueueAnchor(parade, index, spacing);
+  queue.restX = Math.min(queue.restX ?? anchor, anchor);
+
+  const ahead = index > 0 ? parade.queue[index - 1] : null;
+  const aheadX = ahead ? ahead.x : QUEUE_START_X;
+  const desiredX = ahead ? aheadX + spacing : QUEUE_START_X;
+  const targetX = Math.min(queue.restX, desiredX);
+
+  if (queue.mode !== 'advancing') {
+    queue.elapsedMs += deltaMs;
+    if (queue.elapsedMs >= queue.delayMs) {
+      startQueueAdvance(actor);
+    } else {
+      if (actor.pose !== 'idle') {
+        actor.pose = 'idle';
+        resetWalkBob(actor);
+      }
+      return;
+    }
+  }
+
+  const completed = slideActorTowards(actor, targetX, deltaMs);
+  updateWalkBob(actor, deltaMs);
+  if (completed || Math.abs(actor.x - targetX) <= QUEUE_SETTLE_EPSILON) {
+    actor.x = targetX;
+    queue.mode = 'waiting';
+    queue.elapsedMs = 0;
+    queue.delayMs = randomBetween(QUEUE_ADVANCE_DELAY_RANGE);
+    queue.restX = targetX;
+    actor.pose = 'idle';
+    resetWalkBob(actor);
+  }
 }
 
 function createActor(entry) {
@@ -248,16 +322,7 @@ function createActor(entry) {
     pendingActive: false,
     chatAnnounced: false,
     queueIndex: null,
-    queueTargetIndex: null,
-    queue: {
-      desiredX: SPAWN_X,
-      needsAdvance: false,
-      noticeDelayMs: randomBetween(NOTICE_DELAY_RANGE),
-      noticeElapsed: 0,
-      poseTimer: 0,
-      idleDuration: randomBetween(QUEUE_IDLE_RANGE),
-      walkDuration: randomBetween(QUEUE_WALK_RANGE),
-    },
+    queue: createQueueState(),
     bobOffset: 0,
     bobTimerMs: 0,
     bobActiveMs: 0,
@@ -266,57 +331,22 @@ function createActor(entry) {
 }
 
 function layoutQueue(parade, soft) {
-  if (!Array.isArray(parade.queue) || parade.queue.length === 0) return;
-  const spacing = computeQueueSpacing(parade);
-
-  let anchor = QUEUE_START_X;
-  parade.queue.forEach((actor, index) => {
-    const slotX = anchor;
-    if (!actor) {
-      anchor += spacing;
-      return;
-    }
-
-    actor.renderOrder = index;
-    actor.queueIndex = index;
-
-    const desiredX = slotX;
-    const currentDesired = actor.queue.desiredX;
-    if (!soft || Math.abs((currentDesired ?? desiredX) - desiredX) >= 0.5) {
-      actor.queue.desiredX = desiredX;
-      if (actor.state === 'entering') {
-        actor.targetX = desiredX;
-      }
-    }
-
-    if (actor.state === 'queued') {
-      const frontEmpty = isFrontSlotEmpty(parade, index);
-      if (frontEmpty && !actor.queue.needsAdvance) {
-        actor.queue.needsAdvance = true;
-        actor.queue.noticeElapsed = 0;
-        actor.queue.noticeDelayMs = randomBetween(NOTICE_DELAY_RANGE);
-      } else if (!frontEmpty && actor.queue.needsAdvance) {
-        actor.queue.needsAdvance = false;
-        actor.queue.noticeElapsed = 0;
-      }
-    }
-
-    anchor += spacing;
-  });
+  applyQueueLayout(parade);
 }
 
 function advanceActor(parade, actor, deltaMs) {
+  if (!actor || typeof actor !== 'object') return;
   actor.timeInState += deltaMs;
-  updateWalkBob(actor, deltaMs);
 
   switch (actor.state) {
     case 'entering':
     case 'advancing':
     case 'departing':
+      updateWalkBob(actor, deltaMs);
       moveTowardsTarget(parade, actor, deltaMs);
       break;
     case 'queued':
-      updateQueued(actor, deltaMs);
+      updateQueued(parade, actor, deltaMs);
       break;
     case 'activeIdle':
       if (actor.timeInState >= ACTIVE_IDLE_MS) {
@@ -351,26 +381,18 @@ function handleArrival(parade, actor) {
     actor.state = 'queued';
     actor.pose = 'idle';
     resetQueuePose(actor);
+    ensureQueueState(actor, actor.x);
     return;
   }
 
   if (actor.state === 'advancing') {
-    const targetIndex = actor.queueTargetIndex;
-    actor.queueTargetIndex = null;
     if (actor.pendingActive) {
       actor.pendingActive = false;
       beginActiveIdle(parade, actor);
-    } else if (targetIndex != null && targetIndex >= 0) {
-      parade.queue[targetIndex] = actor;
-      actor.queueIndex = targetIndex;
-      actor.state = 'queued';
-      actor.pose = 'idle';
-      resetQueuePose(actor);
     } else {
       actor.state = 'queued';
+      resetQueuePose(actor);
     }
-    parade.queueDirty = true;
-    trimQueue(parade);
     return;
   }
 
@@ -379,67 +401,10 @@ function handleArrival(parade, actor) {
   }
 }
 
-function updateQueued(parade, actor, deltaMs) {
-  const queue = actor.queue;
-  queue.poseTimer += deltaMs;
-
-  let poseChanged = false;
-
-  if (actor.pose === 'idle') {
-    if (queue.poseTimer >= queue.idleDuration) {
-      actor.pose = 'walking';
-      resetWalkBob(actor);
-      queue.poseTimer = 0;
-      queue.walkDuration = randomBetween(QUEUE_WALK_RANGE);
-      poseChanged = true;
-    }
-  } else if (queue.poseTimer >= queue.walkDuration) {
-    actor.pose = 'idle';
-    resetWalkBob(actor);
-    queue.poseTimer = 0;
-    queue.idleDuration = randomBetween(QUEUE_IDLE_RANGE);
-    poseChanged = true;
-  }
-
-  const slotIndex = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
-  const frontEmpty = isFrontSlotEmpty(parade, slotIndex);
-  if (poseChanged && actor.state === 'queued') {
-    if (frontEmpty) {
-      queue.needsAdvance = true;
-      queue.noticeElapsed = 0;
-      queue.noticeDelayMs = randomBetween(NOTICE_DELAY_RANGE);
-    } else if (queue.needsAdvance) {
-      queue.needsAdvance = false;
-      queue.noticeElapsed = 0;
-    }
-  }
-
-  if (queue.needsAdvance) {
-    queue.noticeElapsed += deltaMs;
-    if (actor.pose === 'walking' && queue.noticeElapsed >= queue.noticeDelayMs) {
-      queue.needsAdvance = false;
-      actor.state = 'advancing';
-      const currentIndex = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
-      const targetIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-      actor.queueTargetIndex = targetIndex;
-      if (currentIndex >= 0 && parade.queue[currentIndex] === actor) {
-        parade.queue[currentIndex] = null;
-      }
-      actor.queueIndex = null;
-      const anchor = getQueueAnchor(parade, targetIndex);
-      actor.queue.desiredX = anchor;
-      actor.targetX = anchor;
-      parade.queueDirty = true;
-      actor.timeInState = 0;
-    }
-  }
-}
-
 function beginActiveIdle(parade, actor) {
   parade.activeId = actor.id;
   resetWalkBob(actor);
   actor.queueIndex = null;
-  actor.queueTargetIndex = null;
   parade.pendingActiveId = null;
   actor.state = 'activeIdle';
   actor.pose = 'idle';
@@ -482,7 +447,6 @@ function beginDeparture(parade, actor) {
   parade.activeId = null;
   resetWalkBob(actor);
   actor.queueIndex = null;
-  actor.queueTargetIndex = null;
   actor.state = 'departing';
   actor.pose = 'walking';
   actor.targetX = EXIT_X;
@@ -497,55 +461,42 @@ function beginDeparture(parade, actor) {
 
 function promoteNext(parade) {
   if (parade.activeId || parade.pendingActiveId) return;
-  if (!Array.isArray(parade.queue)) return;
-  const nextIndex = parade.queue.findIndex((actor) => actor);
-  if (nextIndex === -1) return;
-  const next = parade.queue[nextIndex];
-  parade.queue[nextIndex] = null;
-  next.queueIndex = null;
-  next.queueTargetIndex = -1;
-  parade.pendingActiveId = next.id;
-  next.pendingActive = true;
-  next.state = 'advancing';
-  next.pose = 'walking';
-  next.targetX = ACTIVE_ANCHOR_X;
-  next.timeInState = 0;
+  if (!Array.isArray(parade.queue) || parade.queue.length === 0) return;
+  const actor = parade.queue.shift();
+  if (!actor) return;
+  actor.queueIndex = null;
+  actor.pendingActive = true;
+  actor.state = 'advancing';
+  actor.pose = 'walking';
+  actor.targetX = ACTIVE_ANCHOR_X;
+  actor.timeInState = 0;
+  resetWalkBob(actor);
+  parade.pendingActiveId = actor.id;
   parade.queueDirty = true;
-  trimQueue(parade);
 }
 
 function dropActor(parade, actor, index) {
   parade.actors.splice(index, 1);
   if (Array.isArray(parade.queue)) {
-    const slotIndex = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
-    if (slotIndex >= 0) {
-      parade.queue[slotIndex] = null;
-    } else {
-      parade.queue = parade.queue.filter((entry) => entry !== actor);
-    }
+    parade.queue = parade.queue.filter((entry) => entry !== actor);
+    parade.queueDirty = true;
   }
-  actor.queueIndex = null;
-  actor.queueTargetIndex = null;
 
   if (parade.activeId === actor.id) {
     parade.activeId = null;
-    parade.queueDirty = true;
   }
   if (parade.pendingActiveId === actor.id) {
     parade.pendingActiveId = null;
   }
-  trimQueue(parade);
 }
 
 function resetQueuePose(actor) {
-  const queue = actor.queue;
+  const queue = ensureQueueState(actor, actor.x);
   resetWalkBob(actor);
-  queue.poseTimer = 0;
-  queue.idleDuration = randomBetween(QUEUE_IDLE_RANGE);
-  queue.walkDuration = randomBetween(QUEUE_WALK_RANGE);
-  queue.noticeElapsed = 0;
-  queue.noticeDelayMs = randomBetween(NOTICE_DELAY_RANGE);
-  queue.needsAdvance = false;
+  queue.mode = 'waiting';
+  queue.elapsedMs = 0;
+  queue.delayMs = randomBetween(QUEUE_ADVANCE_DELAY_RANGE);
+  queue.restX = actor.x;
   actor.pose = 'idle';
 }
 
@@ -568,7 +519,4 @@ function randomBetween(range) {
   if (!Number.isFinite(max) || max <= min) return min;
   return min + Math.random() * (max - min);
 }
-
-
-
 

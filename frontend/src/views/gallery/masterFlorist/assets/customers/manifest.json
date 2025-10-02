@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-10-02T09:50:47.3037086-04:00",
+  "generatedAt": "2025-10-02T14:06:50.5670899-04:00",
   "sourceFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\sprite-sheets",
   "outputFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\customers",
   "files": [
@@ -989,8 +989,8 @@
       "mood": "happy",
       "pose": "idle",
       "size": {
-        "width": 199,
-        "height": 295
+        "width": 195,
+        "height": 296
       }
     },
     {
