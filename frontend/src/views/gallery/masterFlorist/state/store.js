@@ -1,6 +1,5 @@
 ﻿import { getCustomerLineup } from '../assets/customers/lineup.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
-import { DEFAULT_SLOT_CODES } from './slots.js';
 
 const DEFAULT_VIEWPORT = {
   width: MF_CANVAS_WIDTH,
@@ -27,7 +26,6 @@ export function createMasterFloristState() {
   return {
     seed,
     customers: getCustomerLineup(),
-    benchSlots: buildBenchSlots(),
     hoverStemId: null,
     pendingDrops: [],
     drag: null,
@@ -41,9 +39,6 @@ export function resetMasterFloristState(state) {
   const freshSeed = Date.now();
   state.seed = freshSeed;
   state.customers = getCustomerLineup();
-  state.benchSlots.forEach((slot) => {
-    slot.stemId = null;
-  });
   state.hoverStemId = null;
   state.pendingDrops = [];
   state.drag = null;

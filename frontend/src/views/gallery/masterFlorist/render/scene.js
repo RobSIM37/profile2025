@@ -5,7 +5,6 @@ import {
   DEFAULT_SLOT_CODES,
   SOURCE_BOXES,
   SOURCE_COLUMNS_META,
-  SLOT_HITBOX_SCALE,
   SLOT_CLICK_BOUNDS,
   SOURCE_CONTAINER,
 } from '../state/slots.js';
@@ -18,7 +17,6 @@ const STEM_STYLES = {
   width: 6,
 };
 const FLOWER_DEFS = [
-  { code: 'd', color: '#f9e678', src: '../assets/flowers/daisy.png' },
   { code: 'y', color: '#f9e678', src: '../assets/flowers/daisy.png' },
   { code: 'p', color: '#b39deb', src: '../assets/flowers/iris.png' },
   { code: 'w', color: '#f4f2eb', src: '../assets/flowers/lily.png' },
