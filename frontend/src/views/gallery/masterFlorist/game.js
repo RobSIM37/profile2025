@@ -7,6 +7,8 @@ import { createMasterFloristCanvasController } from './canvas/controller.js';
 import { createMasterFloristRenderer } from './render/scene.js';
 import { createMasterFloristCanvasSizer } from './canvas/sizer.js';
 import { createMasterFloristLoop } from './loop/ticker.js';
+import { loadCustomerSpriteLibrary } from './assets/customers/sprites.js';
+import { initializeCustomerParade, updateCustomerParade, disposeCustomerParade } from './state/customers.js';
 
 export const meta = {
   title: 'Master Florist - Game',
@@ -33,14 +35,15 @@ export function render() {
   section.className = 'stack mf-game-section';
 
   const customerArea = createCustomerArea();
-
   const { workingArea, canvasHost, canvasElement } = createWorkingArea();
 
-  section.append(workingArea, customerArea);
+  section.append(workingArea, customerArea.root);
   layout.append(section);
   frag.append(layout);
 
   const state = createMasterFloristState();
+  state.customerUi = customerArea;
+
   const renderer = createMasterFloristRenderer({ canvas: canvasElement, state });
 
   const sizer = createMasterFloristCanvasSizer({
@@ -61,9 +64,27 @@ export function render() {
     toCanvasPoint: (event) => sizer.toCanvasPoint(event.clientX, event.clientY),
   });
 
+  let paradeReady = false;
+  customerArea.appendMessage('system', 'Loading customer parade...', 'Parade');
+
+  loadCustomerSpriteLibrary()
+    .then((library) => {
+      initializeCustomerParade(state, { spriteLibrary: library, chat: customerArea });
+      customerArea.appendMessage('system', 'Parade ready. Cycling through customer moods.', 'Parade');
+      paradeReady = true;
+      renderer.render();
+    })
+    .catch((err) => {
+      console.error('Unable to load customer sprites', err);
+      customerArea.appendMessage('system', 'Unable to load customer sprites for parade preview.', 'Parade');
+    });
+
   const loop = createMasterFloristLoop({ tickRateMs: 1000 / 30, routeMatch: '#/gallery/master-florist/game' });
   const unsubscribe = loop.subscribe((info) => {
     updateMasterFloristClock(state, info);
+    if (paradeReady) {
+      updateCustomerParade(state, info);
+    }
     renderer.render();
   });
   loop.start();
@@ -77,6 +98,8 @@ export function render() {
     sizer.unmount();
     controller.unmount();
     renderer.dispose();
+    disposeCustomerParade(state);
+    paradeReady = false;
   };
 
   return frag;

@@ -1,5388 +1,2112 @@
 {
-  "generatedAt": "2025-10-02T06:29:45.0061442-04:00",
+  "generatedAt": "2025-10-02T06:38:34.7941068-04:00",
   "sourceFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\sprite-sheets",
   "outputFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\customers",
   "files": [
     {
       "fileName": "female_chef_happy_walking.png",
-      "path": "female_chef_happy_walking.png",
-      "sheet": "female_chef",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 183,
         "height": 323
-      },
-      "bbox": {
-        "x": 46,
-        "y": 14,
-        "width": 183,
-        "height": 323
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_happy_idle.png",
-      "path": "female_chef_happy_idle.png",
-      "sheet": "female_chef",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 323
-      },
-      "bbox": {
-        "x": 246,
-        "y": 14,
-        "width": 201,
-        "height": 323
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_happy_talking.png",
-      "path": "female_chef_happy_talking.png",
-      "sheet": "female_chef",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 196,
         "height": 323
-      },
-      "bbox": {
-        "x": 466,
-        "y": 14,
-        "width": 196,
-        "height": 323
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_neutral_walking.png",
-      "path": "female_chef_neutral_walking.png",
-      "sheet": "female_chef",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 178,
         "height": 319
-      },
-      "bbox": {
-        "x": 45,
-        "y": 366,
-        "width": 178,
-        "height": 319
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_neutral_idle.png",
-      "path": "female_chef_neutral_idle.png",
-      "sheet": "female_chef",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 194,
         "height": 319
-      },
-      "bbox": {
-        "x": 246,
-        "y": 366,
-        "width": 194,
-        "height": 319
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_neutral_talking.png",
-      "path": "female_chef_neutral_talking.png",
-      "sheet": "female_chef",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 200,
         "height": 319
-      },
-      "bbox": {
-        "x": 464,
-        "y": 366,
-        "width": 200,
-        "height": 319
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_angry_walking.png",
-      "path": "female_chef_angry_walking.png",
-      "sheet": "female_chef",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 179,
         "height": 305
-      },
-      "bbox": {
-        "x": 40,
-        "y": 714,
-        "width": 179,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_angry_idle.png",
-      "path": "female_chef_angry_idle.png",
-      "sheet": "female_chef",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 195,
         "height": 304
-      },
-      "bbox": {
-        "x": 243,
-        "y": 714,
-        "width": 195,
-        "height": 304
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_chef_angry_talking.png",
-      "path": "female_chef_angry_talking.png",
-      "sheet": "female_chef",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 304
-      },
-      "bbox": {
-        "x": 465,
-        "y": 714,
-        "width": 197,
-        "height": 304
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_happy_walking.png",
-      "path": "female_clown_happy_walking.png",
-      "sheet": "female_clown",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 172,
         "height": 288
-      },
-      "bbox": {
-        "x": 32,
-        "y": 27,
-        "width": 172,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_happy_idle.png",
-      "path": "female_clown_happy_idle.png",
-      "sheet": "female_clown",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 194,
         "height": 290
-      },
-      "bbox": {
-        "x": 241,
-        "y": 25,
-        "width": 194,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_happy_talking.png",
-      "path": "female_clown_happy_talking.png",
-      "sheet": "female_clown",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 194,
         "height": 291
-      },
-      "bbox": {
-        "x": 465,
-        "y": 24,
-        "width": 194,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_neutral_walking.png",
-      "path": "female_clown_neutral_walking.png",
-      "sheet": "female_clown",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 169,
         "height": 288
-      },
-      "bbox": {
-        "x": 34,
-        "y": 347,
-        "width": 169,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_neutral_idle.png",
-      "path": "female_clown_neutral_idle.png",
-      "sheet": "female_clown",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 194,
         "height": 289
-      },
-      "bbox": {
-        "x": 241,
-        "y": 346,
-        "width": 194,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_neutral_talking.png",
-      "path": "female_clown_neutral_talking.png",
-      "sheet": "female_clown",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 194,
         "height": 289
-      },
-      "bbox": {
-        "x": 464,
-        "y": 346,
-        "width": 194,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_angry_walking.png",
-      "path": "female_clown_angry_walking.png",
-      "sheet": "female_clown",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 169,
         "height": 286
-      },
-      "bbox": {
-        "x": 34,
-        "y": 668,
-        "width": 169,
-        "height": 286
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_angry_idle.png",
-      "path": "female_clown_angry_idle.png",
-      "sheet": "female_clown",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 194,
         "height": 287
-      },
-      "bbox": {
-        "x": 241,
-        "y": 667,
-        "width": 194,
-        "height": 287
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_clown_angry_talking.png",
-      "path": "female_clown_angry_talking.png",
-      "sheet": "female_clown",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 194,
         "height": 287
-      },
-      "bbox": {
-        "x": 464,
-        "y": 667,
-        "width": 194,
-        "height": 287
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_happy_walking.png",
-      "path": "female_cowhand_happy_walking.png",
-      "sheet": "female_cowhand",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 193,
         "height": 290
-      },
-      "bbox": {
-        "x": 30,
-        "y": 18,
-        "width": 193,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_happy_idle.png",
-      "path": "female_cowhand_happy_idle.png",
-      "sheet": "female_cowhand",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 206,
         "height": 290
-      },
-      "bbox": {
-        "x": 248,
-        "y": 18,
-        "width": 206,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_happy_talking.png",
-      "path": "female_cowhand_happy_talking.png",
-      "sheet": "female_cowhand",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 210,
         "height": 290
-      },
-      "bbox": {
-        "x": 454,
-        "y": 18,
-        "width": 210,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_neutral_walking.png",
-      "path": "female_cowhand_neutral_walking.png",
-      "sheet": "female_cowhand",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 190,
         "height": 286
-      },
-      "bbox": {
-        "x": 31,
-        "y": 339,
-        "width": 190,
-        "height": 286
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_neutral_idle.png",
-      "path": "female_cowhand_neutral_idle.png",
-      "sheet": "female_cowhand",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 191,
         "height": 285
-      },
-      "bbox": {
-        "x": 250,
-        "y": 339,
-        "width": 191,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_neutral_talking.png",
-      "path": "female_cowhand_neutral_talking.png",
-      "sheet": "female_cowhand",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 194,
         "height": 286
-      },
-      "bbox": {
-        "x": 467,
-        "y": 339,
-        "width": 194,
-        "height": 286
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_angry_walking.png",
-      "path": "female_cowhand_angry_walking.png",
-      "sheet": "female_cowhand",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 188,
         "height": 283
-      },
-      "bbox": {
-        "x": 32,
-        "y": 651,
-        "width": 188,
-        "height": 283
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_angry_idle.png",
-      "path": "female_cowhand_angry_idle.png",
-      "sheet": "female_cowhand",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 191,
         "height": 282
-      },
-      "bbox": {
-        "x": 250,
-        "y": 651,
-        "width": 191,
-        "height": 282
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_cowhand_angry_talking.png",
-      "path": "female_cowhand_angry_talking.png",
-      "sheet": "female_cowhand",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 194,
         "height": 283
-      },
-      "bbox": {
-        "x": 467,
-        "y": 651,
-        "width": 194,
-        "height": 283
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_happy_walking.png",
-      "path": "female_default_happy_walking.png",
-      "sheet": "female_default",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 175,
         "height": 297
-      },
-      "bbox": {
-        "x": 34,
-        "y": 18,
-        "width": 175,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_happy_idle.png",
-      "path": "female_default_happy_idle.png",
-      "sheet": "female_default",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 202,
         "height": 297
-      },
-      "bbox": {
-        "x": 242,
-        "y": 18,
-        "width": 202,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_happy_talking.png",
-      "path": "female_default_happy_talking.png",
-      "sheet": "female_default",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 201,
         "height": 297
-      },
-      "bbox": {
-        "x": 468,
-        "y": 18,
-        "width": 201,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_neutral_walking.png",
-      "path": "female_default_neutral_walking.png",
-      "sheet": "female_default",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 174,
         "height": 299
-      },
-      "bbox": {
-        "x": 33,
-        "y": 347,
-        "width": 174,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_neutral_idle.png",
-      "path": "female_default_neutral_idle.png",
-      "sheet": "female_default",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 299
-      },
-      "bbox": {
-        "x": 242,
-        "y": 347,
-        "width": 201,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_neutral_talking.png",
-      "path": "female_default_neutral_talking.png",
-      "sheet": "female_default",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 199,
         "height": 299
-      },
-      "bbox": {
-        "x": 466,
-        "y": 347,
-        "width": 199,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_angry_walking.png",
-      "path": "female_default_angry_walking.png",
-      "sheet": "female_default",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 173,
         "height": 300
-      },
-      "bbox": {
-        "x": 33,
-        "y": 678,
-        "width": 173,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_angry_idle.png",
-      "path": "female_default_angry_idle.png",
-      "sheet": "female_default",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 200,
         "height": 300
-      },
-      "bbox": {
-        "x": 241,
-        "y": 678,
-        "width": 200,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_default_angry_talking.png",
-      "path": "female_default_angry_talking.png",
-      "sheet": "female_default",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 199,
         "height": 300
-      },
-      "bbox": {
-        "x": 465,
-        "y": 678,
-        "width": 199,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_happy_walking.png",
-      "path": "female_detective_happy_walking.png",
-      "sheet": "female_detective",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 194,
         "height": 314
-      },
-      "bbox": {
-        "x": 24,
-        "y": 23,
-        "width": 194,
-        "height": 314
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_happy_idle.png",
-      "path": "female_detective_happy_idle.png",
-      "sheet": "female_detective",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 195,
         "height": 314
-      },
-      "bbox": {
-        "x": 246,
-        "y": 23,
-        "width": 195,
-        "height": 314
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_happy_talking.png",
-      "path": "female_detective_happy_talking.png",
-      "sheet": "female_detective",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 193,
         "height": 314
-      },
-      "bbox": {
-        "x": 469,
-        "y": 23,
-        "width": 193,
-        "height": 314
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_neutral_walking.png",
-      "path": "female_detective_neutral_walking.png",
-      "sheet": "female_detective",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 189,
         "height": 305
-      },
-      "bbox": {
-        "x": 23,
-        "y": 364,
-        "width": 189,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_neutral_idle.png",
-      "path": "female_detective_neutral_idle.png",
-      "sheet": "female_detective",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 190,
         "height": 305
-      },
-      "bbox": {
-        "x": 243,
-        "y": 364,
-        "width": 190,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_neutral_talking.png",
-      "path": "female_detective_neutral_talking.png",
-      "sheet": "female_detective",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 191,
         "height": 305
-      },
-      "bbox": {
-        "x": 465,
-        "y": 364,
-        "width": 191,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_angry_walking.png",
-      "path": "female_detective_angry_walking.png",
-      "sheet": "female_detective",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 186,
         "height": 294
-      },
-      "bbox": {
-        "x": 23,
-        "y": 695,
-        "width": 186,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_angry_idle.png",
-      "path": "female_detective_angry_idle.png",
-      "sheet": "female_detective",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 189,
         "height": 294
-      },
-      "bbox": {
-        "x": 241,
-        "y": 695,
-        "width": 189,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_detective_angry_talking.png",
-      "path": "female_detective_angry_talking.png",
-      "sheet": "female_detective",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 191,
         "height": 294
-      },
-      "bbox": {
-        "x": 465,
-        "y": 695,
-        "width": 191,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_happy_walking.png",
-      "path": "female_executive_happy_walking.png",
-      "sheet": "female_executive",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 171,
         "height": 312
-      },
-      "bbox": {
-        "x": 35,
-        "y": 18,
-        "width": 171,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_happy_idle.png",
-      "path": "female_executive_happy_idle.png",
-      "sheet": "female_executive",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 199,
         "height": 312
-      },
-      "bbox": {
-        "x": 241,
-        "y": 18,
-        "width": 199,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_happy_talking.png",
-      "path": "female_executive_happy_talking.png",
-      "sheet": "female_executive",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 312
-      },
-      "bbox": {
-        "x": 465,
-        "y": 18,
-        "width": 197,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_neutral_walking.png",
-      "path": "female_executive_neutral_walking.png",
-      "sheet": "female_executive",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 176,
         "height": 306
-      },
-      "bbox": {
-        "x": 32,
-        "y": 362,
-        "width": 176,
-        "height": 306
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_neutral_idle.png",
-      "path": "female_executive_neutral_idle.png",
-      "sheet": "female_executive",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 198,
         "height": 307
-      },
-      "bbox": {
-        "x": 240,
-        "y": 361,
-        "width": 198,
-        "height": 307
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_neutral_talking.png",
-      "path": "female_executive_neutral_talking.png",
-      "sheet": "female_executive",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 198,
         "height": 308
-      },
-      "bbox": {
-        "x": 464,
-        "y": 360,
-        "width": 198,
-        "height": 308
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_angry_walking.png",
-      "path": "female_executive_angry_walking.png",
-      "sheet": "female_executive",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 174,
         "height": 300
-      },
-      "bbox": {
-        "x": 34,
-        "y": 697,
-        "width": 174,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_angry_idle.png",
-      "path": "female_executive_angry_idle.png",
-      "sheet": "female_executive",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 198,
         "height": 300
-      },
-      "bbox": {
-        "x": 241,
-        "y": 697,
-        "width": 198,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_executive_angry_talking.png",
-      "path": "female_executive_angry_talking.png",
-      "sheet": "female_executive",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 198,
         "height": 301
-      },
-      "bbox": {
-        "x": 465,
-        "y": 696,
-        "width": 198,
-        "height": 301
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_happy_walking.png",
-      "path": "female_ganster_happy_walking.png",
-      "sheet": "female_ganster",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 199,
         "height": 301
-      },
-      "bbox": {
-        "x": 24,
-        "y": 26,
-        "width": 199,
-        "height": 301
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_happy_idle.png",
-      "path": "female_ganster_happy_idle.png",
-      "sheet": "female_ganster",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 197,
         "height": 300
-      },
-      "bbox": {
-        "x": 245,
-        "y": 27,
-        "width": 197,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_happy_talking.png",
-      "path": "female_ganster_happy_talking.png",
-      "sheet": "female_ganster",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 299
-      },
-      "bbox": {
-        "x": 466,
-        "y": 27,
-        "width": 197,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_neutral_walking.png",
-      "path": "female_ganster_neutral_walking.png",
-      "sheet": "female_ganster",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 196,
         "height": 293
-      },
-      "bbox": {
-        "x": 23,
-        "y": 364,
-        "width": 196,
-        "height": 293
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_neutral_idle.png",
-      "path": "female_ganster_neutral_idle.png",
-      "sheet": "female_ganster",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 197,
         "height": 295
-      },
-      "bbox": {
-        "x": 245,
-        "y": 362,
-        "width": 197,
-        "height": 295
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_neutral_talking.png",
-      "path": "female_ganster_neutral_talking.png",
-      "sheet": "female_ganster",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 195,
         "height": 295
-      },
-      "bbox": {
-        "x": 469,
-        "y": 361,
-        "width": 195,
-        "height": 295
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_angry_walking.png",
-      "path": "female_ganster_angry_walking.png",
-      "sheet": "female_ganster",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 192,
         "height": 292
-      },
-      "bbox": {
-        "x": 25,
-        "y": 692,
-        "width": 192,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_angry_idle.png",
-      "path": "female_ganster_angry_idle.png",
-      "sheet": "female_ganster",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 194,
         "height": 292
-      },
-      "bbox": {
-        "x": 245,
-        "y": 692,
-        "width": 194,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_ganster_angry_talking.png",
-      "path": "female_ganster_angry_talking.png",
-      "sheet": "female_ganster",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 194,
         "height": 293
-      },
-      "bbox": {
-        "x": 469,
-        "y": 691,
-        "width": 194,
-        "height": 293
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_happy_walking.png",
-      "path": "female_grandparent_happy_walking.png",
-      "sheet": "female_grandparent",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 179,
         "height": 304
-      },
-      "bbox": {
-        "x": 32,
-        "y": 20,
-        "width": 179,
-        "height": 304
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_happy_idle.png",
-      "path": "female_grandparent_happy_idle.png",
-      "sheet": "female_grandparent",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 197,
         "height": 306
-      },
-      "bbox": {
-        "x": 241,
-        "y": 18,
-        "width": 197,
-        "height": 306
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_happy_talking.png",
-      "path": "female_grandparent_happy_talking.png",
-      "sheet": "female_grandparent",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 196,
         "height": 305
-      },
-      "bbox": {
-        "x": 466,
-        "y": 19,
-        "width": 196,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_neutral_walking.png",
-      "path": "female_grandparent_neutral_walking.png",
-      "sheet": "female_grandparent",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 178,
         "height": 298
-      },
-      "bbox": {
-        "x": 33,
-        "y": 358,
-        "width": 178,
-        "height": 298
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_neutral_idle.png",
-      "path": "female_grandparent_neutral_idle.png",
-      "sheet": "female_grandparent",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 195,
         "height": 298
-      },
-      "bbox": {
-        "x": 243,
-        "y": 358,
-        "width": 195,
-        "height": 298
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_neutral_talking.png",
-      "path": "female_grandparent_neutral_talking.png",
-      "sheet": "female_grandparent",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 194,
         "height": 298
-      },
-      "bbox": {
-        "x": 466,
-        "y": 358,
-        "width": 194,
-        "height": 298
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_angry_walking.png",
-      "path": "female_grandparent_angry_walking.png",
-      "sheet": "female_grandparent",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 180,
         "height": 293
-      },
-      "bbox": {
-        "x": 32,
-        "y": 691,
-        "width": 180,
-        "height": 293
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_angry_idle.png",
-      "path": "female_grandparent_angry_idle.png",
-      "sheet": "female_grandparent",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 195,
         "height": 294
-      },
-      "bbox": {
-        "x": 242,
-        "y": 690,
-        "width": 195,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_grandparent_angry_talking.png",
-      "path": "female_grandparent_angry_talking.png",
-      "sheet": "female_grandparent",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 295
-      },
-      "bbox": {
-        "x": 465,
-        "y": 689,
-        "width": 197,
-        "height": 295
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_happy_walking.png",
-      "path": "female_hippie_happy_walking.png",
-      "sheet": "female_hippie",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 179,
         "height": 290
-      },
-      "bbox": {
-        "x": 44,
-        "y": 18,
-        "width": 179,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_happy_idle.png",
-      "path": "female_hippie_happy_idle.png",
-      "sheet": "female_hippie",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 195,
         "height": 289
-      },
-      "bbox": {
-        "x": 245,
-        "y": 18,
-        "width": 195,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_happy_talking.png",
-      "path": "female_hippie_happy_talking.png",
-      "sheet": "female_hippie",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 195,
         "height": 289
-      },
-      "bbox": {
-        "x": 459,
-        "y": 18,
-        "width": 195,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_neutral_walking.png",
-      "path": "female_hippie_neutral_walking.png",
-      "sheet": "female_hippie",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 180,
         "height": 280
-      },
-      "bbox": {
-        "x": 41,
-        "y": 340,
-        "width": 180,
-        "height": 280
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_neutral_idle.png",
-      "path": "female_hippie_neutral_idle.png",
-      "sheet": "female_hippie",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 193,
         "height": 280
-      },
-      "bbox": {
-        "x": 244,
-        "y": 340,
-        "width": 193,
-        "height": 280
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_neutral_talking.png",
-      "path": "female_hippie_neutral_talking.png",
-      "sheet": "female_hippie",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 193,
         "height": 280
-      },
-      "bbox": {
-        "x": 458,
-        "y": 340,
-        "width": 193,
-        "height": 280
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_angry_walking.png",
-      "path": "female_hippie_angry_walking.png",
-      "sheet": "female_hippie",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 179,
         "height": 273
-      },
-      "bbox": {
-        "x": 40,
-        "y": 649,
-        "width": 179,
-        "height": 273
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_angry_idle.png",
-      "path": "female_hippie_angry_idle.png",
-      "sheet": "female_hippie",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 192,
         "height": 275
-      },
-      "bbox": {
-        "x": 242,
-        "y": 649,
-        "width": 192,
-        "height": 275
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_hippie_angry_talking.png",
-      "path": "female_hippie_angry_talking.png",
-      "sheet": "female_hippie",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 273
-      },
-      "bbox": {
-        "x": 453,
-        "y": 649,
-        "width": 197,
-        "height": 273
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_happy_walking.png",
-      "path": "female_noble_happy_walking.png",
-      "sheet": "female_noble",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 169,
         "height": 308
-      },
-      "bbox": {
-        "x": 35,
-        "y": 16,
-        "width": 169,
-        "height": 308
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_happy_idle.png",
-      "path": "female_noble_happy_idle.png",
-      "sheet": "female_noble",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 199,
         "height": 312
-      },
-      "bbox": {
-        "x": 242,
-        "y": 12,
-        "width": 199,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_happy_talking.png",
-      "path": "female_noble_happy_talking.png",
-      "sheet": "female_noble",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 201,
         "height": 312
-      },
-      "bbox": {
-        "x": 466,
-        "y": 12,
-        "width": 201,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_neutral_walking.png",
-      "path": "female_noble_neutral_walking.png",
-      "sheet": "female_noble",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 172,
         "height": 302
-      },
-      "bbox": {
-        "x": 33,
-        "y": 353,
-        "width": 172,
-        "height": 302
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_neutral_idle.png",
-      "path": "female_noble_neutral_idle.png",
-      "sheet": "female_noble",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 203,
         "height": 303
-      },
-      "bbox": {
-        "x": 240,
-        "y": 352,
-        "width": 203,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_neutral_talking.png",
-      "path": "female_noble_neutral_talking.png",
-      "sheet": "female_noble",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 301
-      },
-      "bbox": {
-        "x": 464,
-        "y": 354,
-        "width": 197,
-        "height": 301
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_angry_walking.png",
-      "path": "female_noble_angry_walking.png",
-      "sheet": "female_noble",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 168,
         "height": 296
-      },
-      "bbox": {
-        "x": 34,
-        "y": 682,
-        "width": 168,
-        "height": 296
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_angry_idle.png",
-      "path": "female_noble_angry_idle.png",
-      "sheet": "female_noble",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 199,
         "height": 297
-      },
-      "bbox": {
-        "x": 239,
-        "y": 681,
-        "width": 199,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_noble_angry_talking.png",
-      "path": "female_noble_angry_talking.png",
-      "sheet": "female_noble",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 199,
         "height": 297
-      },
-      "bbox": {
-        "x": 464,
-        "y": 681,
-        "width": 199,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_happy_walking.png",
-      "path": "female_pirate_happy_walking.png",
-      "sheet": "female_pirate",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 187,
         "height": 317
-      },
-      "bbox": {
-        "x": 28,
-        "y": 7,
-        "width": 187,
-        "height": 317
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_happy_idle.png",
-      "path": "female_pirate_happy_idle.png",
-      "sheet": "female_pirate",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 316
-      },
-      "bbox": {
-        "x": 241,
-        "y": 8,
-        "width": 201,
-        "height": 316
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_happy_talking.png",
-      "path": "female_pirate_happy_talking.png",
-      "sheet": "female_pirate",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 201,
         "height": 317
-      },
-      "bbox": {
-        "x": 464,
-        "y": 7,
-        "width": 201,
-        "height": 317
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_neutral_walking.png",
-      "path": "female_pirate_neutral_walking.png",
-      "sheet": "female_pirate",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 200,
         "height": 312
-      },
-      "bbox": {
-        "x": 10,
-        "y": 348,
-        "width": 200,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_neutral_idle.png",
-      "path": "female_pirate_neutral_idle.png",
-      "sheet": "female_pirate",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 314
-      },
-      "bbox": {
-        "x": 235,
-        "y": 346,
-        "width": 201,
-        "height": 314
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_neutral_talking.png",
-      "path": "female_pirate_neutral_talking.png",
-      "sheet": "female_pirate",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 196,
         "height": 312
-      },
-      "bbox": {
-        "x": 462,
-        "y": 349,
-        "width": 196,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_angry_walking.png",
-      "path": "female_pirate_angry_walking.png",
-      "sheet": "female_pirate",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 184,
         "height": 311
-      },
-      "bbox": {
-        "x": 27,
-        "y": 684,
-        "width": 184,
-        "height": 311
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_angry_idle.png",
-      "path": "female_pirate_angry_idle.png",
-      "sheet": "female_pirate",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 197,
         "height": 312
-      },
-      "bbox": {
-        "x": 236,
-        "y": 683,
-        "width": 197,
-        "height": 312
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_pirate_angry_talking.png",
-      "path": "female_pirate_angry_talking.png",
-      "sheet": "female_pirate",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 200,
         "height": 313
-      },
-      "bbox": {
-        "x": 456,
-        "y": 683,
-        "width": 200,
-        "height": 313
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_happy_walking.png",
-      "path": "female_poet_happy_walking.png",
-      "sheet": "female_poet",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 176,
         "height": 300
-      },
-      "bbox": {
-        "x": 35,
-        "y": 16,
-        "width": 176,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_happy_idle.png",
-      "path": "female_poet_happy_idle.png",
-      "sheet": "female_poet",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 197,
         "height": 298
-      },
-      "bbox": {
-        "x": 244,
-        "y": 17,
-        "width": 197,
-        "height": 298
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_happy_talking.png",
-      "path": "female_poet_happy_talking.png",
-      "sheet": "female_poet",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 198,
         "height": 299
-      },
-      "bbox": {
-        "x": 469,
-        "y": 17,
-        "width": 198,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_neutral_walking.png",
-      "path": "female_poet_neutral_walking.png",
-      "sheet": "female_poet",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 174,
         "height": 289
-      },
-      "bbox": {
-        "x": 35,
-        "y": 347,
-        "width": 174,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_neutral_idle.png",
-      "path": "female_poet_neutral_idle.png",
-      "sheet": "female_poet",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 289
-      },
-      "bbox": {
-        "x": 242,
-        "y": 346,
-        "width": 201,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_neutral_talking.png",
-      "path": "female_poet_neutral_talking.png",
-      "sheet": "female_poet",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 290
-      },
-      "bbox": {
-        "x": 467,
-        "y": 345,
-        "width": 197,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_angry_walking.png",
-      "path": "female_poet_angry_walking.png",
-      "sheet": "female_poet",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 171,
         "height": 284
-      },
-      "bbox": {
-        "x": 34,
-        "y": 667,
-        "width": 171,
-        "height": 284
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_angry_idle.png",
-      "path": "female_poet_angry_idle.png",
-      "sheet": "female_poet",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 285
-      },
-      "bbox": {
-        "x": 242,
-        "y": 666,
-        "width": 201,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_poet_angry_talking.png",
-      "path": "female_poet_angry_talking.png",
-      "sheet": "female_poet",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 200,
         "height": 285
-      },
-      "bbox": {
-        "x": 466,
-        "y": 666,
-        "width": 200,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_happy_walking.png",
-      "path": "female_scientist_happy_walking.png",
-      "sheet": "female_scientist",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 171,
         "height": 297
-      },
-      "bbox": {
-        "x": 32,
-        "y": 20,
-        "width": 171,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_happy_idle.png",
-      "path": "female_scientist_happy_idle.png",
-      "sheet": "female_scientist",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 298
-      },
-      "bbox": {
-        "x": 237,
-        "y": 19,
-        "width": 201,
-        "height": 298
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_happy_talking.png",
-      "path": "female_scientist_happy_talking.png",
-      "sheet": "female_scientist",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 197,
         "height": 297
-      },
-      "bbox": {
-        "x": 463,
-        "y": 20,
-        "width": 197,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_neutral_walking.png",
-      "path": "female_scientist_neutral_walking.png",
-      "sheet": "female_scientist",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 168,
         "height": 300
-      },
-      "bbox": {
-        "x": 32,
-        "y": 344,
-        "width": 168,
-        "height": 300
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_neutral_idle.png",
-      "path": "female_scientist_neutral_idle.png",
-      "sheet": "female_scientist",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 199,
         "height": 299
-      },
-      "bbox": {
-        "x": 236,
-        "y": 345,
-        "width": 199,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_neutral_talking.png",
-      "path": "female_scientist_neutral_talking.png",
-      "sheet": "female_scientist",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 198,
         "height": 299
-      },
-      "bbox": {
-        "x": 460,
-        "y": 345,
-        "width": 198,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_angry_walking.png",
-      "path": "female_scientist_angry_walking.png",
-      "sheet": "female_scientist",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 169,
         "height": 291
-      },
-      "bbox": {
-        "x": 34,
-        "y": 670,
-        "width": 169,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_angry_idle.png",
-      "path": "female_scientist_angry_idle.png",
-      "sheet": "female_scientist",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 199,
         "height": 292
-      },
-      "bbox": {
-        "x": 234,
-        "y": 669,
-        "width": 199,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "female_scientist_angry_talking.png",
-      "path": "female_scientist_angry_talking.png",
-      "sheet": "female_scientist",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 200,
         "height": 292
-      },
-      "bbox": {
-        "x": 458,
-        "y": 669,
-        "width": 200,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_happy_walking.png",
-      "path": "male_chef_happy_walking.png",
-      "sheet": "male_chef",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 200,
         "height": 347
-      },
-      "bbox": {
-        "x": 1,
-        "y": 1,
-        "width": 200,
-        "height": 347
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_happy_idle.png",
-      "path": "male_chef_happy_idle.png",
-      "sheet": "male_chef",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 218,
         "height": 346
-      },
-      "bbox": {
-        "x": 246,
-        "y": 1,
-        "width": 218,
-        "height": 346
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_happy_talking.png",
-      "path": "male_chef_happy_talking.png",
-      "sheet": "male_chef",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 207,
         "height": 346
-      },
-      "bbox": {
-        "x": 475,
-        "y": 1,
-        "width": 207,
-        "height": 346
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_neutral_walking.png",
-      "path": "male_chef_neutral_walking.png",
-      "sheet": "male_chef",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 198,
         "height": 341
-      },
-      "bbox": {
-        "x": 7,
-        "y": 371,
-        "width": 198,
-        "height": 341
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_neutral_idle.png",
-      "path": "male_chef_neutral_idle.png",
-      "sheet": "male_chef",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 215,
         "height": 338
-      },
-      "bbox": {
-        "x": 246,
-        "y": 371,
-        "width": 215,
-        "height": 338
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_neutral_talking.png",
-      "path": "male_chef_neutral_talking.png",
-      "sheet": "male_chef",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 208,
         "height": 337
-      },
-      "bbox": {
-        "x": 474,
-        "y": 371,
-        "width": 208,
-        "height": 337
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_angry_walking.png",
-      "path": "male_chef_angry_walking.png",
-      "sheet": "male_chef",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 192,
         "height": 294
-      },
-      "bbox": {
-        "x": 8,
-        "y": 730,
-        "width": 192,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_angry_idle.png",
-      "path": "male_chef_angry_idle.png",
-      "sheet": "male_chef",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 217,
         "height": 294
-      },
-      "bbox": {
-        "x": 236,
-        "y": 730,
-        "width": 217,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_chef_angry_talking.png",
-      "path": "male_chef_angry_talking.png",
-      "sheet": "male_chef",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 208,
         "height": 294
-      },
-      "bbox": {
-        "x": 474,
-        "y": 730,
-        "width": 208,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_happy_walking.png",
-      "path": "male_clown_happy_walking.png",
-      "sheet": "male_clown",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 200,
         "height": 289
-      },
-      "bbox": {
-        "x": 5,
-        "y": 19,
-        "width": 200,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_happy_idle.png",
-      "path": "male_clown_happy_idle.png",
-      "sheet": "male_clown",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 209,
         "height": 290
-      },
-      "bbox": {
-        "x": 242,
-        "y": 18,
-        "width": 209,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_happy_talking.png",
-      "path": "male_clown_happy_talking.png",
-      "sheet": "male_clown",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 205,
         "height": 291
-      },
-      "bbox": {
-        "x": 477,
-        "y": 19,
-        "width": 205,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_neutral_walking.png",
-      "path": "male_clown_neutral_walking.png",
-      "sheet": "male_clown",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 196,
         "height": 288
-      },
-      "bbox": {
-        "x": 7,
-        "y": 345,
-        "width": 196,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_neutral_idle.png",
-      "path": "male_clown_neutral_idle.png",
-      "sheet": "male_clown",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 211,
         "height": 288
-      },
-      "bbox": {
-        "x": 240,
-        "y": 345,
-        "width": 211,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_neutral_talking.png",
-      "path": "male_clown_neutral_talking.png",
-      "sheet": "male_clown",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 206,
         "height": 288
-      },
-      "bbox": {
-        "x": 476,
-        "y": 345,
-        "width": 206,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_angry_walking.png",
-      "path": "male_clown_angry_walking.png",
-      "sheet": "male_clown",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 195,
         "height": 288
-      },
-      "bbox": {
-        "x": 6,
-        "y": 669,
-        "width": 195,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_angry_idle.png",
-      "path": "male_clown_angry_idle.png",
-      "sheet": "male_clown",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 211,
         "height": 288
-      },
-      "bbox": {
-        "x": 239,
-        "y": 669,
-        "width": 211,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_clown_angry_talking.png",
-      "path": "male_clown_angry_talking.png",
-      "sheet": "male_clown",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 209,
         "height": 288
-      },
-      "bbox": {
-        "x": 473,
-        "y": 669,
-        "width": 209,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_cowhand_happy_walking.png",
-      "path": "male_cowhand_happy_walking.png",
-      "sheet": "male_cowhand",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 211,
         "height": 305
-      },
-      "bbox": {
-        "x": 2,
-        "y": 1,
-        "width": 211,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_happy_idle.png",
-      "path": "male_cowhand_happy_idle.png",
-      "sheet": "male_cowhand",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 230,
         "height": 319
-      },
-      "bbox": {
-        "x": 228,
-        "y": 0,
-        "width": 230,
-        "height": 319
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_happy_talking.png",
-      "path": "male_cowhand_happy_talking.png",
-      "sheet": "male_cowhand",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 206,
         "height": 303
-      },
-      "bbox": {
-        "x": 476,
-        "y": 2,
-        "width": 206,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_neutral_walking.png",
-      "path": "male_cowhand_neutral_walking.png",
-      "sheet": "male_cowhand",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 195,
         "height": 297
-      },
-      "bbox": {
-        "x": 6,
-        "y": 334,
-        "width": 195,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_neutral_idle.png",
-      "path": "male_cowhand_neutral_idle.png",
-      "sheet": "male_cowhand",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 223,
         "height": 313
-      },
-      "bbox": {
-        "x": 228,
-        "y": 319,
-        "width": 223,
-        "height": 313
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_neutral_talking.png",
-      "path": "male_cowhand_neutral_talking.png",
-      "sheet": "male_cowhand",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 202,
         "height": 296
-      },
-      "bbox": {
-        "x": 480,
-        "y": 334,
-        "width": 202,
-        "height": 296
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_angry_walking.png",
-      "path": "male_cowhand_angry_walking.png",
-      "sheet": "male_cowhand",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 194,
         "height": 297
-      },
-      "bbox": {
-        "x": 8,
-        "y": 654,
-        "width": 194,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_angry_idle.png",
-      "path": "male_cowhand_angry_idle.png",
-      "sheet": "male_cowhand",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 222,
         "height": 303
-      },
-      "bbox": {
-        "x": 228,
-        "y": 655,
-        "width": 222,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_cowhand_angry_talking.png",
-      "path": "male_cowhand_angry_talking.png",
-      "sheet": "male_cowhand",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 201,
         "height": 298
-      },
-      "bbox": {
-        "x": 479,
-        "y": 653,
-        "width": 201,
-        "height": 298
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 958
       }
     },
     {
       "fileName": "male_default_happy_walking.png",
-      "path": "male_default_happy_walking.png",
-      "sheet": "male_default",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 170,
         "height": 259
-      },
-      "bbox": {
-        "x": 36,
-        "y": 6,
-        "width": 170,
-        "height": 259
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_happy_idle.png",
-      "path": "male_default_happy_idle.png",
-      "sheet": "male_default",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 202,
         "height": 282
-      },
-      "bbox": {
-        "x": 240,
-        "y": 0,
-        "width": 202,
-        "height": 282
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_happy_talking.png",
-      "path": "male_default_happy_talking.png",
-      "sheet": "male_default",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 207,
         "height": 270
-      },
-      "bbox": {
-        "x": 475,
-        "y": 0,
-        "width": 207,
-        "height": 270
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_neutral_walking.png",
-      "path": "male_default_neutral_walking.png",
-      "sheet": "male_default",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 171,
         "height": 259
-      },
-      "bbox": {
-        "x": 38,
-        "y": 297,
-        "width": 171,
-        "height": 259
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_neutral_idle.png",
-      "path": "male_default_neutral_idle.png",
-      "sheet": "male_default",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 202,
         "height": 289
-      },
-      "bbox": {
-        "x": 240,
-        "y": 282,
-        "width": 202,
-        "height": 289
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_neutral_talking.png",
-      "path": "male_default_neutral_talking.png",
-      "sheet": "male_default",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 192,
         "height": 259
-      },
-      "bbox": {
-        "x": 476,
-        "y": 299,
-        "width": 192,
-        "height": 259
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_angry_walking.png",
-      "path": "male_default_angry_walking.png",
-      "sheet": "male_default",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 168,
         "height": 261
-      },
-      "bbox": {
-        "x": 42,
-        "y": 586,
-        "width": 168,
-        "height": 261
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_angry_idle.png",
-      "path": "male_default_angry_idle.png",
-      "sheet": "male_default",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 201,
         "height": 283
-      },
-      "bbox": {
-        "x": 240,
-        "y": 571,
-        "width": 201,
-        "height": 283
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_default_angry_talking.png",
-      "path": "male_default_angry_talking.png",
-      "sheet": "male_default",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 191,
         "height": 260
-      },
-      "bbox": {
-        "x": 475,
-        "y": 589,
-        "width": 191,
-        "height": 260
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 854
       }
     },
     {
       "fileName": "male_detective_happy_walking.png",
-      "path": "male_detective_happy_walking.png",
-      "sheet": "male_detective",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 220,
         "height": 324
-      },
-      "bbox": {
-        "x": 3,
-        "y": 0,
-        "width": 220,
-        "height": 324
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_happy_idle.png",
-      "path": "male_detective_happy_idle.png",
-      "sheet": "male_detective",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 217,
         "height": 320
-      },
-      "bbox": {
-        "x": 242,
-        "y": 3,
-        "width": 217,
-        "height": 320
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_happy_talking.png",
-      "path": "male_detective_happy_talking.png",
-      "sheet": "male_detective",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 208,
         "height": 320
-      },
-      "bbox": {
-        "x": 474,
-        "y": 3,
-        "width": 208,
-        "height": 320
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_neutral_walking.png",
-      "path": "male_detective_neutral_walking.png",
-      "sheet": "male_detective",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 204,
         "height": 313
-      },
-      "bbox": {
-        "x": 6,
-        "y": 354,
-        "width": 204,
-        "height": 313
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_neutral_idle.png",
-      "path": "male_detective_neutral_idle.png",
-      "sheet": "male_detective",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 214,
         "height": 310
-      },
-      "bbox": {
-        "x": 241,
-        "y": 355,
-        "width": 214,
-        "height": 310
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_neutral_talking.png",
-      "path": "male_detective_neutral_talking.png",
-      "sheet": "male_detective",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 210,
         "height": 309
-      },
-      "bbox": {
-        "x": 472,
-        "y": 356,
-        "width": 210,
-        "height": 309
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_angry_walking.png",
-      "path": "male_detective_angry_walking.png",
-      "sheet": "male_detective",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 204,
         "height": 310
-      },
-      "bbox": {
-        "x": 7,
-        "y": 698,
-        "width": 204,
-        "height": 310
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_angry_idle.png",
-      "path": "male_detective_angry_idle.png",
-      "sheet": "male_detective",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 215,
         "height": 310
-      },
-      "bbox": {
-        "x": 238,
-        "y": 698,
-        "width": 215,
-        "height": 310
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_detective_angry_talking.png",
-      "path": "male_detective_angry_talking.png",
-      "sheet": "male_detective",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 212,
         "height": 308
-      },
-      "bbox": {
-        "x": 470,
-        "y": 699,
-        "width": 212,
-        "height": 308
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_executive_happy_walking.png",
-      "path": "male_executive_happy_walking.png",
-      "sheet": "male_executive",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 214,
         "height": 328
-      },
-      "bbox": {
-        "x": 10,
-        "y": 10,
-        "width": 214,
-        "height": 328
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_happy_idle.png",
-      "path": "male_executive_happy_idle.png",
-      "sheet": "male_executive",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 219,
         "height": 308
-      },
-      "bbox": {
-        "x": 236,
-        "y": 13,
-        "width": 219,
-        "height": 308
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_happy_talking.png",
-      "path": "male_executive_happy_talking.png",
-      "sheet": "male_executive",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 227,
         "height": 309
-      },
-      "bbox": {
-        "x": 455,
-        "y": 12,
-        "width": 227,
-        "height": 309
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_neutral_walking.png",
-      "path": "male_executive_neutral_walking.png",
-      "sheet": "male_executive",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 209,
         "height": 326
-      },
-      "bbox": {
-        "x": 15,
-        "y": 338,
-        "width": 209,
-        "height": 326
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_neutral_idle.png",
-      "path": "male_executive_neutral_idle.png",
-      "sheet": "male_executive",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 219,
         "height": 292
-      },
-      "bbox": {
-        "x": 236,
-        "y": 357,
-        "width": 219,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_neutral_talking.png",
-      "path": "male_executive_neutral_talking.png",
-      "sheet": "male_executive",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 227,
         "height": 292
-      },
-      "bbox": {
-        "x": 455,
-        "y": 357,
-        "width": 227,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_angry_walking.png",
-      "path": "male_executive_angry_walking.png",
-      "sheet": "male_executive",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 196,
         "height": 314
-      },
-      "bbox": {
-        "x": 28,
-        "y": 664,
-        "width": 196,
-        "height": 314
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_angry_idle.png",
-      "path": "male_executive_angry_idle.png",
-      "sheet": "male_executive",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 220,
         "height": 292
-      },
-      "bbox": {
-        "x": 235,
-        "y": 680,
-        "width": 220,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_executive_angry_talking.png",
-      "path": "male_executive_angry_talking.png",
-      "sheet": "male_executive",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 227,
         "height": 292
-      },
-      "bbox": {
-        "x": 455,
-        "y": 680,
-        "width": 227,
-        "height": 292
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 978
       }
     },
     {
       "fileName": "male_ganster_happy_walking.png",
-      "path": "male_ganster_happy_walking.png",
-      "sheet": "male_ganster",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 207,
         "height": 316
-      },
-      "bbox": {
-        "x": 0,
-        "y": 6,
-        "width": 207,
-        "height": 316
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_happy_idle.png",
-      "path": "male_ganster_happy_idle.png",
-      "sheet": "male_ganster",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 233,
         "height": 315
-      },
-      "bbox": {
-        "x": 231,
-        "y": 7,
-        "width": 233,
-        "height": 315
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_happy_talking.png",
-      "path": "male_ganster_happy_talking.png",
-      "sheet": "male_ganster",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 218,
         "height": 314
-      },
-      "bbox": {
-        "x": 476,
-        "y": 7,
-        "width": 218,
-        "height": 314
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_neutral_walking.png",
-      "path": "male_ganster_neutral_walking.png",
-      "sheet": "male_ganster",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 212,
         "height": 308
-      },
-      "bbox": {
-        "x": 0,
-        "y": 359,
-        "width": 212,
-        "height": 308
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_neutral_idle.png",
-      "path": "male_ganster_neutral_idle.png",
-      "sheet": "male_ganster",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 235,
         "height": 307
-      },
-      "bbox": {
-        "x": 229,
-        "y": 360,
-        "width": 235,
-        "height": 307
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_neutral_talking.png",
-      "path": "male_ganster_neutral_talking.png",
-      "sheet": "male_ganster",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 219,
         "height": 309
-      },
-      "bbox": {
-        "x": 475,
-        "y": 360,
-        "width": 219,
-        "height": 309
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_angry_walking.png",
-      "path": "male_ganster_angry_walking.png",
-      "sheet": "male_ganster",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 211,
         "height": 302
-      },
-      "bbox": {
-        "x": 0,
-        "y": 699,
-        "width": 211,
-        "height": 302
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_angry_idle.png",
-      "path": "male_ganster_angry_idle.png",
-      "sheet": "male_ganster",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 233,
         "height": 299
-      },
-      "bbox": {
-        "x": 229,
-        "y": 701,
-        "width": 233,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_ganster_angry_talking.png",
-      "path": "male_ganster_angry_talking.png",
-      "sheet": "male_ganster",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 220,
         "height": 299
-      },
-      "bbox": {
-        "x": 474,
-        "y": 701,
-        "width": 220,
-        "height": 299
-      },
-      "sheetSize": {
-        "width": 694,
-        "height": 1024
       }
     },
     {
       "fileName": "male_grandparent_happy_walking.png",
-      "path": "male_grandparent_happy_walking.png",
-      "sheet": "male_grandparent",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 191,
         "height": 279
-      },
-      "bbox": {
-        "x": 14,
-        "y": 8,
-        "width": 191,
-        "height": 279
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_happy_idle.png",
-      "path": "male_grandparent_happy_idle.png",
-      "sheet": "male_grandparent",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 209,
         "height": 279
-      },
-      "bbox": {
-        "x": 244,
-        "y": 8,
-        "width": 209,
-        "height": 279
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_happy_talking.png",
-      "path": "male_grandparent_happy_talking.png",
-      "sheet": "male_grandparent",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 204,
         "height": 279
-      },
-      "bbox": {
-        "x": 478,
-        "y": 8,
-        "width": 204,
-        "height": 279
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_neutral_walking.png",
-      "path": "male_grandparent_neutral_walking.png",
-      "sheet": "male_grandparent",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 192,
         "height": 277
-      },
-      "bbox": {
-        "x": 17,
-        "y": 328,
-        "width": 192,
-        "height": 277
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_neutral_idle.png",
-      "path": "male_grandparent_neutral_idle.png",
-      "sheet": "male_grandparent",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 209,
         "height": 278
-      },
-      "bbox": {
-        "x": 242,
-        "y": 327,
-        "width": 209,
-        "height": 278
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_neutral_talking.png",
-      "path": "male_grandparent_neutral_talking.png",
-      "sheet": "male_grandparent",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 205,
         "height": 278
-      },
-      "bbox": {
-        "x": 477,
-        "y": 327,
-        "width": 205,
-        "height": 278
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_angry_walking.png",
-      "path": "male_grandparent_angry_walking.png",
-      "sheet": "male_grandparent",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 189,
         "height": 277
-      },
-      "bbox": {
-        "x": 19,
-        "y": 639,
-        "width": 189,
-        "height": 277
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_angry_idle.png",
-      "path": "male_grandparent_angry_idle.png",
-      "sheet": "male_grandparent",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 210,
         "height": 277
-      },
-      "bbox": {
-        "x": 240,
-        "y": 637,
-        "width": 210,
-        "height": 277
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_grandparent_angry_talking.png",
-      "path": "male_grandparent_angry_talking.png",
-      "sheet": "male_grandparent",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 207,
         "height": 278
-      },
-      "bbox": {
-        "x": 475,
-        "y": 637,
-        "width": 207,
-        "height": 278
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 921
       }
     },
     {
       "fileName": "male_hippie_happy_walking.png",
-      "path": "male_hippie_happy_walking.png",
-      "sheet": "male_hippie",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 173,
         "height": 287
-      },
-      "bbox": {
-        "x": 7,
-        "y": 13,
-        "width": 173,
-        "height": 287
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_happy_idle.png",
-      "path": "male_hippie_happy_idle.png",
-      "sheet": "male_hippie",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 212,
         "height": 305
-      },
-      "bbox": {
-        "x": 236,
-        "y": 13,
-        "width": 212,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_happy_talking.png",
-      "path": "male_hippie_happy_talking.png",
-      "sheet": "male_hippie",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 209,
         "height": 287
-      },
-      "bbox": {
-        "x": 470,
-        "y": 13,
-        "width": 209,
-        "height": 287
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_neutral_walking.png",
-      "path": "male_hippie_neutral_walking.png",
-      "sheet": "male_hippie",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 171,
         "height": 286
-      },
-      "bbox": {
-        "x": 8,
-        "y": 338,
-        "width": 171,
-        "height": 286
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_neutral_idle.png",
-      "path": "male_hippie_neutral_idle.png",
-      "sheet": "male_hippie",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 213,
         "height": 305
-      },
-      "bbox": {
-        "x": 236,
-        "y": 319,
-        "width": 213,
-        "height": 305
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_neutral_talking.png",
-      "path": "male_hippie_neutral_talking.png",
-      "sheet": "male_hippie",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 210,
         "height": 285
-      },
-      "bbox": {
-        "x": 469,
-        "y": 339,
-        "width": 210,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_angry_walking.png",
-      "path": "male_hippie_angry_walking.png",
-      "sheet": "male_hippie",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 176,
         "height": 288
-      },
-      "bbox": {
-        "x": 7,
-        "y": 661,
-        "width": 176,
-        "height": 288
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_angry_idle.png",
-      "path": "male_hippie_angry_idle.png",
-      "sheet": "male_hippie",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 212,
         "height": 290
-      },
-      "bbox": {
-        "x": 236,
-        "y": 662,
-        "width": 212,
-        "height": 290
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_hippie_angry_talking.png",
-      "path": "male_hippie_angry_talking.png",
-      "sheet": "male_hippie",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 210,
         "height": 287
-      },
-      "bbox": {
-        "x": 469,
-        "y": 662,
-        "width": 210,
-        "height": 287
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 952
       }
     },
     {
       "fileName": "male_noble_happy_walking.png",
-      "path": "male_noble_happy_walking.png",
-      "sheet": "male_noble",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 186,
         "height": 287
-      },
-      "bbox": {
-        "x": 18,
-        "y": 7,
-        "width": 186,
-        "height": 287
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_happy_idle.png",
-      "path": "male_noble_happy_idle.png",
-      "sheet": "male_noble",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 208,
         "height": 285
-      },
-      "bbox": {
-        "x": 237,
-        "y": 8,
-        "width": 208,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_happy_talking.png",
-      "path": "male_noble_happy_talking.png",
-      "sheet": "male_noble",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 211,
         "height": 285
-      },
-      "bbox": {
-        "x": 458,
-        "y": 7,
-        "width": 211,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_neutral_walking.png",
-      "path": "male_noble_neutral_walking.png",
-      "sheet": "male_noble",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 191,
         "height": 286
-      },
-      "bbox": {
-        "x": 14,
-        "y": 323,
-        "width": 191,
-        "height": 286
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_neutral_idle.png",
-      "path": "male_noble_neutral_idle.png",
-      "sheet": "male_noble",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 214,
         "height": 285
-      },
-      "bbox": {
-        "x": 234,
-        "y": 324,
-        "width": 214,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_neutral_talking.png",
-      "path": "male_noble_neutral_talking.png",
-      "sheet": "male_noble",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 214,
         "height": 285
-      },
-      "bbox": {
-        "x": 456,
-        "y": 323,
-        "width": 214,
-        "height": 285
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_angry_walking.png",
-      "path": "male_noble_angry_walking.png",
-      "sheet": "male_noble",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 188,
         "height": 277
-      },
-      "bbox": {
-        "x": 15,
-        "y": 637,
-        "width": 188,
-        "height": 277
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_angry_idle.png",
-      "path": "male_noble_angry_idle.png",
-      "sheet": "male_noble",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 215,
         "height": 277
-      },
-      "bbox": {
-        "x": 234,
-        "y": 637,
-        "width": 215,
-        "height": 277
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_noble_angry_talking.png",
-      "path": "male_noble_angry_talking.png",
-      "sheet": "male_noble",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 218,
         "height": 277
-      },
-      "bbox": {
-        "x": 455,
-        "y": 636,
-        "width": 218,
-        "height": 277
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_pirate_happy_walking.png",
-      "path": "male_pirate_happy_walking.png",
-      "sheet": "male_pirate",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 197,
         "height": 297
-      },
-      "bbox": {
-        "x": 0,
-        "y": 12,
-        "width": 197,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_happy_idle.png",
-      "path": "male_pirate_happy_idle.png",
-      "sheet": "male_pirate",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 229,
         "height": 297
-      },
-      "bbox": {
-        "x": 221,
-        "y": 12,
-        "width": 229,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_happy_talking.png",
-      "path": "male_pirate_happy_talking.png",
-      "sheet": "male_pirate",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 219,
         "height": 297
-      },
-      "bbox": {
-        "x": 463,
-        "y": 12,
-        "width": 219,
-        "height": 297
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_neutral_walking.png",
-      "path": "male_pirate_neutral_walking.png",
-      "sheet": "male_pirate",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 193,
         "height": 294
-      },
-      "bbox": {
-        "x": 0,
-        "y": 344,
-        "width": 193,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_neutral_idle.png",
-      "path": "male_pirate_neutral_idle.png",
-      "sheet": "male_pirate",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 228,
         "height": 294
-      },
-      "bbox": {
-        "x": 221,
-        "y": 344,
-        "width": 228,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_neutral_talking.png",
-      "path": "male_pirate_neutral_talking.png",
-      "sheet": "male_pirate",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 218,
         "height": 294
-      },
-      "bbox": {
-        "x": 464,
-        "y": 344,
-        "width": 218,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_angry_walking.png",
-      "path": "male_pirate_angry_walking.png",
-      "sheet": "male_pirate",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 198,
         "height": 291
-      },
-      "bbox": {
-        "x": 0,
-        "y": 672,
-        "width": 198,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_angry_idle.png",
-      "path": "male_pirate_angry_idle.png",
-      "sheet": "male_pirate",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 228,
         "height": 296
-      },
-      "bbox": {
-        "x": 220,
-        "y": 672,
-        "width": 228,
-        "height": 296
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_pirate_angry_talking.png",
-      "path": "male_pirate_angry_talking.png",
-      "sheet": "male_pirate",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 216,
         "height": 291
-      },
-      "bbox": {
-        "x": 466,
-        "y": 672,
-        "width": 216,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 968
       }
     },
     {
       "fileName": "male_poet_happy_walking.png",
-      "path": "male_poet_happy_walking.png",
-      "sheet": "male_poet",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 190,
         "height": 293
-      },
-      "bbox": {
-        "x": 1,
-        "y": 10,
-        "width": 190,
-        "height": 293
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_happy_idle.png",
-      "path": "male_poet_happy_idle.png",
-      "sheet": "male_poet",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 230,
         "height": 304
-      },
-      "bbox": {
-        "x": 220,
-        "y": 0,
-        "width": 230,
-        "height": 304
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_happy_talking.png",
-      "path": "male_poet_happy_talking.png",
-      "sheet": "male_poet",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 209,
         "height": 294
-      },
-      "bbox": {
-        "x": 473,
-        "y": 9,
-        "width": 209,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_neutral_walking.png",
-      "path": "male_poet_neutral_walking.png",
-      "sheet": "male_poet",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 184,
         "height": 294
-      },
-      "bbox": {
-        "x": 1,
-        "y": 339,
-        "width": 184,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_neutral_idle.png",
-      "path": "male_poet_neutral_idle.png",
-      "sheet": "male_poet",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 213,
         "height": 294
-      },
-      "bbox": {
-        "x": 237,
-        "y": 339,
-        "width": 213,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_neutral_talking.png",
-      "path": "male_poet_neutral_talking.png",
-      "sheet": "male_poet",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 210,
         "height": 294
-      },
-      "bbox": {
-        "x": 472,
-        "y": 339,
-        "width": 210,
-        "height": 294
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_angry_walking.png",
-      "path": "male_poet_angry_walking.png",
-      "sheet": "male_poet",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 177,
         "height": 291
-      },
-      "bbox": {
-        "x": 11,
-        "y": 668,
-        "width": 177,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_angry_idle.png",
-      "path": "male_poet_angry_idle.png",
-      "sheet": "male_poet",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 213,
         "height": 291
-      },
-      "bbox": {
-        "x": 237,
-        "y": 668,
-        "width": 213,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_poet_angry_talking.png",
-      "path": "male_poet_angry_talking.png",
-      "sheet": "male_poet",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 211,
         "height": 291
-      },
-      "bbox": {
-        "x": 471,
-        "y": 668,
-        "width": 211,
-        "height": 291
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_happy_walking.png",
-      "path": "male_scientist_happy_walking.png",
-      "sheet": "male_scientist",
-      "row": 0,
-      "col": 0,
       "mood": "happy",
       "pose": "walking",
       "size": {
         "width": 191,
         "height": 307
-      },
-      "bbox": {
-        "x": 3,
-        "y": 11,
-        "width": 191,
-        "height": 307
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_happy_idle.png",
-      "path": "male_scientist_happy_idle.png",
-      "sheet": "male_scientist",
-      "row": 0,
-      "col": 1,
       "mood": "happy",
       "pose": "idle",
       "size": {
         "width": 219,
         "height": 307
-      },
-      "bbox": {
-        "x": 232,
-        "y": 11,
-        "width": 219,
-        "height": 307
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_happy_talking.png",
-      "path": "male_scientist_happy_talking.png",
-      "sheet": "male_scientist",
-      "row": 0,
-      "col": 2,
       "mood": "happy",
       "pose": "talking",
       "size": {
         "width": 214,
         "height": 307
-      },
-      "bbox": {
-        "x": 468,
-        "y": 11,
-        "width": 214,
-        "height": 307
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_neutral_walking.png",
-      "path": "male_scientist_neutral_walking.png",
-      "sheet": "male_scientist",
-      "row": 1,
-      "col": 0,
       "mood": "neutral",
       "pose": "walking",
       "size": {
         "width": 181,
         "height": 303
-      },
-      "bbox": {
-        "x": 13,
-        "y": 356,
-        "width": 181,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_neutral_idle.png",
-      "path": "male_scientist_neutral_idle.png",
-      "sheet": "male_scientist",
-      "row": 1,
-      "col": 1,
       "mood": "neutral",
       "pose": "idle",
       "size": {
         "width": 219,
         "height": 303
-      },
-      "bbox": {
-        "x": 230,
-        "y": 356,
-        "width": 219,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_neutral_talking.png",
-      "path": "male_scientist_neutral_talking.png",
-      "sheet": "male_scientist",
-      "row": 1,
-      "col": 2,
       "mood": "neutral",
       "pose": "talking",
       "size": {
         "width": 216,
         "height": 303
-      },
-      "bbox": {
-        "x": 466,
-        "y": 356,
-        "width": 216,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_angry_walking.png",
-      "path": "male_scientist_angry_walking.png",
-      "sheet": "male_scientist",
-      "row": 2,
-      "col": 0,
       "mood": "angry",
       "pose": "walking",
       "size": {
         "width": 185,
         "height": 303
-      },
-      "bbox": {
-        "x": 11,
-        "y": 697,
-        "width": 185,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_angry_idle.png",
-      "path": "male_scientist_angry_idle.png",
-      "sheet": "male_scientist",
-      "row": 2,
-      "col": 1,
       "mood": "angry",
       "pose": "idle",
       "size": {
         "width": 217,
         "height": 303
-      },
-      "bbox": {
-        "x": 231,
-        "y": 697,
-        "width": 217,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     },
     {
       "fileName": "male_scientist_angry_talking.png",
-      "path": "male_scientist_angry_talking.png",
-      "sheet": "male_scientist",
-      "row": 2,
-      "col": 2,
       "mood": "angry",
       "pose": "talking",
       "size": {
         "width": 217,
         "height": 303
-      },
-      "bbox": {
-        "x": 465,
-        "y": 697,
-        "width": 217,
-        "height": 303
-      },
-      "sheetSize": {
-        "width": 682,
-        "height": 1024
       }
     }
   ]

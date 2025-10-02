@@ -60,15 +60,19 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   function render() {
     clear();
 
-    const hasCustomer = hasActiveMasterFloristCustomer(gameState);
-    const slots = hasCustomer ? prepareSlotStates() : [];
-    const vaseMetrics = hasCustomer ? getVaseMetrics() : null;
-    const hoverId = hasCustomer ? gameState?.hoverStemId || null : null;
-    const drag = hasCustomer ? gameState?.drag || null : null;
+    const parade = gameState?.customerParade || null;
+    const actors = Array.isArray(parade?.actors) ? parade.actors : [];
+    const hasActiveCustomer = hasActiveMasterFloristCustomer(gameState);
+    const slots = hasActiveCustomer ? prepareSlotStates() : [];
+    const vaseMetrics = hasActiveCustomer ? getVaseMetrics() : null;
+    const hoverId = hasActiveCustomer ? gameState?.hoverStemId || null : null;
+    const drag = hasActiveCustomer ? gameState?.drag || null : null;
 
+    paintBackground();
+    paintCustomers(actors);
     paintWorkbench();
 
-    if (!hasCustomer) {
+    if (!hasActiveCustomer) {
       return;
     }
 
@@ -93,24 +97,101 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
   }
 
-  function paintWorkbench() {
+  function getBenchMetrics() {
+    const benchConfig = MASTER_FLORIST_LAYOUT.bench || {};
+    const benchHeight = benchConfig.height ?? 140;
+    const benchY = MF_CANVAS_HEIGHT - benchHeight;
+    return {
+      benchHeight,
+      benchY,
+      trimHeight: benchConfig.trimHeight ?? 4,
+      shadowHeight: benchConfig.shadowHeight ?? 6,
+    };
+  }
+
+  function paintBackground() {
+    const { benchY } = getBenchMetrics();
+
     ctx.save();
     ctx.fillStyle = COLORS.background;
     ctx.fillRect(0, 0, MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT);
 
-    const benchConfig = MASTER_FLORIST_LAYOUT.bench || {};
-    const benchHeight = benchConfig.height ?? 140;
-    const benchY = MF_CANVAS_HEIGHT - benchHeight;
-    const trimHeight = benchConfig.trimHeight ?? 4;
-    const shadowHeight = benchConfig.shadowHeight ?? 6;
-
     if (backgroundSprite.ready) {
       ctx.drawImage(backgroundSprite.image, 0, 0, MF_CANVAS_WIDTH, benchY);
     } else {
-      ctx.fillStyle = COLORS.background;
       ctx.fillRect(0, 0, MF_CANVAS_WIDTH, benchY);
     }
 
+    ctx.restore();
+  }
+
+  function paintCustomers(actors = []) {
+    if (!Array.isArray(actors) || actors.length === 0) {
+      return;
+    }
+
+    const { benchY } = getBenchMetrics();
+    const overlap = 5;
+    const ordered = actors.slice().sort((a, b) => {
+      const priority = (actor) => {
+        if (actor?.state === 'activeIdle' || actor?.state === 'activeTalking') return 3;
+        if (actor?.pendingActive) return 2;
+        return 1;
+      };
+      const priorityA = priority(a);
+      const priorityB = priority(b);
+      if (priorityA !== priorityB) {
+        return priorityB - priorityA;
+      }
+      const orderA = typeof a?.renderOrder === 'number' ? a.renderOrder : 0;
+      const orderB = typeof b?.renderOrder === 'number' ? b.renderOrder : 0;
+      if (orderA !== orderB) {
+        return orderB - orderA;
+      }
+      const queueIndexA = typeof a?.queueIndex === 'number' ? a.queueIndex : 0;
+      const queueIndexB = typeof b?.queueIndex === 'number' ? b.queueIndex : 0;
+      if (queueIndexA !== queueIndexB) {
+        return queueIndexB - queueIndexA;
+      }
+      const idA = a?.id || '';
+      const idB = b?.id || '';
+      if (idA === idB) return 0;
+      return idA < idB ? 1 : -1;
+    });
+
+    ordered.forEach((actor) => {
+      const frame = selectActorFrame(actor);
+      if (!frame) return;
+      const img = frame.image;
+      if (!img || !img.complete || img.naturalWidth === 0) {
+        return;
+      }
+      const width = frame.width || img.naturalWidth;
+      const height = frame.height || img.naturalHeight;
+      const top = benchY - height + overlap;
+      const left = (actor?.x ?? 0) - width / 2;
+
+      ctx.save();
+      ctx.drawImage(img, left, top, width, height);
+      ctx.restore();
+    });
+  }
+
+  function selectActorFrame(actor) {
+    if (!actor?.frames) return null;
+    const pose = actor.pose || 'idle';
+    return (
+      actor.frames[pose] ||
+      actor.frames.idle ||
+      actor.frames.walking ||
+      actor.frames.talking ||
+      null
+    );
+  }
+  function paintWorkbench() {
+    const { benchHeight, benchY, trimHeight, shadowHeight } = getBenchMetrics();
+
+    ctx.save();
     ctx.fillStyle = COLORS.benchTop;
     ctx.fillRect(0, benchY, MF_CANVAS_WIDTH, benchHeight);
     ctx.fillRect(0, MF_CANVAS_HEIGHT - trimHeight, MF_CANVAS_WIDTH, trimHeight);
@@ -119,6 +200,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.fillRect(0, benchY - shadowHeight, MF_CANVAS_WIDTH, shadowHeight);
     ctx.restore();
   }
+
 
   function prepareSlotStates() {
     const solution = gameState?.puzzle?.solution || [];
@@ -585,4 +667,3 @@ function roundRect(context, x, y, width, height, radius, fill, stroke, styles = 
   if (stroke) context.stroke();
   context.restore();
 }
-

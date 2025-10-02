@@ -1,37 +1,62 @@
-export function createCustomerArea() {
+export function createCustomerArea({ messages = [] } = {}) {
   const area = document.createElement('aside');
   area.className = 'mf-customer-area';
 
   const chatLog = document.createElement('div');
   chatLog.className = 'mf-chat-log scroll-themed';
 
-  chatLog.append(
-    createChatMessage('customer', 'Need something sunny today.'),
-    createChatMessage('player', 'Attempt #1 - d r y'),
-    createChatMessage('customer', 'Closer! Center needs pop.'),
-    createChatMessage('player', 'Attempt #2 - d d y'),
-    createChatMessage('customer', 'Better, but make the middle brighter.'),
-    createChatMessage('player', 'On it! Swapping the center now.'),
-    createChatMessage('customer', 'Great! Snap a photo when it is ready.')
-  );
+  messages.forEach(({ role, text, label }) => {
+    appendMessage(role, text, label);
+  });
 
   area.append(chatLog);
-  return area;
-}
 
-function createChatMessage(role, text) {
-  const isCustomer = role === 'customer';
-  const wrapper = document.createElement('div');
-  wrapper.className = `mf-chat-message is-${role}`;
+  function appendMessage(role, text, label) {
+    if (typeof text !== 'string' || !text.length) return null;
+    const message = createChatMessage(role, text, label);
+    chatLog.append(message);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return message;
+  }
 
-  const label = document.createElement('span');
-  label.className = 'mf-chat-label';
-  label.textContent = isCustomer ? 'Customer' : 'You';
+  function clearMessages() {
+    chatLog.textContent = '';
+  }
 
-  const body = document.createElement('p');
-  body.className = 'mf-chat-body';
-  body.textContent = text;
+  return {
+    root: area,
+    appendMessage,
+    clearMessages,
+    get element() {
+      return area;
+    },
+    get log() {
+      return chatLog;
+    },
+  };
 
-  wrapper.append(label, body);
-  return wrapper;
+  function createChatMessage(role, text, label) {
+    const wrapper = document.createElement('div');
+    const normalizedRole = typeof role === 'string' ? role.toLowerCase() : 'player';
+    wrapper.className = `mf-chat-message is-${normalizedRole}`;
+
+    const labelNode = document.createElement('span');
+    labelNode.className = 'mf-chat-label';
+    if (typeof label === 'string' && label.length) {
+      labelNode.textContent = label;
+    } else if (normalizedRole === 'customer') {
+      labelNode.textContent = 'Customer';
+    } else if (normalizedRole === 'player') {
+      labelNode.textContent = 'You';
+    } else {
+      labelNode.textContent = normalizedRole.charAt(0).toUpperCase() + normalizedRole.slice(1);
+    }
+
+    const body = document.createElement('p');
+    body.className = 'mf-chat-body';
+    body.textContent = text;
+
+    wrapper.append(labelNode, body);
+    return wrapper;
+  }
 }

@@ -1,4 +1,4 @@
-﻿import { getCustomerLineup } from '../assets/customers/lineup.js';
+import { getCustomerLineup } from '../assets/customers/lineup.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT, MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
 
 const DEFAULT_VIEWPORT = {
@@ -18,6 +18,9 @@ function createEmptySolution() {
 }
 
 export function hasActiveMasterFloristCustomer(state) {
+  if (state?.customerParade) {
+    return Boolean(state.customerParade.activeId);
+  }
   return Array.isArray(state?.customers) && state.customers.length > 0;
 }
 
@@ -32,6 +35,8 @@ export function createMasterFloristState() {
     clock: { tick: 0, elapsedMs: 0, deltaMs: 0 },
     viewport: { ...DEFAULT_VIEWPORT },
     puzzle: createMasterFloristPuzzle(seed),
+    customerParade: null,
+    customerUi: null,
   };
 }
 
@@ -45,6 +50,7 @@ export function resetMasterFloristState(state) {
   state.clock = { tick: 0, elapsedMs: 0, deltaMs: 0 };
   state.viewport = { ...DEFAULT_VIEWPORT };
   state.puzzle = createMasterFloristPuzzle(freshSeed);
+  state.customerParade = null;
 }
 
 export function updateMasterFloristClock(state, info = {}) {
@@ -60,6 +66,11 @@ export function updateMasterFloristViewport(state, metrics = {}) {
     ...state.viewport,
     ...metrics,
   };
+}
+
+export function resetMasterFloristSolution(state) {
+  if (!state?.puzzle) return;
+  state.puzzle.solution = createEmptySolution();
 }
 
 export function updateMasterFloristSolution(state, index, code) {
@@ -137,3 +148,4 @@ function mulberry32(a) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+
