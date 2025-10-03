@@ -1,3 +1,9 @@
+const TOKEN_CLASS_MAP = {
+  warm: 'mf-chat-token-warm',
+  cool: 'mf-chat-token-cool',
+  flower: 'mf-chat-token-flower',
+};
+
 export function createCustomerArea({ messages = [] } = {}) {
   const area = document.createElement('aside');
   area.className = 'mf-customer-area';
@@ -65,10 +71,17 @@ export function createCustomerArea({ messages = [] } = {}) {
 
     wrapper.append(labelNode);
 
-    if (typeof entry.text === 'string' && entry.text.length) {
+    const hasSegments = Array.isArray(entry.segments) && entry.segments.length > 0;
+    const hasText = typeof entry.text === 'string' && entry.text.length > 0;
+
+    if (hasSegments || hasText) {
       const body = document.createElement('p');
       body.className = 'mf-chat-body';
-      body.textContent = entry.text;
+      if (hasSegments) {
+        renderSegments(body, entry.segments);
+      } else {
+        body.textContent = entry.text;
+      }
       wrapper.append(body);
     }
 
@@ -80,6 +93,21 @@ export function createCustomerArea({ messages = [] } = {}) {
     }
 
     return wrapper;
+  }
+
+  function renderSegments(parent, segments = []) {
+    segments.forEach((segment) => {
+      if (!segment || typeof segment.text !== 'string') return;
+      const span = document.createElement('span');
+      span.className = 'mf-chat-segment';
+      const token = typeof segment.token === 'string' ? segment.token.toLowerCase() : '';
+      const tokenClass = TOKEN_CLASS_MAP[token];
+      if (tokenClass) {
+        span.classList.add(tokenClass);
+      }
+      span.textContent = segment.text;
+      parent.append(span);
+    });
   }
 
   function renderAttachment(attachment) {
@@ -143,7 +171,18 @@ export function createCustomerArea({ messages = [] } = {}) {
     if (!entry || typeof entry !== 'object') return null;
     const attachments = Array.isArray(entry.attachments) ? entry.attachments : [];
     const text = typeof entry.text === 'string' ? entry.text : '';
-    if (!text.length && attachments.length === 0) {
+    const segments = Array.isArray(entry.segments)
+      ? entry.segments
+          .map((segment) => {
+            if (!segment || typeof segment.text !== 'string') return null;
+            return {
+              text: segment.text,
+              token: typeof segment.token === 'string' ? segment.token : 'plain',
+            };
+          })
+          .filter(Boolean)
+      : [];
+    if (!text.length && segments.length === 0 && attachments.length === 0) {
       return null;
     }
     return {
@@ -151,6 +190,7 @@ export function createCustomerArea({ messages = [] } = {}) {
       text,
       label: entry.label,
       attachments,
+      segments,
     };
   }
 }

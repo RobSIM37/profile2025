@@ -583,7 +583,9 @@
 }
 
 .mf-chat-message.is-customer {
-  background: rgba(255, 234, 167, 0.55);
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d6d6d6;
   align-self: flex-start;
   text-align: left;
 }
@@ -612,8 +614,33 @@
   justify-self: start;
 }
 
+.mf-chat-message.is-customer .mf-chat-label {
+  color: #a0a0a0;
+}
+.mf-chat-message.is-customer .mf-chat-body {
+  color: inherit;
+}
+
 .mf-chat-message.is-player .mf-chat-label,
 .mf-chat-message.is-player .mf-chat-body {
   text-align: right;
   justify-self: end;
+}
+.mf-chat-segment {
+  display: inline;
+}
+
+.mf-chat-token-warm {
+  color: #ff8a3d;
+  font-weight: 600;
+}
+
+.mf-chat-token-cool {
+  color: #5aa6ff;
+  font-weight: 600;
+}
+
+.mf-chat-token-flower {
+  color: #ffffff;
+  font-weight: 600;
 }

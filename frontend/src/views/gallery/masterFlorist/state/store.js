@@ -7,6 +7,7 @@ import {
   recordPlayerGuess,
 } from './chatEngine.js';
 import { createPuzzle, evaluateGuess } from './puzzleEngine.js';
+import { buildCustomerFeedback, buildCustomerAcceptance } from './dialogueEngine.js';
 
 const STORAGE_PREFIX = 'mf:';
 const SETTINGS_STORAGE_KEY = `${STORAGE_PREFIX}settings`;
@@ -267,24 +268,34 @@ export function startMasterFloristPuzzle(state, { mood = 'happy', customer = nul
   }
 
   const puzzle = createMasterFloristPuzzle(seed, mood);
+  const activeCustomer = customer ? { ...customer } : state.activeCustomer ? { ...state.activeCustomer } : null;
   state.puzzle = puzzle;
   state.hoverStemId = null;
   state.pendingDrops = [];
   state.drag = null;
-  state.activeCustomer = customer ? { ...customer } : state.activeCustomer || null;
+  state.activeCustomer = activeCustomer;
 
-  state.chatSession = createChatSession({ puzzle, customer });
-  addCustomerPuzzleIntro(state.chatSession, { puzzle });
+  state.chatSession = createChatSession({ puzzle, customer: activeCustomer });
+  addCustomerPuzzleIntro(state.chatSession, { puzzle, customer: activeCustomer });
   state._chatSyncedVersion = null;
   syncMasterFloristChat(state);
 }
 
 export function appendMasterFloristFeedback(state, evaluation) {
-  if (!state?.chatSession) return;
-  const message = evaluation?.isMatch
-    ? "That's perfect! Thank you."
-    : 'Hmm, not quite right yet. Could you try something else?';
-  addCustomerResponse(state.chatSession, message);
+  if (!state?.chatSession || !state?.puzzle) return;
+  const history = Array.isArray(state.puzzle.history) ? state.puzzle.history : [];
+  const previousEntry = history.length >= 2 ? history[history.length - 2] : null;
+  const previousEvaluation = previousEntry?.evaluation || null;
+  const customer = state.activeCustomer || state.chatSession.customer || null;
+  const payload = evaluation?.isMatch
+    ? buildCustomerAcceptance({ puzzle: state.puzzle, evaluation, customer })
+    : buildCustomerFeedback({
+        puzzle: state.puzzle,
+        evaluation,
+        previousEvaluation,
+        customer,
+      });
+  addCustomerResponse(state.chatSession, payload);
 }
 
 export function handleMasterFloristPuzzleSuccess(state) {
@@ -444,4 +455,7 @@ function getLocalStorage() {
   } catch {}
   return null;
 }
+
+
+
 

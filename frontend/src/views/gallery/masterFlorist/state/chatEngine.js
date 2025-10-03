@@ -1,4 +1,5 @@
-import { FLOWER_COLOR_BY_CODE, buildGuessGridRows, describePuzzlePlain, normalizeGuessCodes } from './puzzleEngine.js';
+import { FLOWER_COLOR_BY_CODE, buildGuessGridRows, normalizeGuessCodes } from './puzzleEngine.js';
+import { buildCustomerIntro } from './dialogueEngine.js';
 
 export function createChatSession({ puzzle = null, customer = null } = {}) {
   return {
@@ -10,10 +11,10 @@ export function createChatSession({ puzzle = null, customer = null } = {}) {
   };
 }
 
-export function addCustomerPuzzleIntro(session, { puzzle } = {}) {
+export function addCustomerPuzzleIntro(session, { puzzle, customer } = {}) {
   if (!session) return;
-  const text = describePuzzlePlain(puzzle);
-  session.entries.push(createEntry('customer', { text }));
+  const payload = buildCustomerIntro({ puzzle, customer: customer ?? session.customer });
+  session.entries.push(createEntry('customer', payload));
   bumpVersion(session);
 }
 
@@ -35,9 +36,11 @@ export function recordPlayerGuess(session, { puzzle, guessCodes, evaluation } = 
   bumpVersion(session);
 }
 
-export function addCustomerResponse(session, text) {
+export function addCustomerResponse(session, payload) {
   if (!session) return;
-  session.entries.push(createEntry('customer', { text }));
+  if (payload == null) return;
+  const entryPayload = typeof payload === 'string' ? { text: payload } : payload;
+  session.entries.push(createEntry('customer', entryPayload));
   bumpVersion(session);
 }
 
@@ -47,16 +50,46 @@ export function addSystemMessage(session, text, { label } = {}) {
   bumpVersion(session);
 }
 
-function createEntry(role, { text = '', label, attachments = [], meta = null } = {}) {
+function createEntry(role, { text = '', label, attachments = [], meta = null, segments = null } = {}) {
   const normalizedRole = typeof role === 'string' ? role.toLowerCase() : 'customer';
+  const normalizedAttachments = Array.isArray(attachments) ? attachments : [];
+  const normalizedSegments = normalizeSegments(segments, text);
+  const resolvedText = typeof text === 'string' && text.length ? text : segmentsToText(normalizedSegments);
   return {
     id: `mf-chat-entry-${normalizedRole}-${Math.random().toString(16).slice(2, 8)}`,
     role: normalizedRole,
-    text,
+    text: resolvedText,
     label: label || defaultLabel(normalizedRole),
-    attachments,
+    attachments: normalizedAttachments,
     meta,
+    segments: normalizedSegments,
   };
+}
+
+function normalizeSegments(segments, fallbackText) {
+  if (Array.isArray(segments) && segments.length) {
+    return segments
+      .map((part) => {
+        if (!part) return null;
+        if (typeof part === 'string') {
+          return { text: part, token: 'plain' };
+        }
+        if (typeof part.text === 'string') {
+          return { text: part.text, token: part.token || 'plain' };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }
+  if (typeof fallbackText === 'string' && fallbackText.length) {
+    return [{ text: fallbackText, token: 'plain' }];
+  }
+  return [];
+}
+
+function segmentsToText(segments = []) {
+  if (!Array.isArray(segments) || !segments.length) return '';
+  return segments.map((segment) => segment?.text ?? '').join('');
 }
 
 function defaultLabel(role) {

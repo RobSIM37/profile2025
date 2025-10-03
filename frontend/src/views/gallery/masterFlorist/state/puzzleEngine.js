@@ -19,14 +19,46 @@ export const FLOWER_COLOR_BY_CODE = FLOWER_LIBRARY.reduce((acc, entry) => {
   return acc;
 }, Object.create(null));
 
+export const FLOWER_NAME_BY_CODE = FLOWER_LIBRARY.reduce((acc, entry) => {
+  acc[entry.code] = entry.name;
+  acc[entry.code.toUpperCase()] = entry.name;
+  return acc;
+}, Object.create(null));
+
+const WARM_CODES = new Set(['r', 'o', 'y']);
+const COOL_CODES = new Set(['b', 'p', 'w']);
+
+export const FLOWER_GROUP_BY_CODE = FLOWER_LIBRARY.reduce((acc, entry) => {
+  const group = getFlowerGroup(entry.code);
+  if (group) {
+    acc[entry.code] = group;
+    acc[entry.code.toUpperCase()] = group;
+  }
+  return acc;
+}, Object.create(null));
+
+export const FLOWER_GROUP_LABELS = Object.freeze({
+  warm: 'warm',
+  cool: 'cool',
+});
+
+const SLOT_COUNT_OPTIONS = Object.freeze({
+  happy: [6, 5],
+  neutral: [4, 3],
+  angry: [2, 1],
+  complaint: [2, 1],
+  default: [MF_DROP_ZONE_COUNT],
+});
+
 export function createPuzzle({ seed = Date.now(), mood = 'happy', slotCount } = {}) {
-  const resolvedSlotCount = resolveSlotCount(mood, slotCount);
-  const rng = makeSeededRandom(seed);
+  const normalizedSeed = Number.isFinite(seed) ? seed : Date.now();
+  const rng = makeSeededRandom(normalizedSeed);
+  const resolvedSlotCount = resolveSlotCount({ mood, override: slotCount, rng });
   const target = new Array(resolvedSlotCount).fill(null).map(() => randomFlowerCode(rng));
 
   return {
-    id: `mf-puzzle-${seed}-${Math.random().toString(16).slice(2, 8)}`,
-    seed,
+    id: `mf-puzzle-${normalizedSeed}-${Math.random().toString(16).slice(2, 8)}`,
+    seed: normalizedSeed,
     createdAt: Date.now(),
     mood,
     slotCount: resolvedSlotCount,
@@ -38,7 +70,7 @@ export function createPuzzle({ seed = Date.now(), mood = 'happy', slotCount } = 
 
 export function evaluateGuess(puzzle, guessCodes = []) {
   if (!puzzle) {
-    return { exactMatches: 0, partialMatches: 0, isMatch: false, guess: [] };
+    return { exactMatches: 0, partialMatches: 0, isMatch: false, guess: [], slotStates: [] };
   }
 
   const slotCount = Math.max(0, Math.min(puzzle.slotCount ?? DEFAULT_SLOT_COUNT, DEFAULT_SLOT_COUNT));
@@ -47,14 +79,17 @@ export function evaluateGuess(puzzle, guessCodes = []) {
 
   const guessUsed = new Array(slotCount).fill(false);
   const targetUsed = new Array(slotCount).fill(false);
+  const slotStates = new Array(slotCount).fill('absent');
   let exactMatches = 0;
   let partialMatches = 0;
 
   for (let i = 0; i < slotCount; i += 1) {
-    if (normalizedGuess[i] && normalizedGuess[i] === target[i]) {
+    const guessCode = normalizedGuess[i];
+    if (guessCode && guessCode === target[i]) {
       exactMatches += 1;
       guessUsed[i] = true;
       targetUsed[i] = true;
+      slotStates[i] = 'exact';
     }
   }
 
@@ -67,8 +102,13 @@ export function evaluateGuess(puzzle, guessCodes = []) {
       if (target[j] === guessCode) {
         partialMatches += 1;
         targetUsed[j] = true;
+        guessUsed[i] = true;
+        slotStates[i] = 'misplaced';
         break;
       }
+    }
+    if (!guessUsed[i]) {
+      slotStates[i] = 'absent';
     }
   }
 
@@ -77,16 +117,18 @@ export function evaluateGuess(puzzle, guessCodes = []) {
     exactMatches,
     partialMatches,
     isMatch: exactMatches === slotCount,
+    slotStates,
   };
 }
 
 export function describePuzzlePlain(puzzle) {
   if (!puzzle) return 'I need a bouquet, please.';
-  const displayCodes = normalizeGuessCodes(puzzle.target, puzzle.slotCount).map((code) => code.toUpperCase());
-  if (!displayCodes.length) {
+  const displayCodes = normalizeGuessCodes(puzzle.target, puzzle.slotCount).map((code) => code?.toUpperCase?.() ?? '');
+  const filtered = displayCodes.filter(Boolean);
+  if (!filtered.length) {
     return 'I need a bouquet, please.';
   }
-  return `Here is what I would like: ${displayCodes.join(' ')}`;
+  return `Here is what I would like: ${filtered.join(' ')}`;
 }
 
 export function normalizeFlowerCode(value) {
@@ -105,31 +147,59 @@ export function normalizeGuessCodes(codes = [], length = DEFAULT_SLOT_COUNT) {
 
 export function buildGuessGridRows(codes = [], columnsPerRow = 3) {
   const rows = [];
-  const normalized = normalizeGuessCodes(codes, Math.max(codes.length, columnsPerRow * Math.ceil(codes.length / columnsPerRow)));
+  const normalized = normalizeGuessCodes(
+    codes,
+    Math.max(codes.length, columnsPerRow * Math.ceil(codes.length / columnsPerRow)),
+  );
   for (let i = 0; i < normalized.length; i += columnsPerRow) {
     rows.push(normalized.slice(i, i + columnsPerRow));
   }
   return rows;
 }
 
-function resolveSlotCount(mood, override) {
+export function getFlowerName(code) {
+  return FLOWER_NAME_BY_CODE[code] || null;
+}
+
+export function getFlowerGroup(code) {
+  if (!code) return null;
+  const normalized = code.toLowerCase();
+  if (WARM_CODES.has(normalized)) return 'warm';
+  if (COOL_CODES.has(normalized)) return 'cool';
+  return null;
+}
+
+function resolveSlotCount({ mood, override, rng }) {
   if (Number.isFinite(override) && override > 0) {
     return Math.min(DEFAULT_SLOT_COUNT, Math.max(1, Math.floor(override)));
   }
-  switch ((mood || '').toLowerCase()) {
-    case 'angry':
-      return DEFAULT_SLOT_COUNT;
-    case 'neutral':
-      return DEFAULT_SLOT_COUNT;
-    case 'happy':
-    default:
-      return DEFAULT_SLOT_COUNT;
+  const key = typeof mood === 'string' ? mood.toLowerCase() : 'default';
+  const options = SLOT_COUNT_OPTIONS[key] || SLOT_COUNT_OPTIONS.default;
+  return pickFromOptions(options, rng);
+}
+
+function pickFromOptions(options, rng) {
+  if (!Array.isArray(options) || options.length === 0) {
+    return DEFAULT_SLOT_COUNT;
   }
+  if (options.length === 1) {
+    return sanitizeSlotCount(options[0]);
+  }
+  const randomSource = typeof rng === 'function' ? rng : Math.random;
+  const index = Math.floor(randomSource() * options.length);
+  const choice = options[Math.min(Math.max(index, 0), options.length - 1)];
+  return sanitizeSlotCount(choice);
+}
+
+function sanitizeSlotCount(value) {
+  if (!Number.isFinite(value)) return DEFAULT_SLOT_COUNT;
+  return Math.min(DEFAULT_SLOT_COUNT, Math.max(1, Math.floor(value)));
 }
 
 function randomFlowerCode(rng) {
-  const index = Math.floor(rng() * FLOWER_CODES.length);
-  return FLOWER_CODES[index] || FLOWER_CODES[0];
+  const randomSource = typeof rng === 'function' ? rng : Math.random;
+  const index = Math.floor(randomSource() * FLOWER_CODES.length);
+  return FLOWER_CODES[Math.min(Math.max(index, 0), FLOWER_CODES.length - 1)] || FLOWER_CODES[0];
 }
 
 function makeSeededRandom(seed) {
@@ -142,4 +212,3 @@ function makeSeededRandom(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-
