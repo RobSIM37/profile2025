@@ -482,6 +482,7 @@ function beginActiveIdle(parade, actor) {
     parade.rootState.drag = null;
     parade.rootState.hoverStemId = null;
     parade.rootState.pendingDrops = [];
+    advanceCalendarCounters(parade.rootState);
   }
 }
 
@@ -578,6 +579,29 @@ function announceFrames(parade, actor) {
   const text = 'Customer ' + actor.sheet + ' (' + actor.mood + ') -> walking: ' + walking + ', idle: ' + idle + ', talking: ' + talking;
   chat.appendMessage('system', text, 'Sprites');
   actor.chatAnnounced = true;
+}
+
+function advanceCalendarCounters(rootState) {
+  const calendar = rootState?.calendarDisplay;
+  const setDigits = calendar?.setDigits;
+  if (typeof setDigits !== 'function') return;
+
+  calendar.daysRaw = (calendar?.daysRaw ?? 0) + 1;
+  const displayDays = calendar.daysRaw % 100;
+
+  calendar.longestRaw = Math.max(calendar?.longestRaw ?? 0, calendar.daysRaw);
+  const displayLongest = calendar.longestRaw % 100;
+
+  calendar.daysDisplay = displayDays;
+  calendar.mostDisplay = displayLongest;
+
+  setDigits('days', toDigitPair(displayDays));
+  setDigits('most', toDigitPair(displayLongest));
+}
+
+function toDigitPair(value) {
+  const normalized = Math.max(0, Math.floor(Number(value) || 0)) % 100;
+  return [Math.floor(normalized / 10), normalized % 10];
 }
 
 function randomBetween(range) {

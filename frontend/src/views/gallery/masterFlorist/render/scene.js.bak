@@ -1,4 +1,4 @@
-import {
+﻿import {
   SLOT_POSITIONS,
   SLOT_DRAW_ORDER,
   SLOT_SIZE,
@@ -78,7 +78,7 @@ const CALENDAR_LAYOUT = Object.freeze({
 const CALENDAR_TRANSITION_MS = 450;
 const CALENDAR_DROP_PX = 40;
 
-const SHOW_CUSTOMERS = false;
+const SHOW_CUSTOMERS = true;
 
 const INITIAL_CALENDAR_DIGITS = {
   days: [0, 0],
@@ -434,7 +434,6 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       transitions[i] = currentValue != null ? {
         value: currentValue,
         elapsed: 0,
-        anchorIndex: i,
       } : null;
       digits[i] = nextValue;
     }
@@ -495,40 +494,35 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
     const baseY = originY + height / 2 - maxHeight / 2 + OFFSET_Y;
 
-    const slotCount = Math.max(resolvedDigits.length, anchors.length);
+    const slotCount = Math.max(resolvedDigits.length, transitions.length, anchors.length);
     for (let index = 0; index < slotCount; index += 1) {
       const anchor = Number.isFinite(anchors[index]) ? anchors[index] : (slotCount > 1 ? index / (slotCount - 1) : 0.5);
       const slotCenterX = originX + width * anchor;
 
       const spriteInfo = resolvedDigits[index];
-      if (!spriteInfo?.sprite?.ready) continue;
-      const spriteWidth = (spriteInfo.sprite.width || 0) * NUMBER_SCALE;
-      const spriteHeight = (spriteInfo.sprite.height || 0) * NUMBER_SCALE;
-      const drawX = slotCenterX - spriteWidth / 2;
-      const drawY = baseY + (maxHeight - spriteHeight) / 2;
-      drawCalendarDigit(spriteInfo, drawX, drawY, spriteWidth, spriteHeight, { opacity: 1 });
-    }
+      if (spriteInfo?.sprite?.ready) {
+        const spriteWidth = (spriteInfo.sprite.width || 0) * NUMBER_SCALE;
+        const spriteHeight = (spriteInfo.sprite.height || 0) * NUMBER_SCALE;
+        const drawX = slotCenterX - spriteWidth / 2;
+        const drawY = baseY + (maxHeight - spriteHeight) / 2;
+        drawCalendarDigit(spriteInfo, drawX, drawY, spriteWidth, spriteHeight, { opacity: 1 });
+      }
 
-    const transitionCount = transitions.length;
-    for (let index = 0; index < transitionCount; index += 1) {
       const transition = transitions[index];
-      if (!transition) continue;
-      const prevInfo = calendarNumberSprites.getDigitSprite?.(transition.value);
-      if (!prevInfo?.sprite?.ready) continue;
-
-      const anchorIndex = transition.anchorIndex ?? index;
-      const anchor = Number.isFinite(anchors[anchorIndex]) ? anchors[anchorIndex] : (slotCount > 1 ? anchorIndex / (slotCount - 1) : 0.5);
-      const slotCenterX = originX + width * anchor;
-
-      const spriteWidth = (prevInfo.sprite.width || 0) * NUMBER_SCALE;
-      const spriteHeight = (prevInfo.sprite.height || 0) * NUMBER_SCALE;
-      const progress = Math.min(Math.max((transition.elapsed || 0) / CALENDAR_TRANSITION_MS, 0), 1);
-      const fadeProgress = progress * progress;
-      const opacity = 1 - fadeProgress;
-      const drop = CALENDAR_DROP_PX * progress;
-      const drawX = slotCenterX - spriteWidth / 2;
-      const drawY = baseY + (maxHeight - spriteHeight) / 2 + drop;
-      drawCalendarDigit(prevInfo, drawX, drawY, spriteWidth, spriteHeight, { opacity });
+      if (transition) {
+        const prevInfo = calendarNumberSprites.getDigitSprite?.(transition.value);
+        if (prevInfo?.sprite?.ready) {
+          const spriteWidth = (prevInfo.sprite.width || 0) * NUMBER_SCALE;
+          const spriteHeight = (prevInfo.sprite.height || 0) * NUMBER_SCALE;
+          const progress = Math.min(Math.max((transition.elapsed || 0) / CALENDAR_TRANSITION_MS, 0), 1);
+          const fadeProgress = progress * progress;
+          const opacity = 1 - fadeProgress;
+          const drop = CALENDAR_DROP_PX * progress;
+          const drawX = (transition.centerX ?? (originX + width * anchor)) - spriteWidth / 2;
+          const drawY = baseY + (maxHeight - spriteHeight) / 2 + drop;
+          drawCalendarDigit(prevInfo, drawX, drawY, spriteWidth, spriteHeight, { opacity });
+        }
+      }
     }
   }
 
@@ -995,8 +989,6 @@ function createCalendarNumberSprite(meta) {
     },
   };
 }
-
-
 
 
 
