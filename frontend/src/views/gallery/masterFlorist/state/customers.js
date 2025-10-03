@@ -8,7 +8,7 @@ import {
 } from './store.js';
 
 const ACTIVE_IDLE_MS = 0;
-const ACTIVE_TALK_MS = 5_000;
+const ACTIVE_TALK_MS = 1_500;
 const TALK_TOGGLE_MS = 150;
 const QUEUE_ADVANCE_DELAY_RANGE = [1_000, 5_000];
 const QUEUE_SETTLE_EPSILON = 1.5;
@@ -22,6 +22,7 @@ const BASE_PERSONAL_SPACE = 140;
 const MIN_PERSONAL_SPACE = 52;
 const PERSONAL_SPACE_STEP = 12;
 const ADVANCE_ANIM_FRAMES = 10;
+const COMPLAINT_DEPARTURE_RENDER_ORDER = 1000;
 
 const MOOD_SEQUENCE = ['happy', 'neutral', 'angry', 'complaint'];
 
@@ -39,13 +40,13 @@ const FOOT_TRAFFIC_SPAWN_CHANCE = {
 
 const ATMOSPHERE_PROFILES = {
   soothing: {
-    queue: { happy: 24000, neutral: 20000, angry: Number.POSITIVE_INFINITY },
+    queue: { happy: 24000, neutral: 20000, angry: 16000 },
   },
   balanced: {
-    queue: { happy: 16000, neutral: 14000, angry: Number.POSITIVE_INFINITY },
+    queue: { happy: 16000, neutral: 14000, angry: 12000 },
   },
   tense: {
-    queue: { happy: 10000, neutral: 8000, angry: Number.POSITIVE_INFINITY },
+    queue: { happy: 10000, neutral: 8000, angry: 6000 },
   },
 };
 
@@ -62,8 +63,8 @@ const EXIT_X = -260;
 export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
   if (!state || !spriteLibrary) return;
 
-  const entries = spriteLibrary.paradeEntries || [];
-  if (!Array.isArray(entries) || entries.length === 0) {
+  const sheetList = Array.isArray(spriteLibrary.sheetList) ? spriteLibrary.sheetList : [];
+  if (!sheetList.length) {
     console.warn('Master Florist: no customer frames available for parade preview.');
     return;
   }
@@ -72,21 +73,20 @@ export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
     spriteLibrary,
     chat,
     rootState: state,
-    sourceEntries: entries,
-    pendingEntries: entries.slice(),
     actors: [],
     queue: [],
     activeId: null,
     pendingActiveId: null,
     elapsedMs: 0,
     spawnCooldownMs: 0,
+    spawnGapMs: 2_000,
     spawnIntervalMs: SPAWN_INTERVAL_MS,
     spawnAccumulatorMs: 0,
     queueSpacingBase: BASE_PERSONAL_SPACE,
     queueSpacingMin: MIN_PERSONAL_SPACE,
     queueSpacingStep: PERSONAL_SPACE_STEP,
     mouthToggleMs: TALK_TOGGLE_MS,
-    maxVisible: Math.min(MAX_VISIBLE_CUSTOMERS, entries.length + 1),
+    maxVisible: Number.POSITIVE_INFINITY,
     queueDirty: true,
     queueSpacingSnapshot: BASE_PERSONAL_SPACE,
   };
@@ -107,6 +107,7 @@ export function updateCustomerParade(state, info = {}) {
   if (deltaMs <= 0) return;
 
   parade.elapsedMs += deltaMs;
+  parade.spawnCooldownMs = Math.max(0, (parade.spawnCooldownMs || 0) - deltaMs);
   maybeSpawnCustomer(parade, deltaMs);
   ensureQueueStocked(parade);
   applyQueueLayout(parade);
@@ -255,28 +256,10 @@ function updateFollowerTarget(parade, actor, spacingOverride, anchorOverride) {
   return { queue, spacing, anchor, targetX };
 }
 
-function nextEntry(parade) {
-  if (!parade) return null;
-
-  const source = Array.isArray(parade.sourceEntries) ? parade.sourceEntries : [];
-  if (!Array.isArray(parade.pendingEntries) || parade.pendingEntries.length === 0) {
-    parade.pendingEntries = source.slice();
-  }
-
-  if (!Array.isArray(parade.pendingEntries) || parade.pendingEntries.length === 0) {
-    return null;
-  }
-
-  return parade.pendingEntries.shift() || null;
-}
-
 function canSpawnAnother(parade) {
   if (!parade) return false;
   if (!Array.isArray(parade.queue)) parade.queue = [];
-  const activeCount = (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
-  const total = parade.queue.length + activeCount;
-  const max = parade.maxVisible || MAX_VISIBLE_CUSTOMERS;
-  return total < max;
+  return true;
 }
 
 function spawnCustomer(parade) {
@@ -285,7 +268,7 @@ function spawnCustomer(parade) {
     parade.queue = [];
   }
   if (!canSpawnAnother(parade)) return;
-  const entry = nextEntry(parade);
+  const entry = createRandomEntry(parade);
   if (!entry) return;
   const actor = createActor(entry);
   updateActorMoodFrames(parade, actor);
@@ -306,6 +289,7 @@ function spawnCustomer(parade) {
   parade.actors.push(actor);
   parade.queue.push(actor);
   parade.queueDirty = true;
+  parade.spawnCooldownMs = parade.spawnGapMs ?? 0;
 }
 
 function ensureQueueStocked(parade) {
@@ -320,12 +304,14 @@ function ensureQueueStocked(parade) {
 
 function maybeSpawnCustomer(parade, deltaMs) {
   if (!parade) return;
+  if (parade.spawnCooldownMs > 0) return;
   if (!canSpawnAnother(parade)) return;
   const chance = getFootTrafficChance(parade);
   if (chance <= 0) return;
   const probability = chance * (deltaMs / 1000);
   if (Math.random() < probability) {
     spawnCustomer(parade);
+    parade.spawnCooldownMs = parade.spawnGapMs ?? 0;
   }
 }
 
@@ -424,12 +410,13 @@ function createActor(entry) {
   const template = frames.idle || frames.walking || frames.talking;
   const width = template?.width ?? 180;
   const height = template?.height ?? 300;
-  const moodStageIndex = Math.max(0, MOOD_SEQUENCE.indexOf(entry.mood));
+  const initialMood = entry.mood;
+  const moodStageIndex = Math.max(0, MOOD_SEQUENCE.indexOf(initialMood));
 
   return {
     id,
     sheet: entry.sheet,
-    mood: entry.mood,
+    mood: initialMood,
     frames,
     width,
     height,
@@ -455,6 +442,10 @@ function createActor(entry) {
     queueMoodTimer: 0,
     activeMoodTimer: 0,
     lastExactMatches: 0,
+    requestPresented: false,
+    pendingDeparture: false,
+    renderOrder: 0,
+    dropDepthOnDeparture: false,
   };
 }
 
@@ -482,7 +473,7 @@ function advanceActor(parade, actor, deltaMs) {
       updateQueued(parade, actor, deltaMs);
       break;
     case 'activeIdle':
-      if (actor.timeInState >= ACTIVE_IDLE_MS) {
+      if (!actor.requestPresented && actor.timeInState >= ACTIVE_IDLE_MS) {
         startActiveTalking(parade, actor);
       }
       break;
@@ -547,6 +538,8 @@ function beginActiveIdle(parade, actor) {
   actor.queueMoodTimer = 0;
   actor.activeMoodTimer = 0;
   actor.lastExactMatches = 0;
+  actor.requestPresented = false;
+  actor.pendingDeparture = false;
   announceFrames(parade, actor);
   if (parade.rootState) {
     const mood = getActorMood(actor);
@@ -562,6 +555,9 @@ function beginActiveIdle(parade, actor) {
 }
 
 function startActiveTalking(parade, actor) {
+  if (!actor || actor.requestPresented) {
+    return;
+  }
   actor.state = 'activeTalking';
   resetWalkBob(actor);
   actor.pose = 'talking';
@@ -580,12 +576,27 @@ function updateActiveTalking(parade, actor, deltaMs) {
   }
 
   if (actor.talkElapsed >= ACTIVE_TALK_MS) {
+    actor.requestPresented = true;
     actor.state = 'activeIdle';
     actor.pose = 'idle';
     actor.timeInState = 0;
     actor.talkElapsed = 0;
     actor.mouthTimer = 0;
+    if (actor.pendingDeparture) {
+      actor.pendingDeparture = false;
+      beginDeparture(parade, actor);
+    }
   }
+}
+
+function brieflyTalk(parade, actor) {
+  if (!actor || actor.mood === 'complaint' || actor.state === 'departing') return;
+  actor.state = 'activeTalking';
+  actor.pose = 'talking';
+  actor.timeInState = 0;
+  actor.talkElapsed = 0;
+  actor.mouthTimer = 0;
+  actor.requestPresented = true;
 }
 
 function beginDeparture(parade, actor) {
@@ -596,6 +607,11 @@ function beginDeparture(parade, actor) {
   actor.pose = 'walking';
   actor.targetX = EXIT_X;
   actor.timeInState = 0;
+  if (actor.mood === 'complaint' || actor.dropDepthOnDeparture) {
+    actor.renderOrder = COMPLAINT_DEPARTURE_RENDER_ORDER;
+    actor.dropDepthOnDeparture = false;
+  }
+  updateActorMoodFrames(parade, actor);
   if (parade.rootState) {
     resetMasterFloristSolution(parade.rootState);
     parade.rootState.drag = null;
@@ -675,11 +691,13 @@ export function handleMasterFloristGuessResult(state, evaluation = {}) {
 
   if (evaluation?.isMatch) {
     handleMasterFloristPuzzleSuccess(state);
-    beginDeparture(parade, actor);
+    actor.pendingDeparture = true;
+    brieflyTalk(parade, actor);
     return;
   }
 
   applyActiveMistake(parade, actor, { progress });
+  brieflyTalk(parade, actor);
 }
 
 function maybeDecayQueueMood(parade, actor, deltaMs) {
@@ -713,13 +731,12 @@ function stepActorMood(parade, actor, { reason, isActive } = {}) {
 
   const nextIndex = Math.min(currentIndex + 1, MOOD_SEQUENCE.length - 1);
   actor.moodStageIndex = nextIndex;
-  actor.mood = getActorMood(actor);
+  const nextMood = getActorMood(actor);
+  actor.mood = nextMood;
   updateActorMoodFrames(parade, actor);
 
-  if (actor.mood === 'complaint') {
+  if (nextMood === 'complaint') {
     handleCustomerComplaint(parade, actor, { reason, isActive });
-  } else {
-    // keep silent per updated requirements
   }
   return true;
 }
@@ -728,18 +745,25 @@ function handleCustomerComplaint(parade, actor, { reason, isActive } = {}) {
   if (!parade) return;
   handleMasterFloristComplaint(parade.rootState);
 
+  actor.pose = 'walking';
+
   if (isActive) {
+    actor.dropDepthOnDeparture = true;
+    actor.pendingDeparture = false;
     beginDeparture(parade, actor);
+    parade.queueDirty = true;
   } else {
     actor.state = 'departing';
     actor.pose = 'walking';
+    actor.renderOrder = COMPLAINT_DEPARTURE_RENDER_ORDER;
     actor.targetX = EXIT_X;
     actor.timeInState = 0;
     resetWalkBob(actor);
     actor.queueIndex = null;
+    actor.dropDepthOnDeparture = false;
+    updateActorMoodFrames(parade, actor);
     parade.queueDirty = true;
   }
-  actor.complained = true;
   if (parade.pendingActiveId === actor.id) {
     parade.pendingActiveId = null;
   }
@@ -780,12 +804,58 @@ function updateActorMoodFrames(parade, actor) {
   const mood = getActorMood(actor);
   const sheet = actor.sheet;
   if (!sheet) return;
-  const walking = library.getFrame?.(sheet, mood, 'walking');
-  const idle = library.getFrame?.(sheet, mood, 'idle');
-  const talking = library.getFrame?.(sheet, mood, 'talking');
-  if (walking && idle && talking) {
-    actor.frames = { walking, idle, talking };
+
+  const frames = { ...(actor.frames || {}) };
+
+  const applyMoodFrames = (label, { override } = { override: false }) => {
+    if (!label) return;
+    const walking = library.getFrame?.(sheet, label, 'walking');
+    const idle = library.getFrame?.(sheet, label, 'idle');
+    const talking = library.getFrame?.(sheet, label, 'talking');
+    if (walking && (override || !frames.walking)) frames.walking = walking;
+    if (idle && (override || !frames.idle)) frames.idle = idle;
+    if (talking && (override || !frames.talking)) frames.talking = talking;
+  };
+
+  if (mood === 'complaint') {
+    applyMoodFrames('angry');
+    actor.pose = 'walking';
   }
+
+  applyMoodFrames(mood, { override: true });
+
+  actor.frames = frames;
+}
+
+function getFramesForMood(library, sheetName, mood) {
+  if (!library || !sheetName) return null;
+  const walking = library.getFrame?.(sheetName, mood, 'walking');
+  const idle = library.getFrame?.(sheetName, mood, 'idle');
+  const talking = library.getFrame?.(sheetName, mood, 'talking');
+  if (walking && idle && talking) {
+    return { walking, idle, talking };
+  }
+  return null;
+}
+
+function createRandomEntry(parade) {
+  const library = parade?.spriteLibrary;
+  const sheets = Array.isArray(library?.sheetList) ? library.sheetList : [];
+  if (!sheets.length) return null;
+  const attempts = Math.max(4, sheets.length);
+  for (let i = 0; i < attempts; i += 1) {
+    const sheetInfo = sheets[Math.floor(Math.random() * sheets.length)];
+    const sheetName = sheetInfo?.name;
+    if (!sheetName) continue;
+    const frames = getFramesForMood(library, sheetName, 'happy');
+    if (!frames) continue;
+    return {
+      sheet: sheetName,
+      mood: 'happy',
+      frames,
+    };
+  }
+  return null;
 }
 
 function advanceCalendarCounters(rootState) {
@@ -817,4 +887,3 @@ function randomBetween(range) {
   if (!Number.isFinite(max) || max <= min) return min;
   return min + Math.random() * (max - min);
 }
-

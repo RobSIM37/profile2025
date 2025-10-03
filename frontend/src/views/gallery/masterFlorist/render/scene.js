@@ -241,6 +241,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const overlap = 7;
     const ordered = actors.slice().sort((a, b) => {
       const priority = (actor) => {
+        if (actor?.mood === 'complaint') return 4;
         if (actor?.state === 'activeIdle' || actor?.state === 'activeTalking') return 3;
         if (actor?.pendingActive) return 2;
         return 1;
@@ -282,6 +283,10 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       ctx.save();
       ctx.drawImage(img, left, top, width, height);
       ctx.restore();
+
+      if (actor?.mood === 'complaint') {
+        drawComplaintIndicator(left + width / 2, top - 10);
+      }
     });
   }
 
@@ -334,6 +339,27 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
 
     gameState.showButton = { x, y, width, height, enabled };
+  }
+
+  function drawComplaintIndicator(centerX, baseY) {
+    const width = 66;
+    const height = 102;
+    const radius = 24;
+    const x = centerX - width / 2;
+    const y = baseY - height;
+
+    ctx.save();
+    roundRect(ctx, x, y, width, height, radius, true, true, {
+      fillStyle: '#d93a54',
+      strokeStyle: 'rgba(0,0,0,0.3)',
+    });
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 54px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('!', centerX, y + height / 2);
+    ctx.restore();
   }
 
 
