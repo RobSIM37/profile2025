@@ -5,6 +5,7 @@ import {
   startMasterFloristPuzzle,
   handleMasterFloristPuzzleSuccess,
   handleMasterFloristComplaint,
+  triggerMasterFloristGameOver,
 } from './store.js';
 
 const ACTIVE_IDLE_MS = 0;
@@ -23,6 +24,8 @@ const MIN_PERSONAL_SPACE = 52;
 const PERSONAL_SPACE_STEP = 12;
 const ADVANCE_ANIM_FRAMES = 10;
 const COMPLAINT_DEPARTURE_RENDER_ORDER = 1000;
+
+const GAME_OVER_MESSAGE = 'The flower shop had to close due to too many complaints.';
 
 const MOOD_SEQUENCE = ['happy', 'neutral', 'angry', 'complaint'];
 
@@ -89,19 +92,31 @@ export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
     maxVisible: Number.POSITIVE_INFINITY,
     queueDirty: true,
     queueSpacingSnapshot: BASE_PERSONAL_SPACE,
+    grabBag: [],
+    activeSheets: new Set(),
+    gameOver: false,
   };
 
   const footTrafficLabel = state?.settings?.footTraffic;
   state.customerParade.spawnIntervalMs = resolveFootTrafficInterval(footTrafficLabel);
   state.customerParade.atmosphere = resolveAtmosphereProfile(state?.settings?.atmosphere);
 
+  const bag = populateGrabBag(state.customerParade);
+  if (bag.length === 0) {
+    state.customerParade.gameOver = true;
+    triggerMasterFloristGameOver(state, GAME_OVER_MESSAGE);
+    return;
+  }
+
   spawnCustomer(state.customerParade);
   promoteNext(state.customerParade);
+  checkForCustomerExhaustion(state.customerParade);
 }
 
 export function updateCustomerParade(state, info = {}) {
   const parade = state?.customerParade;
   if (!parade || !parade.spriteLibrary) return;
+  if (parade.gameOver) return;
 
   const deltaMs = Number(info?.deltaMs) || 0;
   if (deltaMs <= 0) return;
@@ -257,9 +272,10 @@ function updateFollowerTarget(parade, actor, spacingOverride, anchorOverride) {
 }
 
 function canSpawnAnother(parade) {
-  if (!parade) return false;
+  if (!parade || parade.gameOver) return false;
   if (!Array.isArray(parade.queue)) parade.queue = [];
-  return true;
+  const bag = ensureGrabBag(parade);
+  return bag.length > 0;
 }
 
 function spawnCustomer(parade) {
@@ -269,9 +285,13 @@ function spawnCustomer(parade) {
   }
   if (!canSpawnAnother(parade)) return;
   const entry = createRandomEntry(parade);
-  if (!entry) return;
+  if (!entry) {
+    checkForCustomerExhaustion(parade);
+    return;
+  }
   const actor = createActor(entry);
   updateActorMoodFrames(parade, actor);
+  markSheetActive(parade, actor.sheet);
   actor.pose = 'walking';
   actor.x = SPAWN_X;
   actor.queueIndex = parade.queue.length;
@@ -299,13 +319,20 @@ function ensureQueueStocked(parade) {
   }
   const activeCount = (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
   if (parade.queue.length + activeCount > 0) return;
+  if (!canSpawnAnother(parade)) {
+    checkForCustomerExhaustion(parade);
+    return;
+  }
   spawnCustomer(parade);
 }
 
 function maybeSpawnCustomer(parade, deltaMs) {
   if (!parade) return;
   if (parade.spawnCooldownMs > 0) return;
-  if (!canSpawnAnother(parade)) return;
+  if (!canSpawnAnother(parade)) {
+    checkForCustomerExhaustion(parade);
+    return;
+  }
   const chance = getFootTrafficChance(parade);
   if (chance <= 0) return;
   const probability = chance * (deltaMs / 1000);
@@ -446,6 +473,7 @@ function createActor(entry) {
     pendingDeparture: false,
     renderOrder: 0,
     dropDepthOnDeparture: false,
+    rejoinOnDeparture: false,
   };
 }
 
@@ -466,6 +494,7 @@ function advanceActor(parade, actor, deltaMs) {
     case 'entering':
     case 'advancing':
     case 'departing':
+      actor.pose = 'walking';
       updateWalkBob(actor, deltaMs);
       moveTowardsTarget(parade, actor, deltaMs);
       break;
@@ -540,6 +569,7 @@ function beginActiveIdle(parade, actor) {
   actor.lastExactMatches = 0;
   actor.requestPresented = false;
   actor.pendingDeparture = false;
+  actor.rejoinOnDeparture = false;
   announceFrames(parade, actor);
   if (parade.rootState) {
     const mood = getActorMood(actor);
@@ -599,8 +629,24 @@ function brieflyTalk(parade, actor) {
   actor.requestPresented = true;
 }
 
+function detachFromQueue(parade, actor) {
+  if (!parade?.queue || !Array.isArray(parade.queue)) return;
+  const beforeLength = parade.queue.length;
+  parade.queue = parade.queue.filter((entry) => entry && entry !== actor);
+  if (parade.queue.length !== beforeLength) {
+    parade.queueDirty = true;
+  }
+}
+
 function beginDeparture(parade, actor) {
+  if (!actor) return;
+  releaseSheet(parade, actor.sheet);
+  if (actor.rejoinOnDeparture && actor.sheet) {
+    returnCustomerToGrabBag(parade, actor.sheet);
+    actor.rejoinOnDeparture = false;
+  }
   parade.activeId = null;
+  detachFromQueue(parade, actor);
   resetWalkBob(actor);
   actor.queueIndex = null;
   actor.state = 'departing';
@@ -638,6 +684,7 @@ function promoteNext(parade) {
 }
 
 function dropActor(parade, actor, index) {
+  releaseSheet(parade, actor?.sheet);
   parade.actors.splice(index, 1);
   if (Array.isArray(parade.queue)) {
     parade.queue = parade.queue.filter((entry) => entry !== actor);
@@ -650,6 +697,7 @@ function dropActor(parade, actor, index) {
   if (parade.pendingActiveId === actor.id) {
     parade.pendingActiveId = null;
   }
+  checkForCustomerExhaustion(parade);
 }
 
 function resetQueuePose(actor) {
@@ -691,6 +739,7 @@ export function handleMasterFloristGuessResult(state, evaluation = {}) {
 
   if (evaluation?.isMatch) {
     handleMasterFloristPuzzleSuccess(state);
+    actor.rejoinOnDeparture = true;
     actor.pendingDeparture = true;
     brieflyTalk(parade, actor);
     return;
@@ -744,6 +793,10 @@ function stepActorMood(parade, actor, { reason, isActive } = {}) {
 function handleCustomerComplaint(parade, actor, { reason, isActive } = {}) {
   if (!parade) return;
   handleMasterFloristComplaint(parade.rootState);
+  if (!actor) return;
+
+  actor.rejoinOnDeparture = false;
+  releaseSheet(parade, actor.sheet);
 
   actor.pose = 'walking';
 
@@ -753,6 +806,7 @@ function handleCustomerComplaint(parade, actor, { reason, isActive } = {}) {
     beginDeparture(parade, actor);
     parade.queueDirty = true;
   } else {
+    detachFromQueue(parade, actor);
     actor.state = 'departing';
     actor.pose = 'walking';
     actor.renderOrder = COMPLAINT_DEPARTURE_RENDER_ORDER;
@@ -821,7 +875,6 @@ function updateActorMoodFrames(parade, actor) {
     applyMoodFrames('angry');
     actor.pose = 'walking';
   }
-
   applyMoodFrames(mood, { override: true });
 
   actor.frames = frames;
@@ -840,15 +893,17 @@ function getFramesForMood(library, sheetName, mood) {
 
 function createRandomEntry(parade) {
   const library = parade?.spriteLibrary;
-  const sheets = Array.isArray(library?.sheetList) ? library.sheetList : [];
-  if (!sheets.length) return null;
-  const attempts = Math.max(4, sheets.length);
+  const bag = ensureGrabBag(parade);
+  if (!library || bag.length === 0) return null;
+  const attempts = Math.max(1, bag.length);
   for (let i = 0; i < attempts; i += 1) {
-    const sheetInfo = sheets[Math.floor(Math.random() * sheets.length)];
-    const sheetName = sheetInfo?.name;
-    if (!sheetName) continue;
+    const sheetName = drawFromGrabBag(parade);
+    if (!sheetName) break;
     const frames = getFramesForMood(library, sheetName, 'happy');
-    if (!frames) continue;
+    if (!frames) {
+      returnCustomerToGrabBag(parade, sheetName);
+      continue;
+    }
     return {
       sheet: sheetName,
       mood: 'happy',
@@ -856,6 +911,90 @@ function createRandomEntry(parade) {
     };
   }
   return null;
+}
+
+function populateGrabBag(parade) {
+  if (!parade) {
+    return [];
+  }
+  const library = parade.spriteLibrary;
+  const sheets = Array.isArray(library?.sheetList) ? library.sheetList : [];
+  const seen = new Set();
+  const bag = [];
+  for (const info of sheets) {
+    const name = info?.name;
+    if (!name || seen.has(name)) continue;
+    const frames = getFramesForMood(library, name, 'happy');
+    if (!frames) continue;
+    seen.add(name);
+    bag.push(name);
+  }
+  shuffleArray(bag);
+  parade.grabBag = bag;
+  return bag;
+}
+
+function ensureGrabBag(parade) {
+  if (!parade) return [];
+  if (!Array.isArray(parade.grabBag)) {
+    parade.grabBag = [];
+  }
+  return parade.grabBag;
+}
+
+function drawFromGrabBag(parade) {
+  const bag = ensureGrabBag(parade);
+  if (!bag.length) return null;
+  const index = Math.floor(Math.random() * bag.length);
+  const [sheet] = bag.splice(index, 1);
+  return sheet || null;
+}
+
+function returnCustomerToGrabBag(parade, sheet) {
+  if (!parade || !sheet) return;
+  const bag = ensureGrabBag(parade);
+  if (parade.activeSheets instanceof Set && parade.activeSheets.has(sheet)) return;
+  if (bag.includes(sheet)) return;
+  const index = Math.floor(Math.random() * (bag.length + 1));
+  bag.splice(index, 0, sheet);
+}
+
+function markSheetActive(parade, sheet) {
+  if (!parade || !sheet) return;
+  if (!(parade.activeSheets instanceof Set)) {
+    parade.activeSheets = new Set();
+  }
+  parade.activeSheets.add(sheet);
+}
+
+function releaseSheet(parade, sheet) {
+  if (!parade || !sheet) return;
+  if (parade.activeSheets instanceof Set) {
+    parade.activeSheets.delete(sheet);
+  }
+}
+
+function checkForCustomerExhaustion(parade) {
+  if (!parade || parade.gameOver) return;
+  const bagCount = ensureGrabBag(parade).length;
+  if (bagCount > 0) return;
+  const actorCount = Array.isArray(parade.actors) ? parade.actors.length : 0;
+  if (actorCount > 0) return;
+  const queueCount = Array.isArray(parade.queue) ? parade.queue.length : 0;
+  if (queueCount > 0) return;
+  const activeCount = (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
+  if (activeCount > 0) return;
+  parade.gameOver = true;
+  triggerMasterFloristGameOver(parade.rootState, GAME_OVER_MESSAGE);
+}
+
+function shuffleArray(list) {
+  if (!Array.isArray(list)) return [];
+  for (let i = list.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list;
 }
 
 function advanceCalendarCounters(rootState) {

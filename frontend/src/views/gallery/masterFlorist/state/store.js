@@ -64,6 +64,9 @@ export function createMasterFloristState() {
     puzzleHistory: [],
     chatSession: null,
     _chatSyncedVersion: null,
+    gameOver: false,
+    gameOverMessage: '',
+    onGameOver: null,
   };
 
   startMasterFloristPuzzle(state, { mood: 'happy', seed });
@@ -82,6 +85,8 @@ export function resetMasterFloristState(state) {
   state.queue = createDefaultQueueState();
   state.activeCustomer = null;
   state.customerParade = null;
+  state.gameOver = false;
+  state.gameOverMessage = '';
   startMasterFloristPuzzle(state, { mood: 'happy', seed: freshSeed });
   if (!state.settings) {
     state.settings = loadStoredSettings();
@@ -248,7 +253,7 @@ export function canSubmitMasterFloristGuess(state) {
 }
 
 export function startMasterFloristPuzzle(state, { mood = 'happy', customer = null, seed = Date.now() } = {}) {
-  if (!state) return;
+  if (!state || state.gameOver) return;
   if (!Array.isArray(state.puzzleHistory)) {
     state.puzzleHistory = [];
   }
@@ -302,6 +307,18 @@ export function handleMasterFloristComplaint(state) {
   }
   state.stats.daysWithoutComplaint = 0;
   state.stats.lastComplaintTimestamp = Date.now();
+}
+
+export function triggerMasterFloristGameOver(state, message) {
+  if (!state || state.gameOver) return false;
+  state.gameOver = true;
+  state.gameOverMessage = message || 'The flower shop had to close due to too many complaints.';
+  try {
+    state.onGameOver?.(state.gameOverMessage);
+  } catch (err) {
+    console.error('Master Florist game over handler failed', err);
+  }
+  return true;
 }
 
 export function collapseMasterFloristSolution(solution = []) {

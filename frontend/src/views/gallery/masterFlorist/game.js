@@ -1,6 +1,7 @@
 import { createCustomerArea } from './components/customerArea.js';
 import { createWorkingArea } from './components/workingArea.js';
 import { makeGallerySubheader } from '../../../components/ui/subheader.js';
+import { openModal } from '../../../components/ui/modal.js';
 import { setAppSolid } from '../../../lib/appShell.js';
 import {
   createMasterFloristState,
@@ -54,7 +55,38 @@ export function render() {
   layout.append(section);
   frag.append(layout);
 
+  let gameOverModal = null;
+
   const state = createMasterFloristState();
+  const navigateToSetup = () => {
+    try {
+      if (location.hash !== '#/gallery/master-florist') {
+        location.hash = '#/gallery/master-florist';
+      }
+    } catch {}
+  };
+
+  state.onGameOver = (message) => {
+    if (gameOverModal) return;
+    const note = document.createElement('p');
+    note.textContent = message || 'The flower shop had to close due to too many complaints.';
+    gameOverModal = openModal({
+      title: 'Flower Shop Closed',
+      body: note,
+      actions: [
+        {
+          label: 'OK',
+          onClick() {
+            navigateToSetup();
+          },
+        },
+      ],
+      onClose: () => {
+        gameOverModal = null;
+        navigateToSetup();
+      },
+    });
+  };
   state.customerUi = customerArea;
   syncMasterFloristChat(state);
 
@@ -77,6 +109,9 @@ export function render() {
   };
 
   const handleShowCustomer = () => {
+    if (state.gameOver) {
+      return;
+    }
     if (!hasActiveMasterFloristCustomer(state)) {
       return;
     }
@@ -115,6 +150,11 @@ export function render() {
   const loop = createMasterFloristLoop({ tickRateMs: 1000 / 30, routeMatch: '#/gallery/master-florist/game' });
   const unsubscribe = loop.subscribe((info) => {
     updateMasterFloristClock(state, info);
+    if (state.gameOver) {
+      renderer.render();
+      syncMasterFloristChat(state);
+      return;
+    }
     if (paradeReady) {
       updateCustomerParade(state, info);
     }
@@ -134,6 +174,12 @@ export function render() {
     controller.unmount();
     renderer.dispose();
     disposeCustomerParade(state);
+    if (gameOverModal && typeof gameOverModal.close === 'function') {
+      try {
+        gameOverModal.close();
+      } catch {}
+      gameOverModal = null;
+    }
     paradeReady = false;
   };
 

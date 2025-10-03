@@ -58,6 +58,8 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     }
     const source = findSourceBox(point.x, point.y);
     if (source) {
+      const width = typeof source.width === 'number' && source.width > 0 ? source.width : SLOT_SIZE.width;
+      const height = typeof source.height === 'number' && source.height > 0 ? source.height : SLOT_SIZE.height;
       setMasterFloristDrag(state, {
         pointerId: event.pointerId,
         origin: 'source',
@@ -66,10 +68,10 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
         code: source.code,
         x: point.x,
         y: point.y,
-        offsetX: point.x - source.x,
-        offsetY: point.y - source.y,
-        width: source.width,
-        height: source.height,
+        offsetX: width / 2,
+        offsetY: height / 2,
+        width,
+        height,
       });
       announce('Picked up flower ' + source.code.toUpperCase());
       onStateChange?.();
