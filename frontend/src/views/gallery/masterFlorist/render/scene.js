@@ -10,7 +10,7 @@ import {
 } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 import { MASTER_FLORIST_LAYOUT } from '../state/layout.js';
-import { hasActiveMasterFloristCustomer } from '../state/store.js';
+import { hasActiveMasterFloristCustomer, canSubmitMasterFloristGuess } from '../state/store.js';
 
 const STEM_STYLES = {
   stroke: '#2d5230',
@@ -78,7 +78,9 @@ const CALENDAR_LAYOUT = Object.freeze({
 const CALENDAR_TRANSITION_MS = 450;
 const CALENDAR_DROP_PX = 40;
 
-const SHOW_CUSTOMERS = false;
+const SHOW_CUSTOMERS = true;
+const SHOW_BUTTON_SIZE = { width: 180, height: 52 };
+let showButtonPosition = { x: 0, y: 0 };
 
 const INITIAL_CALENDAR_DIGITS = {
   days: [0, 0],
@@ -135,6 +137,9 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     paintWorkbench();
 
     if (!hasActiveCustomer) {
+      if (gameState) {
+        gameState.showButton = null;
+      }
       return;
     }
 
@@ -146,6 +151,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     paintFlowersLayer(slots);
     paintDragPreview(drag);
     paintEmptySlotPlaceholders(slots);
+    paintShowCustomerButton();
   }
 
   function dispose() {
@@ -301,6 +307,33 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.fillStyle = COLORS.benchShadow;
     ctx.fillRect(0, benchY - shadowHeight, MF_CANVAS_WIDTH, shadowHeight);
     ctx.restore();
+  }
+
+  function paintShowCustomerButton() {
+    const enabled = canSubmitMasterFloristGuess(gameState);
+    const { benchY } = getBenchMetrics();
+    const width = SHOW_BUTTON_SIZE.width;
+    const height = SHOW_BUTTON_SIZE.height;
+    const defaultX = (MF_CANVAS_WIDTH - width) / 2 - 325;
+    const defaultY = benchY - height - 24 + 100;
+    const x = gameState?.showButton?.x ?? defaultX;
+    const y = gameState?.showButton?.y ?? defaultY;
+
+    ctx.save();
+    ctx.lineWidth = 3;
+    roundRect(ctx, x, y, width, height, 16, true, true, {
+      fillStyle: enabled ? '#4b7358' : 'rgba(75, 115, 88, 0.45)',
+      strokeStyle: enabled ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.15)',
+    });
+
+    ctx.fillStyle = enabled ? '#ffffff' : 'rgba(255,255,255,0.65)';
+    ctx.font = 'bold 20px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Show Customer', x + width / 2, y + height / 2);
+    ctx.restore();
+
+    gameState.showButton = { x, y, width, height, enabled };
   }
 
 

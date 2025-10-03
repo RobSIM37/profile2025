@@ -52,7 +52,6 @@ const MF_SOURCE_FILES = [
   'render/scene.js',
   'loop/ticker.js',
   'state/store.js',
-  'assets/customers/lineup.js',
 ];
 
 function renderMfSourceBrowser(host) {

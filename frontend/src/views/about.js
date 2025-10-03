@@ -152,10 +152,17 @@ export function render() {
       wrap.append(p1, btnWrap.firstElementChild);
       return wrap;
     }),
+    mf: (() => {
+      const wrap = document.createElement('div'); wrap.className = 'stack';
+      const p1 = document.createElement('p'); p1.textContent = 'Clears Master Florist settings and longest streak data.';
+      const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-masterflorist', label: 'Clear', variant: 'warning' });
+      wrap.append(p1, btnWrap.firstElementChild);
+      return wrap;
+    }),
     all: (() => {
       const wrap = document.createElement('div'); wrap.className = 'stack';
       const p1 = document.createElement('p'); p1.textContent = 'Clears all data saved by this site in this browser.';
-      const p2 = document.createElement('p'); p2.className = 'note'; p2.textContent = 'This includes Timesweeper, Code Rain, and Light Houses.';
+      const p2 = document.createElement('p'); p2.className = 'note'; p2.textContent = 'This includes Timesweeper, Code Rain, Light Houses, Master Florist, and more.';
       const btnWrap = document.createElement('div'); btnWrap.innerHTML = Button({ id: 'about-clear-all', label: 'Clear', variant: 'warning' });
       wrap.append(p1, p2, btnWrap.firstElementChild);
       return wrap;
@@ -171,6 +178,7 @@ export function render() {
       { id: 'lh', label: 'Light Houses data' },
       { id: 'fb', label: 'FizzBuzz data' },
       { id: 'sn', label: 'Snake+ data' },
+      { id: 'mf', label: 'Master Florist data' },
       { id: 'all', label: 'All data' },
     ],
     panels,
@@ -392,9 +400,15 @@ export function render() {
       else if (id === 'about-clear-snake') {
         try { removeByPrefixes(['snake:']); showToast(t, 'Snake+ data cleared'); } catch {}
       }
+      else if (id === 'about-clear-masterflorist') {
+        try {
+          removeByPrefixes(['mf:']);
+          showToast(t, 'Master Florist data cleared');
+        } catch {}
+      }
       else if (id === 'about-clear-all') {
         if (!confirm('Clear all data saved by this site in this browser?')) return;
-        removeByPrefixes(['timesweeper:', 'coderain:', 'lighthouses:', 'snake:', 'fb:']);
+        removeByPrefixes(['timesweeper:', 'coderain:', 'lighthouses:', 'snake:', 'fb:', 'mf:']);
         showToast(t, 'Site data cleared');
       }
     });

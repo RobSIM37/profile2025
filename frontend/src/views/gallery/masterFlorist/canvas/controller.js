@@ -1,7 +1,7 @@
 import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
 import { hasActiveMasterFloristCustomer, updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag } from '../state/store.js';
 
-export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint } = {}) {
+export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint, onShowCustomer } = {}) {
   if (!canvas) throw new Error('createMasterFloristCanvasController requires a canvas element.');
   const listeners = [];
 
@@ -52,6 +52,10 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     }
 
     const point = mapPointer(event);
+    const showButton = state?.showButton;
+    if (isPointInShowButton(showButton, point)) {
+      return;
+    }
     const source = findSourceBox(point.x, point.y);
     if (source) {
       setMasterFloristDrag(state, {
@@ -114,6 +118,14 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     }
 
     const point = mapPointer(event);
+    const showButton = state?.showButton;
+    if (isPointInShowButton(showButton, point)) {
+      if (showButton?.enabled) {
+        onShowCustomer?.();
+      }
+      return;
+    }
+
     const slotIndex = findSlotIndex(point.x, point.y);
     const drag = state.drag;
 
@@ -217,4 +229,11 @@ function findSourceBox(x, y) {
     }
   }
   return null;
+}
+
+function isPointInShowButton(button, point) {
+  if (!button || !point) return false;
+  const { x, y, width, height } = button;
+  if (width == null || height == null) return false;
+  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }

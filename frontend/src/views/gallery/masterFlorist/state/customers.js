@@ -1,6 +1,11 @@
 import { MF_CANVAS_WIDTH } from '../canvas/constants.js';
 import { MASTER_FLORIST_LAYOUT } from './layout.js';
-import { resetMasterFloristSolution } from './store.js';
+import {
+  resetMasterFloristSolution,
+  startMasterFloristPuzzle,
+  handleMasterFloristPuzzleSuccess,
+  handleMasterFloristComplaint,
+} from './store.js';
 
 const ACTIVE_IDLE_MS = 0;
 const ACTIVE_TALK_MS = 5_000;
@@ -17,6 +22,34 @@ const BASE_PERSONAL_SPACE = 140;
 const MIN_PERSONAL_SPACE = 52;
 const PERSONAL_SPACE_STEP = 12;
 const ADVANCE_ANIM_FRAMES = 10;
+
+const MOOD_SEQUENCE = ['happy', 'neutral', 'angry', 'complaint'];
+
+const FOOT_TRAFFIC_INTERVALS = {
+  relaxed: 1500,
+  steady: SPAWN_INTERVAL_MS,
+  brisk: 600,
+};
+
+const FOOT_TRAFFIC_SPAWN_CHANCE = {
+  relaxed: 0.12,
+  steady: 0.22,
+  brisk: 0.35,
+};
+
+const ATMOSPHERE_PROFILES = {
+  soothing: {
+    queue: { happy: 24000, neutral: 20000, angry: Number.POSITIVE_INFINITY },
+  },
+  balanced: {
+    queue: { happy: 16000, neutral: 14000, angry: Number.POSITIVE_INFINITY },
+  },
+  tense: {
+    queue: { happy: 10000, neutral: 8000, angry: Number.POSITIVE_INFINITY },
+  },
+};
+
+const DEFAULT_ATMOSPHERE_PROFILE = ATMOSPHERE_PROFILES.balanced;
 
 const VASE_AREA = MASTER_FLORIST_LAYOUT?.vase?.area || { left: 220, right: MF_CANVAS_WIDTH - 220 };
 const VASE_LEFT = VASE_AREA.left ?? 220;
@@ -48,6 +81,7 @@ export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
     elapsedMs: 0,
     spawnCooldownMs: 0,
     spawnIntervalMs: SPAWN_INTERVAL_MS,
+    spawnAccumulatorMs: 0,
     queueSpacingBase: BASE_PERSONAL_SPACE,
     queueSpacingMin: MIN_PERSONAL_SPACE,
     queueSpacingStep: PERSONAL_SPACE_STEP,
@@ -56,6 +90,13 @@ export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
     queueDirty: true,
     queueSpacingSnapshot: BASE_PERSONAL_SPACE,
   };
+
+  const footTrafficLabel = state?.settings?.footTraffic;
+  state.customerParade.spawnIntervalMs = resolveFootTrafficInterval(footTrafficLabel);
+  state.customerParade.atmosphere = resolveAtmosphereProfile(state?.settings?.atmosphere);
+
+  spawnCustomer(state.customerParade);
+  promoteNext(state.customerParade);
 }
 
 export function updateCustomerParade(state, info = {}) {
@@ -66,8 +107,7 @@ export function updateCustomerParade(state, info = {}) {
   if (deltaMs <= 0) return;
 
   parade.elapsedMs += deltaMs;
-  parade.spawnCooldownMs = Math.max(0, parade.spawnCooldownMs - deltaMs);
-
+  maybeSpawnCustomer(parade, deltaMs);
   ensureQueueStocked(parade);
   applyQueueLayout(parade);
 
@@ -230,41 +270,62 @@ function nextEntry(parade) {
   return parade.pendingEntries.shift() || null;
 }
 
+function canSpawnAnother(parade) {
+  if (!parade) return false;
+  if (!Array.isArray(parade.queue)) parade.queue = [];
+  const activeCount = (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
+  const total = parade.queue.length + activeCount;
+  const max = parade.maxVisible || MAX_VISIBLE_CUSTOMERS;
+  return total < max;
+}
+
+function spawnCustomer(parade) {
+  if (!parade) return;
+  if (!Array.isArray(parade.queue)) {
+    parade.queue = [];
+  }
+  if (!canSpawnAnother(parade)) return;
+  const entry = nextEntry(parade);
+  if (!entry) return;
+  const actor = createActor(entry);
+  updateActorMoodFrames(parade, actor);
+  actor.pose = 'walking';
+  actor.x = SPAWN_X;
+  actor.queueIndex = parade.queue.length;
+  const spacing = computeQueueSpacing(parade, actor.queueIndex + 1);
+  const anchor = getQueueAnchor(parade, actor.queueIndex, spacing);
+  const tail = parade.queue.length > 0 ? parade.queue[parade.queue.length - 1] : null;
+  actor.followCustomer = tail && !tail.remove ? tail : null;
+  const { queue, targetX } = updateFollowerTarget(parade, actor, spacing, anchor);
+  queue.mode = 'advancing';
+  queue.elapsedMs = 0;
+  queue.justAdvancedFrames = ADVANCE_ANIM_FRAMES;
+  actor.state = 'advancing';
+  actor.pendingActive = false;
+  actor.targetX = targetX;
+  parade.actors.push(actor);
+  parade.queue.push(actor);
+  parade.queueDirty = true;
+}
+
 function ensureQueueStocked(parade) {
   if (!parade) return;
   if (!Array.isArray(parade.queue)) {
     parade.queue = [];
   }
-  const desired = parade.maxVisible;
-  if (desired <= 0) return;
-  if (parade.spawnCooldownMs > 0) return;
-
   const activeCount = (parade.activeId ? 1 : 0) + (parade.pendingActiveId ? 1 : 0);
-  if (parade.queue.length + activeCount >= desired) return;
+  if (parade.queue.length + activeCount > 0) return;
+  spawnCustomer(parade);
+}
 
-  while (parade.queue.length + activeCount < desired) {
-    const entry = nextEntry(parade);
-    if (!entry) break;
-    const actor = createActor(entry);
-    actor.pose = 'walking';
-    actor.x = SPAWN_X;
-    actor.queueIndex = parade.queue.length;
-    const spacing = computeQueueSpacing(parade, actor.queueIndex + 1);
-    const anchor = getQueueAnchor(parade, actor.queueIndex, spacing);
-    const tail = parade.queue.length > 0 ? parade.queue[parade.queue.length - 1] : null;
-    actor.followCustomer = tail && !tail.remove ? tail : null;
-    const { queue, targetX } = updateFollowerTarget(parade, actor, spacing, anchor);
-    queue.mode = 'advancing';
-    queue.elapsedMs = 0;
-    queue.justAdvancedFrames = ADVANCE_ANIM_FRAMES;
-    actor.state = 'advancing';
-    actor.pendingActive = false;
-    actor.targetX = targetX;
-    parade.actors.push(actor);
-    parade.queue.push(actor);
-    parade.queueDirty = true;
-    parade.spawnCooldownMs = parade.spawnIntervalMs;
-    break;
+function maybeSpawnCustomer(parade, deltaMs) {
+  if (!parade) return;
+  if (!canSpawnAnother(parade)) return;
+  const chance = getFootTrafficChance(parade);
+  if (chance <= 0) return;
+  const probability = chance * (deltaMs / 1000);
+  if (Math.random() < probability) {
+    spawnCustomer(parade);
   }
 }
 
@@ -323,6 +384,7 @@ function updateQueued(parade, actor, deltaMs) {
   const index = typeof actor.queueIndex === 'number' ? actor.queueIndex : parade.queue.indexOf(actor);
   if (index < 0) return;
   actor.targetX = targetX;
+  maybeDecayQueueMood(parade, actor, deltaMs);
 
   if (queue.mode !== 'advancing') {
     queue.elapsedMs += deltaMs;
@@ -362,6 +424,7 @@ function createActor(entry) {
   const template = frames.idle || frames.walking || frames.talking;
   const width = template?.width ?? 180;
   const height = template?.height ?? 300;
+  const moodStageIndex = Math.max(0, MOOD_SEQUENCE.indexOf(entry.mood));
 
   return {
     id,
@@ -387,6 +450,11 @@ function createActor(entry) {
     bobTimerMs: 0,
     bobActiveMs: 0,
     bobIsActive: false,
+    seed: Date.now(),
+    moodStageIndex,
+    queueMoodTimer: 0,
+    activeMoodTimer: 0,
+    lastExactMatches: 0,
   };
 }
 
@@ -476,14 +544,21 @@ function beginActiveIdle(parade, actor) {
   actor.timeInState = 0;
   actor.talkElapsed = 0;
   actor.mouthTimer = 0;
+  actor.queueMoodTimer = 0;
+  actor.activeMoodTimer = 0;
+  actor.lastExactMatches = 0;
   announceFrames(parade, actor);
   if (parade.rootState) {
-    resetMasterFloristSolution(parade.rootState);
-    parade.rootState.drag = null;
-    parade.rootState.hoverStemId = null;
-    parade.rootState.pendingDrops = [];
+    const mood = getActorMood(actor);
+    startMasterFloristPuzzle(parade.rootState, {
+      mood,
+      customer: { id: actor.id, sheet: actor.sheet, mood },
+      seed: actor.seed || Date.now(),
+    });
     advanceCalendarCounters(parade.rootState);
   }
+
+  startActiveTalking(parade, actor);
 }
 
 function startActiveTalking(parade, actor) {
@@ -505,7 +580,11 @@ function updateActiveTalking(parade, actor, deltaMs) {
   }
 
   if (actor.talkElapsed >= ACTIVE_TALK_MS) {
-    beginDeparture(parade, actor);
+    actor.state = 'activeIdle';
+    actor.pose = 'idle';
+    actor.timeInState = 0;
+    actor.talkElapsed = 0;
+    actor.mouthTimer = 0;
   }
 }
 
@@ -577,8 +656,136 @@ function announceFrames(parade, actor) {
   const idle = actor.frames.idle?.fileName || 'n/a';
   const talking = actor.frames.talking?.fileName || 'n/a';
   const text = 'Customer ' + actor.sheet + ' (' + actor.mood + ') -> walking: ' + walking + ', idle: ' + idle + ', talking: ' + talking;
-  chat.appendMessage('system', text, 'Sprites');
+  try {
+    chat.appendMessage('system', text, 'Sprites');
+  } catch {}
   actor.chatAnnounced = true;
+}
+
+export function handleMasterFloristGuessResult(state, evaluation = {}) {
+  const parade = state?.customerParade;
+  if (!parade) return;
+  const actor = getActiveActor(parade);
+  if (!actor) return;
+
+  const exactMatches = Number(evaluation?.exactMatches) || 0;
+  const previousBest = Number(actor.lastExactMatches) || 0;
+  const progress = exactMatches > previousBest;
+  actor.lastExactMatches = Math.max(previousBest, exactMatches);
+
+  if (evaluation?.isMatch) {
+    handleMasterFloristPuzzleSuccess(state);
+    beginDeparture(parade, actor);
+    return;
+  }
+
+  applyActiveMistake(parade, actor, { progress });
+}
+
+function maybeDecayQueueMood(parade, actor, deltaMs) {
+  if (!parade?.atmosphere || deltaMs <= 0) return;
+  if (actor.pendingActive) return;
+  const mood = getActorMood(actor);
+  const thresholds = parade.atmosphere.queue || {};
+  const threshold = thresholds[mood];
+  if (!Number.isFinite(threshold) || threshold <= 0) return;
+  actor.queueMoodTimer = (actor.queueMoodTimer || 0) + deltaMs;
+  if (actor.queueMoodTimer >= threshold) {
+    actor.queueMoodTimer = 0;
+    stepActorMood(parade, actor, { reason: 'The customer is getting impatient while waiting.' });
+  }
+}
+
+function applyActiveMistake(parade, actor, { progress } = {}) {
+  if (progress && Math.random() < 0.5) {
+    return;
+  }
+  stepActorMood(parade, actor, { reason: 'The customer is getting frustrated with the guesses.', isActive: true });
+}
+
+function stepActorMood(parade, actor, { reason, isActive } = {}) {
+  if (!actor) return false;
+  const currentIndex = actor.moodStageIndex ?? Math.max(0, MOOD_SEQUENCE.indexOf(actor.mood ?? 'happy'));
+  if (currentIndex >= MOOD_SEQUENCE.length - 1) {
+    handleCustomerComplaint(parade, actor, { reason, isActive });
+    return false;
+  }
+
+  const nextIndex = Math.min(currentIndex + 1, MOOD_SEQUENCE.length - 1);
+  actor.moodStageIndex = nextIndex;
+  actor.mood = getActorMood(actor);
+  updateActorMoodFrames(parade, actor);
+
+  if (actor.mood === 'complaint') {
+    handleCustomerComplaint(parade, actor, { reason, isActive });
+  } else {
+    // keep silent per updated requirements
+  }
+  return true;
+}
+
+function handleCustomerComplaint(parade, actor, { reason, isActive } = {}) {
+  if (!parade) return;
+  handleMasterFloristComplaint(parade.rootState);
+
+  if (isActive) {
+    beginDeparture(parade, actor);
+  } else {
+    actor.state = 'departing';
+    actor.pose = 'walking';
+    actor.targetX = EXIT_X;
+    actor.timeInState = 0;
+    resetWalkBob(actor);
+    actor.queueIndex = null;
+    parade.queueDirty = true;
+  }
+  actor.complained = true;
+  if (parade.pendingActiveId === actor.id) {
+    parade.pendingActiveId = null;
+  }
+}
+
+function getActorMood(actor) {
+  const index = Math.max(0, Math.min(MOOD_SEQUENCE.length - 1, actor?.moodStageIndex ?? MOOD_SEQUENCE.indexOf(actor?.mood ?? 'happy')));
+  return MOOD_SEQUENCE[index];
+}
+
+function getActiveActor(parade) {
+  if (!parade?.activeId) return null;
+  return parade.actors?.find((actor) => actor && actor.id === parade.activeId) || null;
+}
+
+function resolveFootTrafficInterval(label) {
+  const key = (label || '').toLowerCase();
+  return FOOT_TRAFFIC_INTERVALS[key] || SPAWN_INTERVAL_MS;
+}
+
+function resolveAtmosphereProfile(label) {
+  const key = (label || '').toLowerCase();
+  const base = ATMOSPHERE_PROFILES[key] || DEFAULT_ATMOSPHERE_PROFILE;
+  return {
+    label: key && ATMOSPHERE_PROFILES[key] ? key : 'balanced',
+    queue: { ...base.queue },
+  };
+}
+
+function getFootTrafficChance(parade) {
+  const key = (parade?.rootState?.settings?.footTraffic || '').toLowerCase();
+  return FOOT_TRAFFIC_SPAWN_CHANCE[key] ?? FOOT_TRAFFIC_SPAWN_CHANCE.steady;
+}
+
+function updateActorMoodFrames(parade, actor) {
+  if (!parade?.spriteLibrary || !actor) return;
+  const library = parade.spriteLibrary;
+  const mood = getActorMood(actor);
+  const sheet = actor.sheet;
+  if (!sheet) return;
+  const walking = library.getFrame?.(sheet, mood, 'walking');
+  const idle = library.getFrame?.(sheet, mood, 'idle');
+  const talking = library.getFrame?.(sheet, mood, 'talking');
+  if (walking && idle && talking) {
+    actor.frames = { walking, idle, talking };
+  }
 }
 
 function advanceCalendarCounters(rootState) {

@@ -2,13 +2,26 @@ import { createCustomerArea } from './components/customerArea.js';
 import { createWorkingArea } from './components/workingArea.js';
 import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 import { setAppSolid } from '../../../lib/appShell.js';
-import { createMasterFloristState, updateMasterFloristClock, updateMasterFloristViewport } from './state/store.js';
+import {
+  createMasterFloristState,
+  updateMasterFloristClock,
+  updateMasterFloristViewport,
+  syncMasterFloristChat,
+  submitMasterFloristGuess,
+  hasActiveMasterFloristCustomer,
+  canSubmitMasterFloristGuess,
+} from './state/store.js';
 import { createMasterFloristCanvasController } from './canvas/controller.js';
 import { createMasterFloristRenderer } from './render/scene.js';
 import { createMasterFloristCanvasSizer } from './canvas/sizer.js';
 import { createMasterFloristLoop } from './loop/ticker.js';
 import { loadCustomerSpriteLibrary } from './state/spriteLibrary.js';
-import { initializeCustomerParade, updateCustomerParade, disposeCustomerParade } from './state/customers.js';
+import {
+  initializeCustomerParade,
+  updateCustomerParade,
+  disposeCustomerParade,
+  handleMasterFloristGuessResult,
+} from './state/customers.js';
 
 export const meta = {
   title: 'Master Florist - Game',
@@ -43,6 +56,7 @@ export function render() {
 
   const state = createMasterFloristState();
   state.customerUi = customerArea;
+  syncMasterFloristChat(state);
 
   const renderer = createMasterFloristRenderer({ canvas: canvasElement, state });
 
@@ -57,26 +71,45 @@ export function render() {
   sizer.mount();
   updateMasterFloristViewport(state, sizer.getMetrics());
 
+  const handleStateChange = () => {
+    renderer.render();
+    syncMasterFloristChat(state);
+  };
+
+  const handleShowCustomer = () => {
+    if (!hasActiveMasterFloristCustomer(state)) {
+      return;
+    }
+    if (!canSubmitMasterFloristGuess(state)) {
+      return;
+    }
+    const evaluation = submitMasterFloristGuess(state);
+    if (!evaluation) {
+      return;
+    }
+    handleMasterFloristGuessResult(state, evaluation);
+    renderer.render();
+    syncMasterFloristChat(state);
+  };
+
   const controller = createMasterFloristCanvasController({
     canvas: canvasElement,
     state,
-    onStateChange: () => renderer.render(),
+    onStateChange: handleStateChange,
     toCanvasPoint: (event) => sizer.toCanvasPoint(event.clientX, event.clientY),
+    onShowCustomer: handleShowCustomer,
   });
 
   let paradeReady = false;
-  customerArea.appendMessage('system', 'Loading customer parade...', 'Parade');
-
   loadCustomerSpriteLibrary()
     .then((library) => {
       initializeCustomerParade(state, { spriteLibrary: library, chat: customerArea });
-      customerArea.appendMessage('system', 'Parade ready. Cycling through customer moods.', 'Parade');
       paradeReady = true;
       renderer.render();
+      syncMasterFloristChat(state);
     })
     .catch((err) => {
       console.error('Unable to load customer sprites', err);
-      customerArea.appendMessage('system', 'Unable to load customer sprites for parade preview.', 'Parade');
     });
 
   const loop = createMasterFloristLoop({ tickRateMs: 1000 / 30, routeMatch: '#/gallery/master-florist/game' });
@@ -86,11 +119,13 @@ export function render() {
       updateCustomerParade(state, info);
     }
     renderer.render();
+    syncMasterFloristChat(state);
   });
   loop.start();
 
   controller.mount();
   renderer.render();
+  syncMasterFloristChat(state);
 
   frag.cleanup = () => {
     unsubscribe();

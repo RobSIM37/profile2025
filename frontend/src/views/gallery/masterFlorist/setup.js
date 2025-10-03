@@ -1,6 +1,7 @@
 ﻿import { Button } from '../../../components/ui/button.js';
 import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 import { setAppSolid } from '../../../lib/appShell.js';
+import { getMasterFloristSettings, setMasterFloristSettings } from './state/store.js';
 
 export const meta = {
   title: 'Master Florist - Setup',
@@ -50,6 +51,8 @@ function buildSetupView({ includeSubheader = true } = {}) {
     detailList.append(li);
   });
 
+  const settingsPanel = createSettingsPanel();
+
   const actions = document.createElement('div');
   actions.className = 'actions';
   actions.style.justifyContent = 'center';
@@ -61,7 +64,7 @@ function buildSetupView({ includeSubheader = true } = {}) {
 
   actions.append(newGameBtnWrap.firstElementChild, howToBtnWrap.firstElementChild);
 
-  section.append(heading, intro, detailList, actions);
+  section.append(heading, intro, detailList, settingsPanel, actions);
   frag.append(section);
 
   const newGameBtn = section.querySelector('[data-role="new-game"]');
@@ -79,4 +82,87 @@ function buildSetupView({ includeSubheader = true } = {}) {
   });
 
   return frag;
+}
+
+function createSettingsPanel() {
+  const settings = getMasterFloristSettings();
+
+  const panel = document.createElement('div');
+  panel.className = 'stack';
+  panel.style.gap = 'var(--space-3)';
+
+  const subheading = document.createElement('h3');
+  subheading.textContent = 'Customer Flow';
+  subheading.style.fontSize = '1.1rem';
+  subheading.style.fontWeight = '700';
+
+  const footTrafficRow = createSettingRow({
+    label: 'Foot Traffic',
+    description: 'Controls how quickly customers arrive at the shop.',
+    name: 'footTraffic',
+    value: settings.footTraffic,
+    options: [
+      { value: 'relaxed', text: 'Relaxed' },
+      { value: 'steady', text: 'Steady' },
+      { value: 'brisk', text: 'Brisk' },
+    ],
+  });
+
+  const atmosphereRow = createSettingRow({
+    label: 'Atmosphere',
+    description: 'Sets the baseline patience for queued customers.',
+    name: 'atmosphere',
+    value: settings.atmosphere,
+    options: [
+      { value: 'soothing', text: 'Soothing' },
+      { value: 'balanced', text: 'Balanced' },
+      { value: 'tense', text: 'Tense' },
+    ],
+  });
+
+  panel.append(subheading, footTrafficRow, atmosphereRow);
+  return panel;
+}
+
+function createSettingRow({ label, description, name, value, options }) {
+  const wrap = document.createElement('div');
+  wrap.className = 'stack';
+  wrap.style.gap = 'var(--space-1)';
+
+  const labelEl = document.createElement('label');
+  labelEl.className = 'stack';
+  labelEl.style.gap = 'var(--space-1)';
+  labelEl.setAttribute('for', `mf-setup-${name}`);
+
+  const title = document.createElement('span');
+  title.textContent = label;
+  title.style.fontWeight = '600';
+
+  const select = document.createElement('select');
+  select.name = name;
+  select.id = `mf-setup-${name}`;
+  select.className = 'input';
+
+  options.forEach((option) => {
+    const opt = document.createElement('option');
+    opt.value = option.value;
+    opt.textContent = option.text;
+    select.append(opt);
+  });
+
+  if (options.some((option) => option.value === value)) {
+    select.value = value;
+  }
+
+  select.addEventListener('change', () => {
+    setMasterFloristSettings(null, { [name]: select.value });
+  });
+
+  const hint = document.createElement('span');
+  hint.className = 'note';
+  hint.textContent = description;
+
+  labelEl.append(title, select, hint);
+  wrap.append(labelEl);
+  return wrap;
 }
