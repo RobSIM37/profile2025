@@ -36,6 +36,8 @@ const DEFAULT_STATS = Object.freeze({
 });
 const HANDOFF_ANIMATION_DURATION_MS = 1_500;
 
+export const MASTER_FLORIST_COMPLAINT_GAME_OVER_THRESHOLD = 20;
+
 
 function createEmptySolution(length = MF_DROP_ZONE_COUNT) {
   return new Array(length).fill(null);
@@ -89,6 +91,7 @@ export function createMasterFloristState() {
     settings,
     stats,
     puzzleHistory: [],
+    complaintDepartures: 0,
     chatSession: null,
     _chatSyncedVersion: null,
     gameOver: false,
@@ -117,6 +120,7 @@ export function resetMasterFloristState(state) {
   state.queue = createDefaultQueueState();
   state.activeCustomer = null;
   state.customerParade = null;
+  state.complaintDepartures = 0;
   state.gameOver = false;
   state.gameOverMessage = '';
   startMasterFloristPuzzle(state, { mood: 'happy', seed: freshSeed });
@@ -374,7 +378,13 @@ export function handleMasterFloristComplaint(state) {
   }
   state.stats.daysWithoutComplaint = 0;
   state.stats.lastComplaintTimestamp = Date.now();
+
+  state.complaintDepartures = (Number(state.complaintDepartures) || 0) + 1;
+  if (!state.gameOver && state.complaintDepartures >= MASTER_FLORIST_COMPLAINT_GAME_OVER_THRESHOLD) {
+    triggerMasterFloristGameOver(state, 'Too many customers have left dissatisfied.');
+  }
 }
+
 
 export function startMasterFloristHandoffAnimation(state, options = {}) {
   if (!state) return null;

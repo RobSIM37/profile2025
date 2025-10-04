@@ -308,35 +308,26 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
     const { benchY } = getBenchMetrics();
     const defaultOverlap = 7;
-    const ordered = actors.slice().sort((a, b) => {
-      const priority = (actor) => {
-        if (actor?.mood === 'complaint') return 4;
-        if (actor?.state === 'activeIdle' || actor?.state === 'activeTalking') return 3;
-        if (actor?.pendingActive) return 2;
-        return 1;
-      };
-      const priorityA = priority(a);
-      const priorityB = priority(b);
-      if (priorityA !== priorityB) {
-        return priorityB - priorityA;
-      }
-      const orderA = typeof a?.renderOrder === 'number' ? a.renderOrder : 0;
-      const orderB = typeof b?.renderOrder === 'number' ? b.renderOrder : 0;
-      if (orderA !== orderB) {
-        return orderB - orderA;
-      }
-      const queueIndexA = typeof a?.queueIndex === 'number' ? a.queueIndex : 0;
-      const queueIndexB = typeof b?.queueIndex === 'number' ? b.queueIndex : 0;
-      if (queueIndexA !== queueIndexB) {
-        return queueIndexB - queueIndexA;
-      }
-      const idA = a?.id || '';
-      const idB = b?.id || '';
-      if (idA === idB) return 0;
-      return idA < idB ? 1 : -1;
-    });
+    const activeId = gameState?.customerParade?.activeId || null;
+    const activeActor = actors.find((actor) => actor && actor.id === activeId) || null;
+    const others = actors
+      .filter((actor) => !actor || actor.id !== activeId)
+      .slice()
+      .sort((a, b) => {
+        const depthA = Number(a?.depth) || 0;
+        const depthB = Number(b?.depth) || 0;
+        if (depthA !== depthB) {
+          return depthB - depthA;
+        }
+        const idA = a?.id || '';
+        const idB = b?.id || '';
+        if (idA === idB) return 0;
+        return idA < idB ? -1 : 1;
+      });
 
-    ordered.forEach((actor) => {
+    const drawOrder = activeActor ? [...others, activeActor] : others;
+
+    drawOrder.forEach((actor) => {
       const frame = selectActorFrame(actor);
       if (!frame) return;
       const img = frame.image;

@@ -8,6 +8,7 @@ import {
   resetMasterFloristHandoff,
   handleMasterFloristComplaint,
   triggerMasterFloristGameOver,
+  MASTER_FLORIST_COMPLAINT_GAME_OVER_THRESHOLD,
 } from './store.js';
 
 const ACTIVE_IDLE_MS = 0;
@@ -25,7 +26,6 @@ const BASE_PERSONAL_SPACE = 140;
 const MIN_PERSONAL_SPACE = 52;
 const PERSONAL_SPACE_STEP = 12;
 const ADVANCE_ANIM_FRAMES = 10;
-const COMPLAINT_DEPARTURE_RENDER_ORDER = 1000;
 
 const GAME_OVER_MESSAGE = 'The flower shop had to close due to too many complaints.';
 
@@ -65,6 +65,13 @@ const QUEUE_START_X = (VASE_LEFT + VASE_RIGHT) / 2;
 const SPAWN_X = MF_CANVAS_WIDTH + 220;
 const EXIT_X = -260;
 
+function hasReachedComplaintDepartureLimit(parade) {
+  const rootState = parade?.rootState;
+  if (!rootState) return false;
+  const count = Number(rootState.complaintDepartures) || 0;
+  return count >= MASTER_FLORIST_COMPLAINT_GAME_OVER_THRESHOLD;
+}
+
 export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
   if (!state || !spriteLibrary) return;
 
@@ -97,6 +104,7 @@ export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
     grabBag: [],
     activeSheets: new Set(),
     gameOver: false,
+    depthCounter: 0,
   };
 
   const footTrafficLabel = state?.settings?.footTraffic;
@@ -292,6 +300,8 @@ function spawnCustomer(parade) {
     return;
   }
   const actor = createActor(entry);
+  actor.depth = (parade.depthCounter || 0) + 1;
+  parade.depthCounter = actor.depth;
   updateActorMoodFrames(parade, actor);
   markSheetActive(parade, actor.sheet);
   actor.pose = 'walking';
@@ -473,9 +483,10 @@ function createActor(entry) {
     lastExactMatches: 0,
     requestPresented: false,
     pendingDeparture: false,
-    renderOrder: 0,
     dropDepthOnDeparture: false,
     rejoinOnDeparture: false,
+    finalComplaint: false,
+    depth: null,
   };
 }
 
@@ -655,10 +666,7 @@ function beginDeparture(parade, actor) {
   actor.pose = 'walking';
   actor.targetX = EXIT_X;
   actor.timeInState = 0;
-  if (actor.mood === 'complaint' || actor.dropDepthOnDeparture) {
-    actor.renderOrder = COMPLAINT_DEPARTURE_RENDER_ORDER;
-    actor.dropDepthOnDeparture = false;
-  }
+  actor.dropDepthOnDeparture = false;
   updateActorMoodFrames(parade, actor);
   if (parade.rootState) {
     resetMasterFloristSolution(parade.rootState);
@@ -771,7 +779,6 @@ function maybeDecayQueueMood(parade, actor, deltaMs) {
   }
 }
 
-
 function stepActorMood(parade, actor, { reason, isActive } = {}) {
   if (!actor) return false;
   const currentIndex = actor.moodStageIndex ?? Math.max(0, MOOD_SEQUENCE.indexOf(actor.mood ?? 'happy'));
@@ -800,10 +807,30 @@ function handleCustomerComplaint(parade, actor, { reason, isActive } = {}) {
   actor.rejoinOnDeparture = false;
   releaseSheet(parade, actor.sheet);
 
+  const reachedComplaintLimit = hasReachedComplaintDepartureLimit(parade);
+  if (reachedComplaintLimit) {
+    parade.gameOver = true;
+    actor.dropDepthOnDeparture = false;
+    actor.finalComplaint = true;
+    actor.pose = 'idle';
+    actor.state = 'activeIdle';
+    actor.pendingDeparture = false;
+    const currentX = Number.isFinite(actor.x) ? actor.x : ACTIVE_ANCHOR_X;
+    actor.targetX = currentX;
+    actor.queueIndex = null;
+    parade.activeId = actor.id;
+    parade.pendingActiveId = null;
+    if (Array.isArray(parade.queue)) {
+      parade.queue = parade.queue.filter((entry) => entry && entry.id !== actor.id);
+    }
+    parade.queueDirty = true;
+    return;
+  }
+
   actor.pose = 'walking';
 
   if (isActive) {
-    actor.dropDepthOnDeparture = true;
+    actor.dropDepthOnDeparture = false;
     actor.pendingDeparture = false;
     beginDeparture(parade, actor);
     parade.queueDirty = true;
@@ -811,7 +838,6 @@ function handleCustomerComplaint(parade, actor, { reason, isActive } = {}) {
     detachFromQueue(parade, actor);
     actor.state = 'departing';
     actor.pose = 'walking';
-    actor.renderOrder = COMPLAINT_DEPARTURE_RENDER_ORDER;
     actor.targetX = EXIT_X;
     actor.timeInState = 0;
     resetWalkBob(actor);
@@ -1028,5 +1054,4 @@ function randomBetween(range) {
   if (!Number.isFinite(max) || max <= min) return min;
   return min + Math.random() * (max - min);
 }
-
 
