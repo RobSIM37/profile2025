@@ -4,6 +4,8 @@ import {
   resetMasterFloristSolution,
   startMasterFloristPuzzle,
   handleMasterFloristPuzzleSuccess,
+  startMasterFloristHandoffAnimation,
+  resetMasterFloristHandoff,
   handleMasterFloristComplaint,
   triggerMasterFloristGameOver,
 } from './store.js';
@@ -660,6 +662,8 @@ function beginDeparture(parade, actor) {
   updateActorMoodFrames(parade, actor);
   if (parade.rootState) {
     resetMasterFloristSolution(parade.rootState);
+    resetMasterFloristHandoff(parade.rootState);
+    parade.rootState.arrangementOffsetY = 0;
     parade.rootState.drag = null;
     parade.rootState.hoverStemId = null;
     parade.rootState.pendingDrops = [];
@@ -671,6 +675,7 @@ function promoteNext(parade) {
   if (!Array.isArray(parade.queue) || parade.queue.length === 0) return;
   const actor = parade.queue.shift();
   if (!actor) return;
+  actor.carryArrangement = null;
   actor.queueIndex = null;
   actor.followCustomer = null;
   actor.pendingActive = true;
@@ -684,6 +689,7 @@ function promoteNext(parade) {
 }
 
 function dropActor(parade, actor, index) {
+  if (actor) { delete actor.carryArrangement; }
   releaseSheet(parade, actor?.sheet);
   parade.actors.splice(index, 1);
   if (Array.isArray(parade.queue)) {
@@ -701,6 +707,8 @@ function dropActor(parade, actor, index) {
 }
 
 function resetQueuePose(actor) {
+  if (!actor) return;
+  actor.carryArrangement = null;
   const queue = ensureQueueState(actor, actor.x);
   resetWalkBob(actor);
   queue.mode = 'waiting';
@@ -734,10 +742,11 @@ export function handleMasterFloristGuessResult(state, evaluation = {}) {
 
   const exactMatches = Number(evaluation?.exactMatches) || 0;
   const previousBest = Number(actor.lastExactMatches) || 0;
-  const progress = exactMatches > previousBest;
   actor.lastExactMatches = Math.max(previousBest, exactMatches);
 
   if (evaluation?.isMatch) {
+    const carrySnapshot = startMasterFloristHandoffAnimation(state, { actorId: actor.id });
+    actor.carryArrangement = carrySnapshot;
     handleMasterFloristPuzzleSuccess(state);
     actor.rejoinOnDeparture = true;
     actor.pendingDeparture = true;
@@ -745,7 +754,6 @@ export function handleMasterFloristGuessResult(state, evaluation = {}) {
     return;
   }
 
-  applyActiveMistake(parade, actor, { progress });
   brieflyTalk(parade, actor);
 }
 
@@ -763,12 +771,6 @@ function maybeDecayQueueMood(parade, actor, deltaMs) {
   }
 }
 
-function applyActiveMistake(parade, actor, { progress } = {}) {
-  if (progress && Math.random() < 0.5) {
-    return;
-  }
-  stepActorMood(parade, actor, { reason: 'The customer is getting frustrated with the guesses.', isActive: true });
-}
 
 function stepActorMood(parade, actor, { reason, isActive } = {}) {
   if (!actor) return false;
@@ -1026,3 +1028,5 @@ function randomBetween(range) {
   if (!Number.isFinite(max) || max <= min) return min;
   return min + Math.random() * (max - min);
 }
+
+

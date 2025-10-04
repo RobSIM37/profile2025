@@ -10,7 +10,7 @@ import {
 } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 import { MASTER_FLORIST_LAYOUT } from '../state/layout.js';
-import { hasActiveMasterFloristCustomer, canSubmitMasterFloristGuess } from '../state/store.js';
+import { hasActiveMasterFloristCustomer, canSubmitMasterFloristGuess, advanceMasterFloristHandoff } from '../state/store.js';
 
 const STEM_STYLES = {
   stroke: '#2d5230',
@@ -81,6 +81,14 @@ const CALENDAR_DROP_PX = 40;
 const SHOW_CUSTOMERS = true;
 const SHOW_BUTTON_SIZE = { width: 180, height: 52 };
 let showButtonPosition = { x: 0, y: 0 };
+const HANDOFF_TARGET = Object.freeze({
+  centerX: ((MASTER_FLORIST_LAYOUT?.vase?.area?.left ?? 214) * 0.75) - 40,
+  offsetY: 95,
+  height: 120,
+});
+const HANDOFF_CARRY_OFFSET = Object.freeze({ x: -80, y: 20 });
+const ARRANGEMENT_LIFT_DURATION_MS = 650;
+const ARRANGEMENT_LIFT_DISTANCE = MF_CANVAS_HEIGHT;
 
 const INITIAL_CALENDAR_DIGITS = {
   days: [0, 0],
@@ -99,6 +107,14 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   if (!ctx) throw new Error('Unable to obtain 2d context for Master Florist.');
 
   const gameState = state || null;
+  const initialHasActiveCustomer = hasActiveMasterFloristCustomer(gameState);
+  const arrangementLift = createArrangementLiftState(initialHasActiveCustomer);
+  let lastHasActiveCustomer = initialHasActiveCustomer;
+  let lastPuzzleId = gameState?.puzzle?.id || null;
+
+  if (gameState) {
+    gameState.arrangementOffsetY = arrangementLift.offset;
+  }
   const calendarDisplayState = createCalendarDisplayState(INITIAL_CALENDAR_DIGITS);
   queueCalendarDigitUpdate(calendarDisplayState.days, INITIAL_CALENDAR_DIGITS.days);
   queueCalendarDigitUpdate(calendarDisplayState.most, INITIAL_CALENDAR_DIGITS.most);
@@ -122,36 +138,87 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const actors = Array.isArray(parade?.actors) ? parade.actors : [];
     const hasActiveCustomer = hasActiveMasterFloristCustomer(gameState);
     const slots = hasActiveCustomer ? prepareSlotStates() : [];
-    const vaseMetrics = hasActiveCustomer ? getVaseMetrics() : null;
+    const vaseMetrics = getVaseMetrics();
     const hoverId = hasActiveCustomer ? gameState?.hoverStemId || null : null;
     const drag = hasActiveCustomer ? gameState?.drag || null : null;
 
     const deltaMs = typeof gameState?.clock?.deltaMs === "number" ? gameState.clock.deltaMs : 16;
+    const currentPuzzleId = gameState?.puzzle?.id || null;
+    if (hasActiveCustomer) {
+      if (!lastHasActiveCustomer) {
+        startArrangementLift(arrangementLift);
+      } else if (currentPuzzleId && currentPuzzleId !== lastPuzzleId) {
+        startArrangementLift(arrangementLift);
+      }
+    }
+
+    const arrangementOffsetRaw = advanceArrangementLift(arrangementLift, hasActiveCustomer, deltaMs);
+    const arrangementOffsetY = hasActiveCustomer ? arrangementOffsetRaw : 0;
+    if (gameState) {
+      gameState.arrangementOffsetY = arrangementOffsetY;
+    }
+    const handoffStatus = gameState?.handoffAnimation?.status || 'idle';
+    const handoffProgress = advanceMasterFloristHandoff(gameState, deltaMs);
+    const isHandoffRunning = handoffStatus === 'running';
+    const easedHandoffProgress = isHandoffRunning ? easeInOutCubic(handoffProgress) : 0;
+    const showArrangementOnBench = handoffStatus === 'idle' || handoffStatus === 'running';
+    const allowHandoffTransforms = isHandoffRunning;
     advanceCalendarAnimations(calendarDisplayState, deltaMs);
 
     paintBackground();
     paintCalendars();
     if (SHOW_CUSTOMERS) {
-      paintCustomers(actors);
+      paintCustomers(actors, { handoffStatus, vaseMetrics });
     }
     paintWorkbench();
+    paintFlowerColumns(drag);
 
     if (!hasActiveCustomer) {
       if (gameState) {
         gameState.showButton = null;
       }
+      lastHasActiveCustomer = hasActiveCustomer;
+      lastPuzzleId = currentPuzzleId;
       return;
     }
 
-    paintFlowerColumns(drag);
+    const allowInteractions = handoffStatus === 'idle';
+
+    ctx.save();
+    ctx.translate(0, arrangementOffsetY);
+
+    if (!showArrangementOnBench) {
+      ctx.restore();
+      lastHasActiveCustomer = hasActiveCustomer;
+      lastPuzzleId = currentPuzzleId;
+      return;
+    }
+
+    if (allowHandoffTransforms) {
+      applyHandoffTransform(vaseMetrics, easedHandoffProgress);
+    }
+
     paintVaseLip(vaseMetrics);
     paintStemsLayer(slots, vaseMetrics);
     paintVaseBody(vaseMetrics);
-    paintDropTargets(slots, hoverId, drag);
+    if (allowInteractions) {
+      paintDropTargets(slots, hoverId, drag);
+    }
     paintFlowersLayer(slots);
-    paintDragPreview(drag);
+    if (allowInteractions) {
+      paintDragPreview(drag, arrangementOffsetY);
+    }
     paintEmptySlotPlaceholders(slots);
-    paintShowCustomerButton();
+    if (allowInteractions) {
+      paintShowCustomerButton();
+    } else if (gameState) {
+      gameState.showButton = null;
+    }
+
+    ctx.restore();
+
+    lastHasActiveCustomer = hasActiveCustomer;
+    lastPuzzleId = currentPuzzleId;
   }
 
   function dispose() {
@@ -232,13 +299,15 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     });
   }
 
-  function paintCustomers(actors = []) {
+  function paintCustomers(actors = [], options = {}) {
+    const handoffStatusForActors = options?.handoffStatus || 'idle';
+    const carriedVaseMetrics = options?.vaseMetrics || null;
     if (!Array.isArray(actors) || actors.length === 0) {
       return;
     }
 
     const { benchY } = getBenchMetrics();
-    const overlap = 7;
+    const defaultOverlap = 7;
     const ordered = actors.slice().sort((a, b) => {
       const priority = (actor) => {
         if (actor?.mood === 'complaint') return 4;
@@ -277,12 +346,18 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       const width = frame.width || img.naturalWidth;
       const height = frame.height || img.naturalHeight;
       const bobOffset = actor?.bobOffset || 0;
-      const top = benchY - height + overlap + bobOffset;
+      const actorOverlap = Number.isFinite(actor?.overlap) ? Number(actor.overlap) : defaultOverlap;
+      const top = benchY - height + actorOverlap + bobOffset;
       const left = (actor?.x ?? 0) - width / 2;
 
       ctx.save();
       ctx.drawImage(img, left, top, width, height);
       ctx.restore();
+
+      const actorMetrics = { top, left, width, height, overlap: actorOverlap };
+      if (shouldPaintCarriedArrangement(actor, handoffStatusForActors)) {
+        paintCarriedArrangementForActor(actor, actorMetrics, carriedVaseMetrics);
+      }
 
       if (actor?.mood === 'complaint') {
         drawComplaintIndicator(left + width / 2, top - 10);
@@ -341,6 +416,68 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     gameState.showButton = { x, y, width, height, enabled };
   }
 
+  function applyHandoffTransform(metrics, progress) {
+    if (!metrics || progress <= 0) return;
+    const target = getHandoffTargetMetrics(metrics);
+    if (!target) return;
+    const baseX = lerp(metrics.baseX, target.baseX, progress);
+    const baseY = lerp(metrics.baseY, target.baseY, progress);
+    const scale = lerp(1, target.scale, progress);
+
+    ctx.translate(baseX, baseY);
+    ctx.scale(scale, scale);
+    ctx.translate(-metrics.baseX, -metrics.baseY);
+  }
+
+  function getHandoffTargetMetrics(metrics) {
+    if (!metrics) return null;
+    const targetHeight = HANDOFF_TARGET.height;
+    const scale = metrics.scaledHeight > 0 ? targetHeight / metrics.scaledHeight : 1;
+    const baseX = HANDOFF_TARGET.centerX;
+    const baseY = metrics.baseY - (HANDOFF_TARGET.offsetY ?? 0);
+    return { baseX, baseY, scale, height: targetHeight };
+  }
+
+  function shouldPaintCarriedArrangement(actor, handoffStatus) {
+    if (!actor?.carryArrangement) return false;
+    if (handoffStatus === 'running') return false;
+    const carryState = actor?.state;
+    if (carryState !== 'departing' && !actor?.pendingDeparture) return false;
+    const solution = actor.carryArrangement.solution;
+    return Array.isArray(solution) && solution.some((code) => code);
+  }
+
+  function paintCarriedArrangementForActor(actor, metrics, vaseMetrics) {
+    const arrangement = actor?.carryArrangement;
+    if (!arrangement || !vaseMetrics) return;
+    const solution = Array.isArray(arrangement.solution) ? arrangement.solution : [];
+    const slotCount = Number.isFinite(arrangement.slotCount) ? arrangement.slotCount : solution.length;
+    if (!slotCount) return;
+    const slots = prepareSlotStates(solution, slotCount);
+    const offsetX = Number.isFinite(arrangement.offsetX) ? arrangement.offsetX : HANDOFF_CARRY_OFFSET.x;
+    const offsetY = Number.isFinite(arrangement.offsetY) ? arrangement.offsetY : HANDOFF_CARRY_OFFSET.y;
+    const actorCenterX = actor?.x ?? 0;
+    const actorBaseY = metrics.top + metrics.height - metrics.overlap;
+    const baseX = actorCenterX + offsetX;
+    const baseY = actorBaseY + offsetY;
+    const referenceHeight = vaseMetrics.scaledHeight || HANDOFF_TARGET.height;
+    const scale = Number.isFinite(arrangement.scale)
+      ? arrangement.scale
+      : HANDOFF_TARGET.height / Math.max(referenceHeight, Number.EPSILON);
+
+    ctx.save();
+    ctx.translate(baseX, baseY);
+    ctx.scale(scale, scale);
+    ctx.translate(-vaseMetrics.baseX, -vaseMetrics.baseY);
+
+    paintVaseLip(vaseMetrics);
+    paintStemsLayer(slots, vaseMetrics);
+    paintVaseBody(vaseMetrics);
+    paintFlowersLayer(slots);
+
+    ctx.restore();
+  }
+
   function drawComplaintIndicator(centerX, baseY) {
     const width = 66;
     const height = 102;
@@ -362,20 +499,33 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.restore();
   }
 
+  function getActiveSlotLimit() {
+    const raw = Number.isFinite(gameState?.puzzle?.slotCount) ? Math.floor(gameState.puzzle.slotCount) : SLOT_POSITIONS.length;
+    if (raw <= 0) return 0;
+    return Math.min(SLOT_POSITIONS.length, Math.max(0, raw));
+  }
 
-  function prepareSlotStates() {
-    const solution = gameState?.puzzle?.solution || [];
+  function prepareSlotStates(solutionOverride = null, slotLimitOverride = null) {
+    const solution = Array.isArray(solutionOverride) ? solutionOverride : gameState?.puzzle?.solution || [];
+    const slotLimit = Number.isFinite(slotLimitOverride) ? slotLimitOverride : getActiveSlotLimit();
 
-    return SLOT_POSITIONS.map((slot, index) => ({
-      index,
-      x: slot.x ?? 0,
-      y: slot.y ?? 0,
-      width: slot.width ?? SLOT_SIZE.width,
-      height: slot.height ?? SLOT_SIZE.height,
-      code: normalizeSlotCode(solution[index], index),
-      stemOffsetX: slot.stemOffsetX ?? 0,
-      clickBounds: SLOT_CLICK_BOUNDS[index] || null,
-    }));
+    return SLOT_POSITIONS.map((slot, index) => {
+      const baseWidth = slot?.width ?? SLOT_SIZE.width;
+      const baseHeight = slot?.height ?? SLOT_SIZE.height;
+      const entry = index < solution.length ? solution[index] : null;
+      const code = normalizeSlotCode(entry, index);
+      return {
+        index,
+        x: slot?.x ?? 0,
+        y: slot?.y ?? 0,
+        width: baseWidth,
+        height: baseHeight,
+        code,
+        stemOffsetX: slot?.stemOffsetX ?? 0,
+        clickBounds: SLOT_CLICK_BOUNDS[index] || null,
+        isWithinActiveRange: index < slotLimit,
+      };
+    });
   }
 
   function paintStemsLayer(slots, vaseMetrics) {
@@ -397,6 +547,10 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
   function paintDropTargets(slots, hoverId, drag) {
     if (!drag) return;
+    const slotLimit = getActiveSlotLimit();
+    if (slotLimit <= 0) return;
+    const filledSlots = slots.reduce((count, slot) => (slot?.code ? count + 1 : count), 0);
+    if (filledSlots >= slotLimit) return;
     const meta = getFlowerMeta(drag.code);
     const color = meta.color || 'rgba(255, 255, 255, 0.45)';
     const hoverIndex = typeof hoverId === 'string' && hoverId.startsWith('slot-') ? Number(hoverId.slice(5)) : null;
@@ -440,14 +594,14 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     });
   }
 
-  function paintDragPreview(drag) {
+  function paintDragPreview(drag, arrangementOffsetY = 0) {
     if (!drag || drag.x == null || drag.y == null) return;
     const width = drag.width ?? SLOT_SIZE.width;
     const height = drag.height ?? SLOT_SIZE.height;
     const offsetX = drag.offsetX ?? width / 2;
     const offsetY = drag.offsetY ?? height / 2;
     const drawX = drag.x - offsetX;
-    const drawY = drag.y - offsetY;
+    const drawY = drag.y - offsetY - arrangementOffsetY;
     ctx.save();
     ctx.globalAlpha = 0.75;
     drawSlotFlower(drag.code, drawX, drawY, width, height);
@@ -456,6 +610,70 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
   function paintEmptySlotPlaceholders() {
     // Dev hitbox outlines disabled.
+  }
+
+  function createArrangementLiftState(initialActive) {
+    return {
+      running: Boolean(initialActive),
+      elapsed: 0,
+      progress: 0,
+      offset: ARRANGEMENT_LIFT_DISTANCE,
+    };
+  }
+
+  function startArrangementLift(lift) {
+    if (!lift) return;
+    lift.running = true;
+    lift.elapsed = 0;
+    lift.progress = 0;
+    lift.offset = ARRANGEMENT_LIFT_DISTANCE;
+  }
+
+  function advanceArrangementLift(lift, hasActiveCustomer, deltaMs) {
+    if (!lift) return 0;
+    if (!hasActiveCustomer) {
+      lift.running = false;
+      lift.elapsed = 0;
+      lift.progress = 0;
+      lift.offset = ARRANGEMENT_LIFT_DISTANCE;
+      return lift.offset;
+    }
+
+    if (lift.running) {
+      lift.elapsed += deltaMs;
+    } else if (lift.progress < 1) {
+      lift.running = true;
+      lift.elapsed += deltaMs;
+    }
+
+    const progress = Math.min(Math.max(lift.elapsed / ARRANGEMENT_LIFT_DURATION_MS, 0), 1);
+    lift.progress = progress;
+    const eased = easeOutCubic(progress);
+    lift.offset = (1 - eased) * ARRANGEMENT_LIFT_DISTANCE;
+    if (progress >= 1) {
+      lift.running = false;
+      lift.elapsed = ARRANGEMENT_LIFT_DURATION_MS;
+      lift.offset = 0;
+    }
+    return lift.offset;
+  }
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function easeInOutCubic(t) {
+    const clamped = Math.min(Math.max(t, 0), 1);
+    if (clamped < 0.5) {
+      return 4 * clamped * clamped * clamped;
+    }
+    const inv = -2 * clamped + 2;
+    return 1 - (inv * inv * inv) / 2;
+  }
+
+  function easeOutCubic(t) {
+    const clamped = Math.min(Math.max(t, 0), 1);
+    return 1 - Math.pow(1 - clamped, 3);
   }
 
   function createCalendarDisplayState(initial = {}) {
@@ -979,7 +1197,6 @@ function roundRect(context, x, y, width, height, radius, fill, stroke, styles = 
   context.restore();
 }
 
-
 function createCalendarSprites() {
   const sprites = {};
   Object.entries(CALENDAR_META).forEach(([key, meta]) => {
@@ -1054,9 +1271,6 @@ function createCalendarNumberSprite(meta) {
     },
   };
 }
-
-
-
 
 
 

@@ -2,6 +2,23 @@ import { MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
 
 const DEFAULT_SLOT_COUNT = MF_DROP_ZONE_COUNT;
 
+export const MASTER_FLORIST_DIFFICULTY_LEVELS = Object.freeze(['insane', 'hard', 'normal', 'easy']);
+export const MASTER_FLORIST_DEFAULT_DIFFICULTY = 'normal';
+
+const MASTER_FLORIST_DIFFICULTY_PENALTIES = Object.freeze({
+  insane: 0,
+  hard: 1,
+  normal: 2,
+  easy: 3,
+});
+
+const MOOD_BASE_SLOT_COUNT = Object.freeze({
+  happy: 6,
+  neutral: 5,
+  angry: 4,
+  complaint: 4,
+});
+
 export const FLOWER_LIBRARY = [
   { code: 'y', name: 'Daisy', color: '#f9e678' },
   { code: 'p', name: 'Iris', color: '#b39deb' },
@@ -50,10 +67,10 @@ const SLOT_COUNT_OPTIONS = Object.freeze({
   default: [MF_DROP_ZONE_COUNT],
 });
 
-export function createPuzzle({ seed = Date.now(), mood = 'happy', slotCount } = {}) {
+export function createPuzzle({ seed = Date.now(), mood = 'happy', slotCount, difficulty = MASTER_FLORIST_DEFAULT_DIFFICULTY } = {}) {
   const normalizedSeed = Number.isFinite(seed) ? seed : Date.now();
   const rng = makeSeededRandom(normalizedSeed);
-  const resolvedSlotCount = resolveSlotCount({ mood, override: slotCount, rng });
+  const resolvedSlotCount = resolveSlotCount({ mood, override: slotCount, difficulty, rng });
   const target = new Array(resolvedSlotCount).fill(null).map(() => randomFlowerCode(rng));
 
   return {
@@ -169,11 +186,20 @@ export function getFlowerGroup(code) {
   return null;
 }
 
-function resolveSlotCount({ mood, override, rng }) {
+function resolveSlotCount({ mood, override, difficulty, rng }) {
   if (Number.isFinite(override) && override > 0) {
     return Math.min(DEFAULT_SLOT_COUNT, Math.max(1, Math.floor(override)));
   }
   const key = typeof mood === 'string' ? mood.toLowerCase() : 'default';
+  if (Object.prototype.hasOwnProperty.call(MOOD_BASE_SLOT_COUNT, key)) {
+    const base = MOOD_BASE_SLOT_COUNT[key];
+    const difficultyKey = typeof difficulty === 'string' ? difficulty.toLowerCase() : MASTER_FLORIST_DEFAULT_DIFFICULTY;
+    const penalty =
+      MASTER_FLORIST_DIFFICULTY_PENALTIES[difficultyKey] ??
+      MASTER_FLORIST_DIFFICULTY_PENALTIES[MASTER_FLORIST_DEFAULT_DIFFICULTY];
+    const resolved = base - penalty;
+    return sanitizeSlotCount(Math.max(resolved, 1));
+  }
   const options = SLOT_COUNT_OPTIONS[key] || SLOT_COUNT_OPTIONS.default;
   return pickFromOptions(options, rng);
 }

@@ -1,5 +1,5 @@
 import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
-import { hasActiveMasterFloristCustomer, updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag } from '../state/store.js';
+import { hasActiveMasterFloristCustomer, updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag, isMasterFloristHandoffActive } from '../state/store.js';
 
 export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint, onShowCustomer } = {}) {
   if (!canvas) throw new Error('createMasterFloristCanvasController requires a canvas element.');
@@ -40,7 +40,15 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     listeners.push({ target, type, handler, options });
   }
 
+  function isInteractionLocked() {
+    const status = state?.handoffAnimation?.status;
+    return isMasterFloristHandoffActive(state) || status === 'completed';
+  }
+
   function handlePointerDown(event) {
+    if (isInteractionLocked()) {
+      return;
+    }
     canvas.focus();
     canvas.setPointerCapture?.(event.pointerId);
     if (state.drag) return;
@@ -52,10 +60,39 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     }
 
     const point = mapPointer(event);
+    const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
+    const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
     const showButton = state?.showButton;
-    if (isPointInShowButton(showButton, point)) {
+    if (isPointInShowButton(showButton, arrangementPoint)) {
       return;
     }
+    const solution = state?.puzzle?.solution;
+    const slotIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y);
+    if (Array.isArray(solution) && slotIndex != null) {
+      const slot = SLOT_POSITIONS[slotIndex] || {};
+      const slotValue = solution[slotIndex];
+      if (slotValue) {
+        const baseWidth = slot?.width ?? SLOT_SIZE.width;
+        const baseHeight = slot?.height ?? SLOT_SIZE.height;
+        updateMasterFloristSolution(state, slotIndex, null);
+        setMasterFloristDrag(state, {
+          pointerId: event.pointerId,
+          origin: 'slot',
+          slotIndex,
+          code: slotValue,
+          x: point.x,
+          y: point.y,
+          offsetX: baseWidth / 2,
+          offsetY: baseHeight / 2,
+          width: baseWidth,
+          height: baseHeight,
+        });
+        announce('Picked up flower from slot ' + (slotIndex + 1));
+        onStateChange?.();
+        return;
+      }
+    }
+
     const source = findSourceBox(point.x, point.y);
     if (source) {
       const width = typeof source.width === 'number' && source.width > 0 ? source.width : SLOT_SIZE.width;
@@ -79,6 +116,9 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   }
 
   function handlePointerMove(event) {
+    if (isInteractionLocked()) {
+      return;
+    }
     if (!hasActiveMasterFloristCustomer(state)) {
       let changed = false;
       if (state.hoverStemId != null) {
@@ -96,7 +136,9 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     }
 
     const point = mapPointer(event);
-    const hoverIndex = findSlotIndex(point.x, point.y);
+    const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
+    const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
+    const hoverIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y);
     state.hoverStemId = hoverIndex != null ? 'slot-' + hoverIndex : null;
 
     if (state.drag && (state.drag.pointerId == null || state.drag.pointerId === event.pointerId)) {
@@ -110,6 +152,9 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
 
   function handlePointerUp(event) {
     canvas.releasePointerCapture?.(event.pointerId);
+    if (isInteractionLocked()) {
+      return;
+    }
 
     if (!hasActiveMasterFloristCustomer(state)) {
       if (state.drag) {
@@ -120,18 +165,44 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     }
 
     const point = mapPointer(event);
+    const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
+    const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
     const showButton = state?.showButton;
-    if (isPointInShowButton(showButton, point)) {
+    if (isPointInShowButton(showButton, arrangementPoint)) {
       if (showButton?.enabled) {
         onShowCustomer?.();
       }
       return;
     }
 
-    const slotIndex = findSlotIndex(point.x, point.y);
+    const slotIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y);
     const drag = state.drag;
 
     if (drag && (drag.pointerId == null || drag.pointerId === event.pointerId)) {
+      if (drag.origin === 'slot') {
+        const originIndex = drag.slotIndex;
+        const solution = state?.puzzle?.solution || [];
+        if (slotIndex == null) {
+          updateMasterFloristSolution(state, originIndex, drag.code);
+          announce('Placement cancelled');
+        } else if (slotIndex === originIndex) {
+          announce('Removed flower from slot ' + (slotIndex + 1));
+        } else {
+          const targetCode = solution[slotIndex] || null;
+          updateMasterFloristSolution(state, slotIndex, null);
+          updateMasterFloristSolution(state, slotIndex, drag.code);
+          if (targetCode) {
+            updateMasterFloristSolution(state, originIndex, targetCode);
+            announce('Swapped flowers between slots ' + (originIndex + 1) + ' and ' + (slotIndex + 1));
+          } else {
+            announce('Moved flower to slot ' + (slotIndex + 1));
+          }
+        }
+        setMasterFloristDrag(state, null);
+        onStateChange?.();
+        return;
+      }
+
       if (slotIndex != null) {
         updateMasterFloristSolution(state, slotIndex, drag.code);
         announce('Placed flower in slot ' + (slotIndex + 1));
@@ -154,7 +225,7 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     }
 
     if (!handled) {
-      state.pendingDrops.push({ x: point.x, y: point.y, at: Date.now() });
+      state.pendingDrops.push({ x: arrangementPoint.x, y: arrangementPoint.y, at: Date.now() });
     }
 
     onStateChange?.();

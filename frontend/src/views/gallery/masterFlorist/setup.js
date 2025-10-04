@@ -120,7 +120,25 @@ function createSettingsPanel() {
     ],
   });
 
-  panel.append(subheading, footTrafficRow, atmosphereRow);
+  const challengeHeading = document.createElement('h3');
+  challengeHeading.textContent = 'Challenge';
+  challengeHeading.style.fontSize = '1.1rem';
+  challengeHeading.style.fontWeight = '700';
+
+  const difficultyRow = createSettingRow({
+    label: 'Difficulty',
+    description: 'Adjusts bouquet size targets by mood.',
+    name: 'difficulty',
+    value: settings.difficulty || 'normal',
+    options: [
+      { value: 'insane', text: 'Insane' },
+      { value: 'hard', text: 'Hard' },
+      { value: 'normal', text: 'Normal' },
+      { value: 'easy', text: 'Easy' },
+    ],
+  });
+
+  panel.append(subheading, footTrafficRow, atmosphereRow, challengeHeading, difficultyRow);
   return panel;
 }
 

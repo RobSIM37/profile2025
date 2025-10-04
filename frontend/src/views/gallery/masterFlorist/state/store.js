@@ -6,7 +6,7 @@ import {
   addSystemMessage,
   recordPlayerGuess,
 } from './chatEngine.js';
-import { createPuzzle, evaluateGuess } from './puzzleEngine.js';
+import { createPuzzle, evaluateGuess, MASTER_FLORIST_DEFAULT_DIFFICULTY, MASTER_FLORIST_DIFFICULTY_LEVELS } from './puzzleEngine.js';
 import { buildCustomerFeedback, buildCustomerAcceptance } from './dialogueEngine.js';
 
 const STORAGE_PREFIX = 'mf:';
@@ -26,6 +26,7 @@ const DEFAULT_VIEWPORT = {
 const DEFAULT_SETTINGS = Object.freeze({
   footTraffic: 'steady',
   atmosphere: 'balanced',
+  difficulty: MASTER_FLORIST_DEFAULT_DIFFICULTY,
 });
 
 const DEFAULT_STATS = Object.freeze({
@@ -33,9 +34,34 @@ const DEFAULT_STATS = Object.freeze({
   longestDaysWithoutComplaint: 0,
   lastComplaintTimestamp: null,
 });
+const HANDOFF_ANIMATION_DURATION_MS = 1_500;
+
 
 function createEmptySolution(length = MF_DROP_ZONE_COUNT) {
   return new Array(length).fill(null);
+}
+
+function createHandoffAnimationState(status = 'idle') {
+  return {
+    status,
+    elapsed: 0,
+    duration: HANDOFF_ANIMATION_DURATION_MS,
+    progress: status === 'completed' ? 1 : 0,
+  };
+}
+
+function createHandoffArrangementSnapshot(state, actorId = null) {
+  const puzzle = state?.puzzle || null;
+  const slotCount = getPuzzleSlotLimit(puzzle);
+  const rawSolution = Array.isArray(puzzle?.solution) ? puzzle.solution : [];
+  const normalizedSolution = rawSolution.slice(0, MF_DROP_ZONE_COUNT).map((entry) => normalizeSolutionEntry(entry));
+  return {
+    actorId,
+    solution: normalizedSolution,
+    slotCount,
+    puzzleId: puzzle?.id ?? null,
+    createdAt: Date.now(),
+  };
 }
 
 export function hasActiveMasterFloristCustomer(state) {
@@ -67,6 +93,9 @@ export function createMasterFloristState() {
     _chatSyncedVersion: null,
     gameOver: false,
     gameOverMessage: '',
+    arrangementOffsetY: 0,
+    handoffAnimation: createHandoffAnimationState(),
+    handoffSnapshot: null,
     onGameOver: null,
   };
 
@@ -80,6 +109,8 @@ export function resetMasterFloristState(state) {
   state.hoverStemId = null;
   state.pendingDrops = [];
   state.drag = null;
+  state.arrangementOffsetY = 0;
+  resetMasterFloristHandoff(state);
   state.clock = { tick: 0, elapsedMs: 0, deltaMs: 0 };
   state.viewport = { ...DEFAULT_VIEWPORT };
   state.puzzleHistory = [];
@@ -104,6 +135,7 @@ export function resetMasterFloristState(state) {
   }
 }
 
+
 export function updateMasterFloristClock(state, info = {}) {
   if (!state || !state.clock) return;
   state.clock.tick = info.tick ?? state.clock.tick;
@@ -121,17 +153,31 @@ export function updateMasterFloristViewport(state, metrics = {}) {
 
 export function resetMasterFloristSolution(state) {
   if (!state?.puzzle) return;
-  const slotCount = state.puzzle?.slotCount ?? MF_DROP_ZONE_COUNT;
-  state.puzzle.solution = createEmptySolution(slotCount);
+  state.puzzle.solution = createEmptySolution(MF_DROP_ZONE_COUNT);
 }
 
 export function updateMasterFloristSolution(state, index, code) {
   if (!state?.puzzle) return;
-  if (index < 0 || index >= state.puzzle.solution.length) return;
-  if (typeof code === 'string' && code.length) {
-    state.puzzle.solution[index] = code.toLowerCase();
+  const solution = state.puzzle.solution;
+  if (!Array.isArray(solution)) return;
+  if (index < 0 || index >= solution.length) return;
+
+  const normalized = normalizeSolutionEntry(code);
+  if (normalized) {
+    if (normalized === 'n') {
+      solution[index] = null;
+      return;
+    }
+    const slotLimit = getPuzzleSlotLimit(state.puzzle);
+    const currentValue = solution[index];
+    const filledSlots = collapseMasterFloristSolution(solution, slotLimit).length;
+    const currentIsFilled = isFilledSolutionEntry(currentValue);
+    if (!currentIsFilled && filledSlots >= slotLimit) {
+      return;
+    }
+    solution[index] = normalized;
   } else {
-    state.puzzle.solution[index] = null;
+    solution[index] = null;
   }
 }
 
@@ -198,12 +244,15 @@ export function clearMasterFloristStoredData() {
 export function submitMasterFloristGuess(state) {
   if (!state?.puzzle) return null;
   if (!canSubmitMasterFloristGuess(state)) return null;
-  const slotCount = state.puzzle.slotCount ?? MF_DROP_ZONE_COUNT;
-  const solution = Array.isArray(state.puzzle.solution)
-    ? state.puzzle.solution.slice(0, slotCount)
-    : [];
+  const slotCount = getPuzzleSlotLimit(state.puzzle);
+  const solution = Array.isArray(state.puzzle.solution) ? state.puzzle.solution : [];
+  const collapsed = collapseMasterFloristSolution(solution, slotCount);
+  const guess = collapsed.slice(0, slotCount);
+  while (guess.length < slotCount) {
+    guess.push(null);
+  }
 
-  const evaluation = evaluateGuess(state.puzzle, solution);
+  const evaluation = evaluateGuess(state.puzzle, guess);
   const entry = {
     guess: evaluation.guess,
     evaluation,
@@ -248,9 +297,10 @@ export function addMasterFloristSystemMessage(state, text, label) {
 export function canSubmitMasterFloristGuess(state) {
   if (!state?.puzzle) return false;
   if (!hasActiveMasterFloristCustomer(state)) return false;
-  const slotCount = state.puzzle.slotCount ?? Math.min(MF_DROP_ZONE_COUNT, state.puzzle.solution?.length ?? MF_DROP_ZONE_COUNT);
+  const slotCount = getPuzzleSlotLimit(state.puzzle);
   const solution = state.puzzle.solution || [];
-  return solution.slice(0, slotCount).every((code) => Boolean(code));
+  const filled = collapseMasterFloristSolution(solution, slotCount).length;
+  return filled >= slotCount && slotCount > 0;
 }
 
 export function startMasterFloristPuzzle(state, { mood = 'happy', customer = null, seed = Date.now() } = {}) {
@@ -267,19 +317,24 @@ export function startMasterFloristPuzzle(state, { mood = 'happy', customer = nul
     });
   }
 
-  const puzzle = createMasterFloristPuzzle(seed, mood);
+  const difficulty = state?.settings?.difficulty ?? MASTER_FLORIST_DEFAULT_DIFFICULTY;
+  const puzzle = createMasterFloristPuzzle({ seed, mood, difficulty });
   const activeCustomer = customer ? { ...customer } : state.activeCustomer ? { ...state.activeCustomer } : null;
   state.puzzle = puzzle;
   state.hoverStemId = null;
   state.pendingDrops = [];
   state.drag = null;
+  state.arrangementOffsetY = 0;
+  resetMasterFloristHandoff(state);
   state.activeCustomer = activeCustomer;
+  state.showButton = null;
 
   state.chatSession = createChatSession({ puzzle, customer: activeCustomer });
   addCustomerPuzzleIntro(state.chatSession, { puzzle, customer: activeCustomer });
   state._chatSyncedVersion = null;
   syncMasterFloristChat(state);
 }
+
 
 export function appendMasterFloristFeedback(state, evaluation) {
   if (!state?.chatSession || !state?.puzzle) return;
@@ -311,6 +366,7 @@ export function handleMasterFloristPuzzleSuccess(state) {
   }
 }
 
+
 export function handleMasterFloristComplaint(state) {
   if (!state) return;
   if (!state.stats) {
@@ -319,6 +375,55 @@ export function handleMasterFloristComplaint(state) {
   state.stats.daysWithoutComplaint = 0;
   state.stats.lastComplaintTimestamp = Date.now();
 }
+
+export function startMasterFloristHandoffAnimation(state, options = {}) {
+  if (!state) return null;
+  const actorId = options?.actorId ?? null;
+  const snapshot = createHandoffArrangementSnapshot(state, actorId);
+  state.handoffSnapshot = snapshot;
+  state.handoffAnimation = {
+    status: 'running',
+    elapsed: 0,
+    duration: HANDOFF_ANIMATION_DURATION_MS,
+    progress: 0,
+  };
+  state.hoverStemId = null;
+  state.pendingDrops = [];
+  state.drag = null;
+  state.showButton = null;
+  return snapshot;
+}
+
+export function advanceMasterFloristHandoff(state, deltaMs = 0) {
+  if (!state) return 0;
+  if (!state.handoffAnimation) {
+    state.handoffAnimation = createHandoffAnimationState();
+  }
+  const animation = state.handoffAnimation;
+  if (animation.status !== 'running') {
+    return Number(animation.progress) || 0;
+  }
+  const duration = animation.duration > 0 ? animation.duration : HANDOFF_ANIMATION_DURATION_MS;
+  animation.elapsed += Math.max(0, deltaMs || 0);
+  const progress = duration > 0 ? Math.min(animation.elapsed / duration, 1) : 1;
+  animation.progress = progress;
+  if (progress >= 1) {
+    animation.progress = 1;
+    animation.status = 'completed';
+  }
+  return animation.progress;
+}
+
+export function isMasterFloristHandoffActive(state) {
+  return state?.handoffAnimation?.status === 'running';
+}
+
+export function resetMasterFloristHandoff(state) {
+  if (!state) return;
+  state.handoffAnimation = createHandoffAnimationState();
+  state.handoffSnapshot = null;
+}
+
 
 export function triggerMasterFloristGameOver(state, message) {
   if (!state || state.gameOver) return false;
@@ -332,25 +437,53 @@ export function triggerMasterFloristGameOver(state, message) {
   return true;
 }
 
-export function collapseMasterFloristSolution(solution = []) {
-  return solution.filter((code) => code != null && code !== '');
+export function collapseMasterFloristSolution(solution = [], limit = MF_DROP_ZONE_COUNT) {
+  if (!Array.isArray(solution) || limit <= 0) return [];
+  const collapsed = [];
+  for (let i = 0; i < solution.length && collapsed.length < limit; i += 1) {
+    const entry = solution[i];
+    if (!isFilledSolutionEntry(entry)) continue;
+    collapsed.push(normalizeSolutionEntry(entry));
+  }
+  return collapsed;
 }
 
 export function isMasterFloristSolutionMatch(state) {
   if (!state?.puzzle) return false;
+  const slotCount = getPuzzleSlotLimit(state.puzzle);
+  if (slotCount <= 0) return false;
   const solution = state.puzzle.solution || [];
-  const slotCount = state.puzzle.slotCount ?? solution.length;
-  if (slotCount === 0) return false;
-  if (solution.length < slotCount) return false;
-  if (solution.slice(0, slotCount).some((code) => !code)) return false;
-  const evaluation = evaluateGuess(state.puzzle, solution);
+  const collapsed = collapseMasterFloristSolution(solution, slotCount);
+  if (collapsed.length < slotCount) return false;
+  const guess = collapsed.slice(0, slotCount);
+  const evaluation = evaluateGuess(state.puzzle, guess);
   return Boolean(evaluation?.isMatch);
 }
 
-export function createMasterFloristPuzzle(seed, mood = 'happy') {
-  const puzzle = createPuzzle({ seed, mood });
-  puzzle.solution = createEmptySolution(puzzle.slotCount);
+export function createMasterFloristPuzzle({ seed, mood = 'happy', difficulty } = {}) {
+  const puzzle = createPuzzle({ seed, mood, difficulty });
+  puzzle.solution = createEmptySolution(MF_DROP_ZONE_COUNT);
   return puzzle;
+}
+
+function getPuzzleSlotLimit(puzzle) {
+  const raw = Number.isFinite(puzzle?.slotCount) ? Math.floor(puzzle.slotCount) : MF_DROP_ZONE_COUNT;
+  if (raw <= 0) return 0;
+  return Math.min(MF_DROP_ZONE_COUNT, Math.max(0, raw));
+}
+
+function normalizeSolutionEntry(value) {
+  if (typeof value === 'string') {
+    return value.trim().toLowerCase();
+  }
+  if (value == null) return null;
+  return String(value).trim().toLowerCase();
+}
+
+function isFilledSolutionEntry(value) {
+  const normalized = normalizeSolutionEntry(value);
+  if (!normalized) return false;
+  return normalized !== 'n';
 }
 
 function createDefaultQueueState() {
@@ -397,6 +530,12 @@ function filterSettings(source = {}) {
   }
   if (typeof source.atmosphere === 'string' && source.atmosphere.length) {
     normalized.atmosphere = source.atmosphere;
+  }
+  if (typeof source.difficulty === 'string' && source.difficulty.length) {
+    const normalizedDifficulty = source.difficulty.toLowerCase();
+    if (MASTER_FLORIST_DIFFICULTY_LEVELS.includes(normalizedDifficulty)) {
+      normalized.difficulty = normalizedDifficulty;
+    }
   }
   return normalized;
 }
@@ -455,7 +594,3 @@ function getLocalStorage() {
   } catch {}
   return null;
 }
-
-
-
-
