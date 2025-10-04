@@ -277,18 +277,23 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     const displayHeight = daysSprite.height * scale;
     const centerY = (benchY / 2) + offsetY;
     const totalWidth = width * 2 + gap;
-    const centerX = MF_CANVAS_WIDTH * 0.75;
+    const centerX = (MF_CANVAS_WIDTH * 0.75) - 550;
     const startX = centerX - totalWidth / 2 + offsetX;
     const top = centerY - displayHeight / 2;
 
+    const daysX = startX + width + gap + 30;
+    const daysY = top;
+    const mostX = daysX;
+    const mostY = top + 120;
+
     ctx.save();
-    ctx.drawImage(daysSprite.image, startX, top, width, displayHeight);
-    ctx.drawImage(mostSprite.image, startX + width + gap, top, width, displayHeight);
+    ctx.drawImage(daysSprite.image, daysX, daysY, width, displayHeight);
+    ctx.drawImage(mostSprite.image, mostX, mostY, width, displayHeight);
     ctx.restore();
 
     paintCalendarDigits({
-      originX: startX,
-      originY: top,
+      originX: daysX,
+      originY: daysY,
       width,
       height: displayHeight,
       stateEntry: calendarDisplayState.days,
@@ -296,8 +301,8 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     });
 
     paintCalendarDigits({
-      originX: startX + width + gap,
-      originY: top,
+      originX: mostX,
+      originY: mostY,
       width,
       height: displayHeight,
       stateEntry: calendarDisplayState.most,

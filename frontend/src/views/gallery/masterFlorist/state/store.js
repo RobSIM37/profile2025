@@ -26,8 +26,8 @@ const DEFAULT_VIEWPORT = {
 };
 
 const DEFAULT_SETTINGS = Object.freeze({
-  footTraffic: 'steady',
-  atmosphere: 'balanced',
+  footTraffic: 'relaxed',
+  atmosphere: 'soothing',
   difficulty: MASTER_FLORIST_DEFAULT_DIFFICULTY,
 });
 

@@ -34,7 +34,7 @@ export function render() {
     ]),
     createListBlock('Game Goal', [
       'Fulfill every bouquet quickly and accurately.',
-      'Stay complaint-free for 100 in-game days.',
+      'Stay complaint-free for 99 in-game days.',
     ]),
     createListBlock('Controls', [
       'Drag and drop flowers into the bouquet slots.',
