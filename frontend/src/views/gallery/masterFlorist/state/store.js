@@ -12,6 +12,9 @@ import { buildCustomerFeedback, buildCustomerAcceptance } from './dialogueEngine
 const STORAGE_PREFIX = 'mf:';
 const SETTINGS_STORAGE_KEY = `${STORAGE_PREFIX}settings`;
 const LONGEST_STREAK_STORAGE_KEY = `${STORAGE_PREFIX}longestStreak`;
+const DAY_ADVANCE_INTERVAL_MS = 30_000;
+const MAX_CALENDAR_DISPLAY_VALUE = 99;
+const TEMP_DISABLE_COMPLAINT_TRIGGER = true;
 
 const DEFAULT_VIEWPORT = {
   width: MF_CANVAS_WIDTH,
@@ -66,6 +69,49 @@ function createHandoffArrangementSnapshot(state, actorId = null) {
   };
 }
 
+function createMasterFloristTimers() {
+  return {
+    dayCounterMs: 0,
+    dayIntervalMs: DAY_ADVANCE_INTERVAL_MS,
+    gameElapsedMs: 0,
+  };
+}
+
+function resetMasterFloristTimers(state) {
+  if (!state) return;
+  state.timers = createMasterFloristTimers();
+}
+
+function ensureMasterFloristTimers(state) {
+  if (!state) return createMasterFloristTimers();
+  if (!state.timers) {
+    resetMasterFloristTimers(state);
+  }
+  return state.timers;
+}
+
+function createCalendarCounters() {
+  return {
+    daysSince: 0,
+    longestDays: 0,
+  };
+}
+
+function resetMasterFloristCalendar(state) {
+  if (!state) return;
+  state.calendar = createCalendarCounters();
+  updateCalendarDaysDisplay(state, 0);
+  updateCalendarLongestDisplay(state, 0);
+}
+
+function ensureCalendarCounters(state) {
+  if (!state) return createCalendarCounters();
+  if (!state.calendar) {
+    state.calendar = createCalendarCounters();
+  }
+  return state.calendar;
+}
+
 export function hasActiveMasterFloristCustomer(state) {
   return Boolean(state?.customerParade?.activeId);
 }
@@ -99,8 +145,14 @@ export function createMasterFloristState() {
     arrangementOffsetY: 0,
     handoffAnimation: createHandoffAnimationState(),
     handoffSnapshot: null,
+    calendar: null,
+    timers: null,
+    solveTestTimerStart: null,
     onGameOver: null,
   };
+
+  resetMasterFloristCalendar(state);
+  resetMasterFloristTimers(state);
 
   startMasterFloristPuzzle(state, { mood: 'happy', seed });
   return state;
@@ -123,6 +175,9 @@ export function resetMasterFloristState(state) {
   state.complaintDepartures = 0;
   state.gameOver = false;
   state.gameOverMessage = '';
+  state.solveTestTimerStart = null;
+  resetMasterFloristCalendar(state);
+  resetMasterFloristTimers(state);
   startMasterFloristPuzzle(state, { mood: 'happy', seed: freshSeed });
   if (!state.settings) {
     state.settings = loadStoredSettings();
@@ -325,6 +380,12 @@ export function startMasterFloristPuzzle(state, { mood = 'happy', customer = nul
   const puzzle = createMasterFloristPuzzle({ seed, mood, difficulty });
   const activeCustomer = customer ? { ...customer } : state.activeCustomer ? { ...state.activeCustomer } : null;
   state.puzzle = puzzle;
+  const slotLimit = getPuzzleSlotLimit(puzzle);
+  if (slotLimit === 6) {
+    state.solveTestTimerStart = Date.now();
+  } else {
+    state.solveTestTimerStart = null;
+  }
   state.hoverStemId = null;
   state.pendingDrops = [];
   state.drag = null;
@@ -359,6 +420,11 @@ export function appendMasterFloristFeedback(state, evaluation) {
 
 export function handleMasterFloristPuzzleSuccess(state) {
   if (!state) return;
+  if (state.solveTestTimerStart != null && getPuzzleSlotLimit(state.puzzle) === 6) {
+    const elapsed = Date.now() - state.solveTestTimerStart;
+    console.log(`[MasterFloristTest] 6-slot solve time: ${elapsed}ms`);
+    state.solveTestTimerStart = null;
+  }
   if (!state.stats) {
     state.stats = loadStoredStats();
   }
@@ -373,16 +439,134 @@ export function handleMasterFloristPuzzleSuccess(state) {
 
 export function handleMasterFloristComplaint(state) {
   if (!state) return;
+  if (TEMP_DISABLE_COMPLAINT_TRIGGER) {
+    return;
+  }
   if (!state.stats) {
     state.stats = loadStoredStats();
   }
   state.stats.daysWithoutComplaint = 0;
   state.stats.lastComplaintTimestamp = Date.now();
 
+  resetMasterFloristDayCounter(state);
+  const timers = ensureMasterFloristTimers(state);
+  if (timers) {
+    timers.dayCounterMs = 0;
+  }
+
   state.complaintDepartures = (Number(state.complaintDepartures) || 0) + 1;
   if (!state.gameOver && state.complaintDepartures >= MASTER_FLORIST_COMPLAINT_GAME_OVER_THRESHOLD) {
     triggerMasterFloristGameOver(state, 'Too many customers have left dissatisfied.');
   }
+}
+
+function resetMasterFloristDayCounter(state) {
+  const counters = ensureCalendarCounters(state);
+  counters.daysSince = 0;
+  updateCalendarDaysDisplay(state, counters.daysSince);
+}
+
+function updateCalendarDaysDisplay(state, value) {
+  const calendar = state?.calendarDisplay;
+  const normalized = Math.max(0, Math.floor(Math.abs(Number(value) || 0)));
+  if (calendar?.setDigits) {
+    calendar.setDigits('days', toDigitPair(normalized));
+  }
+  if (calendar) {
+    calendar.daysRaw = normalized;
+    calendar.daysDisplay = normalized % 100;
+  }
+}
+
+function updateCalendarLongestDisplay(state, value) {
+  const calendar = state?.calendarDisplay;
+  const normalized = Math.max(0, Math.floor(Math.abs(Number(value) || 0)));
+  if (calendar?.setDigits) {
+    calendar.setDigits('most', toDigitPair(normalized));
+  }
+  if (calendar) {
+    calendar.longestRaw = normalized;
+    calendar.mostDisplay = normalized % 100;
+  }
+}
+
+function incrementMasterFloristDay(state) {
+  const counters = ensureCalendarCounters(state);
+  const previousDays = counters.daysSince;
+  const previousLongest = counters.longestDays;
+  const nextDays = Math.max(0, previousDays) + 1;
+  counters.daysSince = nextDays;
+  updateCalendarDaysDisplay(state, nextDays);
+
+  if (nextDays > previousLongest) {
+    counters.longestDays = nextDays;
+    updateCalendarLongestDisplay(state, counters.longestDays);
+  }
+
+  if (!state?.gameOver && previousLongest < MAX_CALENDAR_DISPLAY_VALUE && counters.longestDays >= MAX_CALENDAR_DISPLAY_VALUE) {
+    triggerMasterFloristGameOver(state, 'Congratulations! The Most Days calendar reached 99. You beat Master Florist!');
+  }
+}
+
+export function advanceMasterFloristTimers(state, deltaMs = 0) {
+  if (!state || state.gameOver) return;
+  const ms = Math.max(0, Number(deltaMs) || 0);
+  const timers = ensureMasterFloristTimers(state);
+  timers.gameElapsedMs += ms;
+
+  if (ms <= 0) {
+    return;
+  }
+
+  const interval = Number.isFinite(timers.dayIntervalMs) && timers.dayIntervalMs > 0
+    ? timers.dayIntervalMs
+    : DAY_ADVANCE_INTERVAL_MS;
+  timers.dayCounterMs += ms;
+
+  while (timers.dayCounterMs >= interval) {
+    timers.dayCounterMs -= interval;
+    incrementMasterFloristDay(state);
+    if (state.gameOver) {
+      timers.dayCounterMs = 0;
+      break;
+    }
+  }
+}
+
+function appendGameTimeToMessage(state, baseMessage) {
+  const timers = ensureMasterFloristTimers(state);
+  const formatted = formatMasterFloristDuration(timers?.gameElapsedMs ?? 0);
+  const message = typeof baseMessage === 'string' && baseMessage.trim().length
+    ? baseMessage.trim()
+    : 'The flower shop had to close due to too many complaints.';
+  return `${message}
+Total game time: ${formatted}`;
+}
+
+function formatMasterFloristDuration(ms) {
+  const safeMs = Math.max(0, Math.floor(Number(ms) || 0));
+  let totalSeconds = safeMs / 1000;
+  let hours = Math.floor(totalSeconds / 3600);
+  totalSeconds -= hours * 3600;
+  let minutes = Math.floor(totalSeconds / 60);
+  totalSeconds -= minutes * 60;
+  let seconds = Math.round(totalSeconds * 100) / 100;
+  if (seconds >= 60) {
+    seconds -= 60;
+    minutes += 1;
+  }
+  if (minutes >= 60) {
+    minutes -= 60;
+    hours += 1;
+  }
+  const minutesStr = String(minutes).padStart(2, '0');
+  const secondsStr = seconds.toFixed(2).padStart(5, '0');
+  return `${hours}h ${minutesStr}m ${secondsStr}s`;
+}
+
+function toDigitPair(value) {
+  const normalized = Math.max(0, Math.floor(Math.abs(Number(value) || 0))) % 100;
+  return [Math.floor(normalized / 10), normalized % 10];
 }
 
 
@@ -437,10 +621,11 @@ export function resetMasterFloristHandoff(state) {
 
 export function triggerMasterFloristGameOver(state, message) {
   if (!state || state.gameOver) return false;
+  const finalMessage = appendGameTimeToMessage(state, message);
   state.gameOver = true;
-  state.gameOverMessage = message || 'The flower shop had to close due to too many complaints.';
+  state.gameOverMessage = finalMessage;
   try {
-    state.onGameOver?.(state.gameOverMessage);
+    state.onGameOver?.(finalMessage);
   } catch (err) {
     console.error('Master Florist game over handler failed', err);
   }

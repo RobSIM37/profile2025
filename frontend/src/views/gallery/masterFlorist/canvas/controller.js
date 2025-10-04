@@ -1,6 +1,26 @@
 import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
 import { hasActiveMasterFloristCustomer, updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag, isMasterFloristHandoffActive } from '../state/store.js';
 
+const FLOWER_KEY_BINDINGS = Object.freeze({
+  a: 'r',
+  s: 'o',
+  d: 'y',
+  j: 'b',
+  k: 'p',
+  l: 'w',
+});
+const CLEAR_KEY_LAST = 'h';
+const CLEAR_KEY_ALL = ' ';
+
+const FLOWER_NAME_BY_CODE = Object.freeze({
+  r: 'rose',
+  o: 'marigold',
+  y: 'daisy',
+  b: 'violet',
+  p: 'iris',
+  w: 'lily',
+});
+
 export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint, onShowCustomer } = {}) {
   if (!canvas) throw new Error('createMasterFloristCanvasController requires a canvas element.');
   const listeners = [];
@@ -17,7 +37,10 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     bind(canvas, 'pointermove', handlePointerMove);
     bind(canvas, 'pointerup', handlePointerUp);
     bind(canvas, 'pointerleave', handlePointerLeave);
-    bind(canvas, 'keydown', handleKeyDown);
+    const keyTarget = canvas?.ownerDocument || (typeof document !== 'undefined' ? document : null);
+    if (keyTarget) {
+      bind(keyTarget, 'keydown', handleKeyDown, { passive: false });
+    }
     canvas.setAttribute('aria-live', 'polite');
   }
 
@@ -244,9 +267,113 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   }
 
   function handleKeyDown(event) {
-    if (event.key === ' ') {
+    const key = typeof event.key === 'string' ? event.key : '';
+    const normalized = key.length === 1 ? key.toLowerCase() : key.toLowerCase();
+    const isSpaceKey = key === CLEAR_KEY_ALL || event.code === 'Space' || normalized === 'space' || normalized === 'spacebar';
+
+    if (isSpaceKey) {
       event.preventDefault();
     }
+
+    const target = event.target;
+    if (target && typeof target.closest === 'function') {
+      const editable = target.closest('input, textarea, [contenteditable="true"], [role="textbox"]');
+      if (editable) {
+        return;
+      }
+    }
+    if (event.defaultPrevented && !isSpaceKey && normalized !== 'enter') {
+      return;
+    }
+
+    if (!hasActiveMasterFloristCustomer(state) || isInteractionLocked()) {
+      return;
+    }
+    if (state.drag) {
+      return;
+    }
+    if (!state?.puzzle?.solution || !Array.isArray(state.puzzle.solution)) {
+      return;
+    }
+
+    const slotLimit = resolveActiveSlotLimit();
+    if (slotLimit <= 0) {
+      return;
+    }
+
+    const solution = state.puzzle.solution;
+    let handled = false;
+
+    if (normalized === CLEAR_KEY_LAST) {
+      handled = clearLastSlot(solution, slotLimit);
+      if (handled) {
+        announce('Removed last flower from arrangement.');
+      }
+    } else if (isSpaceKey) {
+      handled = clearAllSlots(solution, slotLimit);
+      if (handled) {
+        announce('Cleared arrangement.');
+      }
+    } else if (normalized === 'enter' || (event.code === 'ShiftLeft' && !event.ctrlKey && !event.altKey && !event.metaKey)) {
+      event.preventDefault();
+      const showButton = state?.showButton;
+      if (showButton?.enabled) {
+        onShowCustomer?.();
+        handled = true;
+      }
+    } else {
+      const flowerCode = FLOWER_KEY_BINDINGS[normalized];
+      if (flowerCode) {
+        handled = addFlowerByCode(solution, slotLimit, flowerCode);
+        if (handled) {
+          const flowerName = FLOWER_NAME_BY_CODE[flowerCode] || 'flower';
+          announce(`Added ${flowerName} to arrangement.`);
+        }
+      }
+    }
+
+    if (handled) {
+      onStateChange?.();
+    }
+  }
+
+  function resolveActiveSlotLimit() {
+    if (!state?.puzzle) return 0;
+    const solution = state.puzzle.solution;
+    if (!Array.isArray(solution)) return 0;
+    const rawLimit = Number.isFinite(state.puzzle.slotCount) ? Math.max(0, Math.floor(state.puzzle.slotCount)) : solution.length;
+    return Math.max(0, Math.min(solution.length, rawLimit));
+  }
+
+  function clearLastSlot(solution, limit) {
+    for (let i = Math.min(limit, solution.length) - 1; i >= 0; i -= 1) {
+      if (solution[i] != null) {
+        updateMasterFloristSolution(state, i, null);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function clearAllSlots(solution, limit) {
+    let cleared = false;
+    for (let i = 0; i < limit && i < solution.length; i += 1) {
+      if (solution[i] != null) {
+        updateMasterFloristSolution(state, i, null);
+        cleared = true;
+      }
+    }
+    return cleared;
+  }
+
+  function addFlowerByCode(solution, limit, code) {
+    for (let i = 0; i < limit && i < solution.length; i += 1) {
+      if (solution[i] == null) {
+        updateMasterFloristSolution(state, i, code);
+        return true;
+      }
+    }
+    return false;
   }
 
   function announce(message) {

@@ -11,6 +11,7 @@ import {
   submitMasterFloristGuess,
   hasActiveMasterFloristCustomer,
   canSubmitMasterFloristGuess,
+  advanceMasterFloristTimers,
 } from './state/store.js';
 import { createMasterFloristCanvasController } from './canvas/controller.js';
 import { createMasterFloristRenderer } from './render/scene.js';
@@ -150,6 +151,7 @@ export function render() {
   const loop = createMasterFloristLoop({ tickRateMs: 1000 / 30, routeMatch: '#/gallery/master-florist/game' });
   const unsubscribe = loop.subscribe((info) => {
     updateMasterFloristClock(state, info);
+    advanceMasterFloristTimers(state, info?.deltaMs);
     if (state.gameOver) {
       renderer.render();
       syncMasterFloristChat(state);

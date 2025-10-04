@@ -90,11 +90,6 @@ const HANDOFF_CARRY_OFFSET = Object.freeze({ x: -80, y: 20 });
 const ARRANGEMENT_LIFT_DURATION_MS = 650;
 const ARRANGEMENT_LIFT_DISTANCE = MF_CANVAS_HEIGHT;
 
-const INITIAL_CALENDAR_DIGITS = {
-  days: [0, 0],
-  most: [0, 0],
-};
-
 const vaseSprites = createVaseSprites();
 const flowerSprites = createFlowerSprites();
 const backgroundSprite = createBackgroundSprite();
@@ -115,9 +110,16 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   if (gameState) {
     gameState.arrangementOffsetY = arrangementLift.offset;
   }
-  const calendarDisplayState = createCalendarDisplayState(INITIAL_CALENDAR_DIGITS);
-  queueCalendarDigitUpdate(calendarDisplayState.days, INITIAL_CALENDAR_DIGITS.days);
-  queueCalendarDigitUpdate(calendarDisplayState.most, INITIAL_CALENDAR_DIGITS.most);
+  const initialDaysValue = Math.max(0, Math.floor(Number(gameState?.calendar?.daysSince) || 0));
+  const initialMostValue = Math.max(0, Math.floor(Number(gameState?.calendar?.longestDays) || 0));
+  const initialDaysDigits = toDigitPair(initialDaysValue);
+  const initialMostDigits = toDigitPair(initialMostValue);
+  const calendarDisplayState = createCalendarDisplayState({
+    days: initialDaysDigits,
+    most: initialMostDigits,
+  });
+  queueCalendarDigitUpdate(calendarDisplayState.days, initialDaysDigits);
+  queueCalendarDigitUpdate(calendarDisplayState.most, initialMostDigits);
 
   if (gameState) {
     gameState.calendarDisplay = {
@@ -128,6 +130,10 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
         const digitsArray = normalizeDigitInput(nextDigits);
         queueCalendarDigitUpdate(entry, digitsArray);
       },
+      daysRaw: initialDaysValue,
+      longestRaw: initialMostValue,
+      daysDisplay: initialDaysValue % 100,
+      mostDisplay: initialMostValue % 100,
     };
   }
 

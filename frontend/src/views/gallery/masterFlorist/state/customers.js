@@ -28,6 +28,7 @@ const PERSONAL_SPACE_STEP = 12;
 const ADVANCE_ANIM_FRAMES = 10;
 
 const GAME_OVER_MESSAGE = 'The flower shop had to close due to too many complaints.';
+const TEMP_SINGLE_CUSTOMER_POOL = true;
 
 const MOOD_SEQUENCE = ['happy', 'neutral', 'angry', 'complaint'];
 
@@ -591,7 +592,6 @@ function beginActiveIdle(parade, actor) {
       customer: { id: actor.id, sheet: actor.sheet, mood },
       seed: actor.seed || Date.now(),
     });
-    advanceCalendarCounters(parade.rootState);
   }
 
   startActiveTalking(parade, actor);
@@ -958,6 +958,10 @@ function populateGrabBag(parade) {
     bag.push(name);
   }
   shuffleArray(bag);
+  if (TEMP_SINGLE_CUSTOMER_POOL) {
+    parade.grabBag = bag.length ? [bag[0]] : [];
+    return parade.grabBag;
+  }
   parade.grabBag = bag;
   return bag;
 }
@@ -1023,29 +1027,6 @@ function shuffleArray(list) {
     [list[i], list[j]] = [list[j], list[i]];
   }
   return list;
-}
-
-function advanceCalendarCounters(rootState) {
-  const calendar = rootState?.calendarDisplay;
-  const setDigits = calendar?.setDigits;
-  if (typeof setDigits !== 'function') return;
-
-  calendar.daysRaw = (calendar?.daysRaw ?? 0) + 1;
-  const displayDays = calendar.daysRaw % 100;
-
-  calendar.longestRaw = Math.max(calendar?.longestRaw ?? 0, calendar.daysRaw);
-  const displayLongest = calendar.longestRaw % 100;
-
-  calendar.daysDisplay = displayDays;
-  calendar.mostDisplay = displayLongest;
-
-  setDigits('days', toDigitPair(displayDays));
-  setDigits('most', toDigitPair(displayLongest));
-}
-
-function toDigitPair(value) {
-  const normalized = Math.max(0, Math.floor(Number(value) || 0)) % 100;
-  return [Math.floor(normalized / 10), normalized % 10];
 }
 
 function randomBetween(range) {
