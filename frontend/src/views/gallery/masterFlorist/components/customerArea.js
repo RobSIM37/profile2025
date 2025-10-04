@@ -45,12 +45,29 @@ export function createCustomerArea({ messages = [] } = {}) {
     chatLog.textContent = '';
   }
 
+  function setPaused(paused) {
+    const isPaused = Boolean(paused);
+    if (isPaused) {
+      chatLog.style.pointerEvents = 'none';
+      chatLog.style.overflowY = 'hidden';
+      area.classList.add('is-paused');
+      chatLog.setAttribute('aria-disabled', 'true');
+    } else {
+      chatLog.style.pointerEvents = '';
+      chatLog.style.overflowY = '';
+      area.classList.remove('is-paused');
+      chatLog.removeAttribute('aria-disabled');
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+  }
+
   return {
     root: area,
     appendMessage,
     appendEntry,
     setEntries,
     clearMessages,
+    setPaused,
     get element() {
       return area;
     },

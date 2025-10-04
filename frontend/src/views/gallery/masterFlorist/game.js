@@ -12,6 +12,7 @@ import {
   hasActiveMasterFloristCustomer,
   canSubmitMasterFloristGuess,
   advanceMasterFloristTimers,
+  setMasterFloristDrag,
 } from './state/store.js';
 import { createMasterFloristCanvasController } from './canvas/controller.js';
 import { createMasterFloristRenderer } from './render/scene.js';
@@ -128,12 +129,68 @@ export function render() {
     syncMasterFloristChat(state);
   };
 
+  function setLoopRunning(running) {
+    const normalized = Boolean(running);
+    if (state.loopRunning === normalized) {
+      return false;
+    }
+    state.loopRunning = normalized;
+    return true;
+  }
+
+  function startLoop() {
+    if (!loop.isRunning) {
+      loop.start();
+    }
+    const changed = setLoopRunning(true);
+    customerArea.setPaused?.(false);
+    if (changed) {
+      renderer.render();
+    }
+  }
+
+  function pauseLoop() {
+    if (loop.isRunning) {
+      loop.stop();
+    }
+    customerArea.setPaused?.(true);
+
+    let changed = setLoopRunning(false);
+    if (state.drag) {
+      setMasterFloristDrag(state, null);
+      changed = true;
+    }
+    if (state.hoverStemId != null) {
+      state.hoverStemId = null;
+      changed = true;
+    }
+    if (Array.isArray(state.pendingDrops) && state.pendingDrops.length) {
+      state.pendingDrops = [];
+      changed = true;
+    }
+
+    if (changed) {
+      handleStateChange();
+    } else {
+      renderer.render();
+    }
+  }
+
+  function handleToggleLoop() {
+    if (loop.isRunning) {
+      pauseLoop();
+    } else {
+      startLoop();
+    }
+  }
+
   const controller = createMasterFloristCanvasController({
     canvas: canvasElement,
     state,
     onStateChange: handleStateChange,
     toCanvasPoint: (event) => sizer.toCanvasPoint(event.clientX, event.clientY),
     onShowCustomer: handleShowCustomer,
+    onToggleLoop: handleToggleLoop,
   });
 
   let paradeReady = false;
@@ -163,7 +220,7 @@ export function render() {
     renderer.render();
     syncMasterFloristChat(state);
   });
-  loop.start();
+  startLoop();
 
   controller.mount();
   renderer.render();
@@ -172,6 +229,8 @@ export function render() {
   frag.cleanup = () => {
     unsubscribe();
     loop.dispose();
+    state.loopRunning = false;
+    customerArea.setPaused?.(false);
     sizer.unmount();
     controller.unmount();
     renderer.dispose();
