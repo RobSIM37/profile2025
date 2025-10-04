@@ -7,6 +7,7 @@ import {
   SOURCE_COLUMNS_META,
   SLOT_CLICK_BOUNDS,
   SOURCE_CONTAINER,
+  getDisabledSlotsForLength,
 } from '../state/slots.js';
 import { MF_CANVAS_WIDTH, MF_CANVAS_HEIGHT } from '../canvas/constants.js';
 import { MASTER_FLORIST_LAYOUT } from '../state/layout.js';
@@ -509,13 +510,16 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
   function prepareSlotStates(solutionOverride = null, slotLimitOverride = null) {
     const solution = Array.isArray(solutionOverride) ? solutionOverride : gameState?.puzzle?.solution || [];
-    const slotLimit = Number.isFinite(slotLimitOverride) ? slotLimitOverride : getActiveSlotLimit();
+    const rawLimit = Number.isFinite(slotLimitOverride) ? slotLimitOverride : getActiveSlotLimit();
+    const slotLimit = Math.max(0, Math.floor(rawLimit));
+    const disabledSet = new Set(getDisabledSlotsForLength(slotLimit));
 
     return SLOT_POSITIONS.map((slot, index) => {
       const baseWidth = slot?.width ?? SLOT_SIZE.width;
       const baseHeight = slot?.height ?? SLOT_SIZE.height;
       const entry = index < solution.length ? solution[index] : null;
-      const code = normalizeSlotCode(entry, index);
+      const isDisabled = slotLimit <= 0 || disabledSet.has(index);
+      const code = isDisabled ? null : normalizeSlotCode(entry, index);
       return {
         index,
         x: slot?.x ?? 0,
@@ -525,7 +529,8 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
         code,
         stemOffsetX: slot?.stemOffsetX ?? 0,
         clickBounds: SLOT_CLICK_BOUNDS[index] || null,
-        isWithinActiveRange: index < slotLimit,
+        isWithinActiveRange: !isDisabled,
+        isDisabled,
       };
     });
   }
@@ -551,7 +556,10 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     if (!drag) return;
     const slotLimit = getActiveSlotLimit();
     if (slotLimit <= 0) return;
-    const filledSlots = slots.reduce((count, slot) => (slot?.code ? count + 1 : count), 0);
+    const filledSlots = slots.reduce((count, slot) => {
+      if (!slot || !slot.isWithinActiveRange) return count;
+      return slot.code ? count + 1 : count;
+    }, 0);
     if (filledSlots >= slotLimit) return;
     const meta = getFlowerMeta(drag.code);
     const color = meta.color || 'rgba(255, 255, 255, 0.45)';
@@ -559,6 +567,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 
     slots.forEach((slot) => {
       if (!slot) return;
+      if (!slot.isWithinActiveRange) return;
       if (slot.code != null && slot.code !== '') return;
       const bounds = slot.clickBounds || SLOT_CLICK_BOUNDS?.[slot.index] || {};
       const width = bounds.width ?? slot.width;

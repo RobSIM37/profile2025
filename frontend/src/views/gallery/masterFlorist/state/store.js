@@ -8,6 +8,7 @@ import {
 } from './chatEngine.js';
 import { createPuzzle, evaluateGuess, normalizeGuessCodes, MASTER_FLORIST_DEFAULT_DIFFICULTY, MASTER_FLORIST_DIFFICULTY_LEVELS } from './puzzleEngine.js';
 import { buildCustomerFeedback, buildCustomerAcceptance } from './dialogueEngine.js';
+import { isSlotDisabledForLength } from './slots.js';
 
 const STORAGE_PREFIX = 'mf:';
 const SETTINGS_STORAGE_KEY = `${STORAGE_PREFIX}settings`;
@@ -220,23 +221,29 @@ export function updateMasterFloristSolution(state, index, code) {
   if (!Array.isArray(solution)) return;
   if (index < 0 || index >= solution.length) return;
 
+  const slotLimit = getPuzzleSlotLimit(state.puzzle);
   const normalized = normalizeSolutionEntry(code);
-  if (normalized) {
-    if (normalized === 'n') {
-      solution[index] = null;
-      return;
-    }
-    const slotLimit = getPuzzleSlotLimit(state.puzzle);
-    const currentValue = solution[index];
-    const filledSlots = collapseMasterFloristSolution(solution, slotLimit).length;
-    const currentIsFilled = isFilledSolutionEntry(currentValue);
-    if (!currentIsFilled && filledSlots >= slotLimit) {
-      return;
-    }
-    solution[index] = normalized;
-  } else {
+  if (!normalized) {
     solution[index] = null;
+    return;
   }
+
+  if (normalized === 'n') {
+    solution[index] = null;
+    return;
+  }
+
+  if (isSlotDisabledForLength(slotLimit, index)) {
+    return;
+  }
+
+  const currentValue = solution[index];
+  const filledSlots = collapseMasterFloristSolution(solution, slotLimit).length;
+  const currentIsFilled = isFilledSolutionEntry(currentValue);
+  if (!currentIsFilled && filledSlots >= slotLimit) {
+    return;
+  }
+  solution[index] = normalized;
 }
 
 export function setMasterFloristDrag(state, drag) {
@@ -638,6 +645,7 @@ export function collapseMasterFloristSolution(solution = [], limit = MF_DROP_ZON
   if (!Array.isArray(solution) || limit <= 0) return [];
   const collapsed = [];
   for (let i = 0; i < solution.length && collapsed.length < limit; i += 1) {
+    if (isSlotDisabledForLength(limit, i)) continue;
     const entry = solution[i];
     if (!isFilledSolutionEntry(entry)) continue;
     collapsed.push(normalizeSolutionEntry(entry));

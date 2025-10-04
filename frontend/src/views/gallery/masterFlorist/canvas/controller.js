@@ -1,4 +1,11 @@
-import { SLOT_POSITIONS, SLOT_SIZE, SOURCE_BOXES, SLOT_HITBOX_SCALE, SLOT_CLICK_BOUNDS } from '../state/slots.js';
+import {
+  SLOT_POSITIONS,
+  SLOT_SIZE,
+  SOURCE_BOXES,
+  SLOT_HITBOX_SCALE,
+  SLOT_CLICK_BOUNDS,
+  isSlotDisabledForLength,
+} from '../state/slots.js';
 import { hasActiveMasterFloristCustomer, updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag, isMasterFloristHandoffActive } from '../state/store.js';
 
 const FLOWER_KEY_BINDINGS = Object.freeze({
@@ -90,7 +97,8 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
       return;
     }
     const solution = state?.puzzle?.solution;
-    const slotIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y);
+    const slotCount = resolveActiveSlotLimit();
+    const slotIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y, slotCount);
     if (Array.isArray(solution) && slotIndex != null) {
       const slot = SLOT_POSITIONS[slotIndex] || {};
       const slotValue = solution[slotIndex];
@@ -161,7 +169,8 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     const point = mapPointer(event);
     const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
     const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
-    const hoverIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y);
+    const slotCount = resolveActiveSlotLimit();
+    const hoverIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y, slotCount);
     state.hoverStemId = hoverIndex != null ? 'slot-' + hoverIndex : null;
 
     if (state.drag && (state.drag.pointerId == null || state.drag.pointerId === event.pointerId)) {
@@ -198,7 +207,8 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
       return;
     }
 
-    const slotIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y);
+    const slotCount = resolveActiveSlotLimit();
+    const slotIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y, slotCount);
     const drag = state.drag;
 
     if (drag && (drag.pointerId == null || drag.pointerId === event.pointerId)) {
@@ -304,6 +314,9 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     const solution = state.puzzle.solution;
     let handled = false;
 
+    const isLeftShiftKey =
+      event.code === 'ShiftLeft' || (normalized === 'shift' && Number(event.location) === 1);
+
     if (normalized === CLEAR_KEY_LAST) {
       handled = clearLastSlot(solution, slotLimit);
       if (handled) {
@@ -314,7 +327,10 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
       if (handled) {
         announce('Cleared arrangement.');
       }
-    } else if (normalized === 'enter' || (event.code === 'ShiftLeft' && !event.ctrlKey && !event.altKey && !event.metaKey)) {
+    } else if (
+      normalized === 'enter' ||
+      (isLeftShiftKey && !event.ctrlKey && !event.altKey && !event.metaKey && !event.repeat)
+    ) {
       event.preventDefault();
       const showButton = state?.showButton;
       if (showButton?.enabled) {
@@ -345,11 +361,18 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     return Math.max(0, Math.min(solution.length, rawLimit));
   }
 
-  function clearLastSlot(solution /* , limit */) {
+  function clearLastSlot(solution, limit) {
     if (!Array.isArray(solution)) {
       return false;
     }
+    const slotCount = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : resolveActiveSlotLimit();
+    if (slotCount <= 0) {
+      return false;
+    }
     for (let i = solution.length - 1; i >= 0; i -= 1) {
+      if (isSlotDisabledForLength(slotCount, i)) {
+        continue;
+      }
       if (solution[i] != null) {
         updateMasterFloristSolution(state, i, null);
         return true;
@@ -373,7 +396,17 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   }
 
   function addFlowerByCode(solution, limit, code) {
-    for (let i = 0; i < limit && i < solution.length; i += 1) {
+    if (!Array.isArray(solution)) {
+      return false;
+    }
+    const slotCount = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : resolveActiveSlotLimit();
+    if (slotCount <= 0) {
+      return false;
+    }
+    for (let i = 0; i < solution.length; i += 1) {
+      if (isSlotDisabledForLength(slotCount, i)) {
+        continue;
+      }
       if (solution[i] == null) {
         updateMasterFloristSolution(state, i, code);
         return true;
@@ -389,10 +422,13 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   return { mount, unmount, reset };
 }
 
-function findSlotIndex(x, y) {
+function findSlotIndex(x, y, slotCount) {
   if (x == null || y == null) return null;
+  const limit = Number.isFinite(slotCount) ? Math.max(0, Math.floor(slotCount)) : 0;
+  if (limit <= 0) return null;
   const slotsPerRow = SLOT_POSITIONS.length / 2;
   for (let i = 0; i < SLOT_POSITIONS.length; i += 1) {
+    if (isSlotDisabledForLength(limit, i)) continue;
     const slot = SLOT_POSITIONS[i];
     const bounds = SLOT_CLICK_BOUNDS?.[i];
     if (!slot) continue;
