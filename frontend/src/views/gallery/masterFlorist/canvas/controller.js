@@ -28,7 +28,14 @@ const FLOWER_NAME_BY_CODE = Object.freeze({
   w: 'lily',
 });
 
-export function createMasterFloristCanvasController({ canvas, state, onStateChange, toCanvasPoint, onShowCustomer } = {}) {
+export function createMasterFloristCanvasController({
+  canvas,
+  state,
+  onStateChange,
+  toCanvasPoint,
+  onShowCustomer,
+  onToggleLoop,
+} = {}) {
   if (!canvas) throw new Error('createMasterFloristCanvasController requires a canvas element.');
   const listeners = [];
 
@@ -75,12 +82,32 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     return isMasterFloristHandoffActive(state) || status === 'completed';
   }
 
+  function isLoopPaused() {
+    return state?.loopRunning === false;
+  }
+
   function handlePointerDown(event) {
-    if (isInteractionLocked()) {
+    const point = mapPointer(event);
+    const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
+    const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
+    const loopButton = state?.loopButton;
+    const targetsLoopButton = isPointInLoopButton(loopButton, arrangementPoint);
+
+    if (!targetsLoopButton && isInteractionLocked()) {
       return;
     }
+
+    if (!targetsLoopButton && isLoopPaused()) {
+      return;
+    }
+
     canvas.focus();
     canvas.setPointerCapture?.(event.pointerId);
+
+    if (targetsLoopButton) {
+      return;
+    }
+
     if (state.drag) return;
 
     if (!hasActiveMasterFloristCustomer(state)) {
@@ -89,13 +116,11 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
       return;
     }
 
-    const point = mapPointer(event);
-    const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
-    const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
     const showButton = state?.showButton;
     if (isPointInShowButton(showButton, arrangementPoint)) {
       return;
     }
+
     const solution = state?.puzzle?.solution;
     const slotCount = resolveActiveSlotLimit();
     const slotIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y, slotCount);
@@ -150,6 +175,21 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     if (isInteractionLocked()) {
       return;
     }
+    if (isLoopPaused()) {
+      let changed = false;
+      if (state.hoverStemId != null) {
+        state.hoverStemId = null;
+        changed = true;
+      }
+      if (state.drag) {
+        setMasterFloristDrag(state, null);
+        changed = true;
+      }
+      if (changed) {
+        onStateChange?.();
+      }
+      return;
+    }
     if (!hasActiveMasterFloristCustomer(state)) {
       let changed = false;
       if (state.hoverStemId != null) {
@@ -184,7 +224,22 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
 
   function handlePointerUp(event) {
     canvas.releasePointerCapture?.(event.pointerId);
-    if (isInteractionLocked()) {
+    const point = mapPointer(event);
+    const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
+    const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
+    const loopButton = state?.loopButton;
+    const targetsLoopButton = isPointInLoopButton(loopButton, arrangementPoint);
+
+    if (!targetsLoopButton && isInteractionLocked()) {
+      return;
+    }
+
+    if (targetsLoopButton) {
+      onToggleLoop?.();
+      return;
+    }
+
+    if (isLoopPaused()) {
       return;
     }
 
@@ -196,9 +251,6 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
       return;
     }
 
-    const point = mapPointer(event);
-    const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
-    const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
     const showButton = state?.showButton;
     if (isPointInShowButton(showButton, arrangementPoint)) {
       if (showButton?.enabled) {
@@ -265,7 +317,7 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
   }
 
   function handlePointerLeave() {
-    if (!hasActiveMasterFloristCustomer(state)) {
+    if (!hasActiveMasterFloristCustomer(state) || isLoopPaused()) {
       if (state.hoverStemId != null) {
         state.hoverStemId = null;
         onStateChange?.();
@@ -280,6 +332,10 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     const key = typeof event.key === 'string' ? event.key : '';
     const normalized = key.length === 1 ? key.toLowerCase() : key.toLowerCase();
     const isSpaceKey = key === CLEAR_KEY_ALL || event.code === 'Space' || normalized === 'space' || normalized === 'spacebar';
+
+    if (isLoopPaused()) {
+      return;
+    }
 
     if (isSpaceKey) {
       event.preventDefault();
@@ -473,10 +529,17 @@ function findSourceBox(x, y) {
   return null;
 }
 
-function isPointInShowButton(button, point) {
+function isPointInButton(button, point) {
   if (!button || !point) return false;
   const { x, y, width, height } = button;
   if (width == null || height == null) return false;
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
 
+function isPointInShowButton(button, point) {
+  return isPointInButton(button, point);
+}
+
+function isPointInLoopButton(button, point) {
+  return isPointInButton(button, point);
+}

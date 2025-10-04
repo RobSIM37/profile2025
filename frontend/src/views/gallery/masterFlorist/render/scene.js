@@ -81,6 +81,11 @@ const CALENDAR_DROP_PX = 40;
 
 const SHOW_CUSTOMERS = true;
 const SHOW_BUTTON_SIZE = { width: 180, height: 52 };
+const LOOP_BUTTON_OFFSET_Y = 12;
+const LOOP_BUTTON_COLORS = Object.freeze({
+  running: { fill: '#e88d87', stroke: 'rgba(148, 38, 34, 0.35)' },
+  paused: { fill: '#7fc37a', stroke: 'rgba(34, 107, 39, 0.35)' },
+});
 let showButtonPosition = { x: 0, y: 0 };
 const HANDOFF_TARGET = Object.freeze({
   centerX: ((MASTER_FLORIST_LAYOUT?.vase?.area?.left ?? 214) * 0.75) - 40,
@@ -183,6 +188,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     if (!hasActiveCustomer) {
       if (gameState) {
         gameState.showButton = null;
+        gameState.loopButton = null;
       }
       lastHasActiveCustomer = hasActiveCustomer;
       lastPuzzleId = currentPuzzleId;
@@ -217,9 +223,11 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     }
     paintEmptySlotPlaceholders(slots);
     if (allowInteractions) {
-      paintShowCustomerButton();
+      const showButtonMetrics = paintShowCustomerButton();
+      paintLoopControlButton(showButtonMetrics);
     } else if (gameState) {
       gameState.showButton = null;
+      gameState.loopButton = null;
     }
 
     ctx.restore();
@@ -393,12 +401,13 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
   }
 
   function paintShowCustomerButton() {
-    const enabled = canSubmitMasterFloristGuess(gameState);
+    const loopRunning = gameState?.loopRunning !== false;
+    const enabled = loopRunning && canSubmitMasterFloristGuess(gameState);
     const { benchY } = getBenchMetrics();
     const width = SHOW_BUTTON_SIZE.width;
     const height = SHOW_BUTTON_SIZE.height;
     const defaultX = (MF_CANVAS_WIDTH - width) / 2 - 325;
-    const defaultY = benchY - height - 24 + 100;
+    const defaultY = benchY - height - 24 + 90;
     const x = gameState?.showButton?.x ?? defaultX;
     const y = gameState?.showButton?.y ?? defaultY;
 
@@ -416,7 +425,42 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.fillText('Show Customer', x + width / 2, y + height / 2);
     ctx.restore();
 
-    gameState.showButton = { x, y, width, height, enabled };
+    const metrics = { x, y, width, height, enabled };
+    gameState.showButton = metrics;
+    return metrics;
+  }
+
+  function paintLoopControlButton(anchor) {
+    if (!gameState) return;
+    const reference = anchor || gameState.showButton;
+    if (!reference) {
+      gameState.loopButton = null;
+      return;
+    }
+
+    const width = reference.width;
+    const height = reference.height;
+    const x = reference.x;
+    const y = reference.y + reference.height + LOOP_BUTTON_OFFSET_Y;
+    const loopRunning = gameState.loopRunning !== false;
+    const palette = loopRunning ? LOOP_BUTTON_COLORS.running : LOOP_BUTTON_COLORS.paused;
+    const label = loopRunning ? 'Pause' : 'Resume';
+
+    ctx.save();
+    ctx.lineWidth = 3;
+    roundRect(ctx, x, y, width, height, 16, true, true, {
+      fillStyle: palette.fill,
+      strokeStyle: palette.stroke,
+    });
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x + width / 2, y + height / 2);
+    ctx.restore();
+
+    gameState.loopButton = { x, y, width, height, running: loopRunning };
   }
 
   function applyHandoffTransform(metrics, progress) {
