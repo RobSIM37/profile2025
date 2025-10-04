@@ -4,6 +4,44 @@ export const SLOT_SIZE = { width: 166, height: 86 };
 
 export const SLOT_HITBOX_SCALE = 0.5;
 
+const EMPTY_DISABLED_SLOTS = Object.freeze([]);
+
+const DISABLED_SLOT_MAP = Object.freeze({
+  5: Object.freeze([4]),
+  4: Object.freeze([3, 5]),
+  3: Object.freeze([0, 1, 2]),
+  2: Object.freeze([0, 1, 2, 4]),
+  1: Object.freeze([0, 1, 2, 3, 5]),
+});
+
+export function getDisabledSlotsForLength(length) {
+  const key = Number.isFinite(length) ? Math.max(0, Math.floor(length)) : 0;
+  return DISABLED_SLOT_MAP[key] || EMPTY_DISABLED_SLOTS;
+}
+
+export function isSlotDisabledForLength(length, index) {
+  if (!Number.isFinite(length) || length <= 0) {
+    return true;
+  }
+  if (!Number.isInteger(index) || index < 0) {
+    return true;
+  }
+  const disabled = getDisabledSlotsForLength(length);
+  return disabled.includes(index);
+}
+
+export function getEnabledSlotsForLength(length) {
+  const disabled = new Set(getDisabledSlotsForLength(length));
+  const totalSlots = SLOT_POSITIONS.length;
+  const enabled = [];
+  for (let i = 0; i < totalSlots; i += 1) {
+    if (!disabled.has(i)) {
+      enabled.push(i);
+    }
+  }
+  return enabled;
+}
+
 export const SLOT_POSITIONS = [
   { x: 314, y: 78, stemOffsetX: 50 },
   { x: 397, y: 43 },
