@@ -445,3 +445,225 @@
 
 
 
+/* Master Florist layout */
+.mf-game-layout {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  gap: var(--space-4);
+  box-sizing: border-box;
+  justify-items: stretch;
+  align-content: stretch;
+}
+
+.mf-game-subheader {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.mf-game-section {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  justify-items: stretch;
+  align-content: stretch;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.mf-working-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.mf-working-frame {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  width: 100%;
+  max-width: 960px;
+  max-height: 100%;
+  aspect-ratio: 960 / 540;
+  background: var(--bg-elev);
+  border-radius: var(--radius);
+  box-sizing: border-box;
+  box-shadow: inset 0 0 0 1px var(--border);
+  overflow: hidden;
+}
+
+.mf-canvas {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.mf-customer-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  width: 960px;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+  flex: 0 0 auto;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--bg-elev);
+  border-radius: var(--radius);
+  box-shadow: 0 0 0 1px var(--border);
+  align-items: stretch;
+}
+
+.mf-chat-log {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 0;
+  max-height: 100%;
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  background: #FFE797;
+  border-radius: calc(var(--radius) / 1.5);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+}
+
+.mf-chat-log.scroll-themed::-webkit-scrollbar {
+  width: 12px;
+}
+
+.mf-chat-log.scroll-themed::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 999px;
+}
+
+.mf-chat-log.scroll-themed::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.mf-chat-message {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: calc(var(--radius) / 1.5);
+  width: fit-content;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+.mf-chat-message.is-customer {
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d6d6d6;
+  align-self: flex-start;
+  text-align: left;
+}
+
+.mf-chat-message.is-player {
+  background: #ffffff;
+  color: #090909;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  align-self: flex-end;
+  text-align: right;
+}
+
+
+.mf-chat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.mf-chat-body {
+  margin: 0;
+  line-height: 1.3;
+}
+
+.mf-chat-message.is-customer .mf-chat-label,
+.mf-chat-message.is-customer .mf-chat-body {
+  text-align: left;
+  justify-self: start;
+}
+
+.mf-chat-message.is-customer .mf-chat-label {
+  color: #a0a0a0;
+}
+.mf-chat-message.is-customer .mf-chat-body {
+  color: inherit;
+}
+
+.mf-chat-message.is-player .mf-chat-label,
+.mf-chat-message.is-player .mf-chat-body {
+  text-align: right;
+  justify-self: end;
+}
+.mf-chat-message.is-player .mf-chat-label {
+  color: #505050;
+  opacity: 0.85;
+}
+
+.mf-chat-segment {
+  display: inline;
+}
+
+.mf-chat-token-warm {
+  color: #ff8a3d;
+  font-weight: 600;
+}
+
+.mf-chat-token-cool {
+  color: #5aa6ff;
+  font-weight: 600;
+}
+
+.mf-chat-token-flower {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+
+
+
+
+

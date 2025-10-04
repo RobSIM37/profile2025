@@ -1,0 +1,2780 @@
+{
+    "templates": {
+        "request": [
+            "I need {len} stem{plural_s(len)}.",
+            "Put together {len} stem{plural_s(len)} for me.",
+            "Make me a set of {len} stem{plural_s(len)}."
+        ],
+        "clauses": {
+            "exact": [
+                "{exact} {is_are(exact)} exactly right",
+                "{exact} stem{plural_s(exact)} landed in the right spot",
+                "{exact} {was_were(exact)} perfect"
+            ],
+            "misplaced": [
+                "{misplaced} {is_are(misplaced)} right but in the wrong spot",
+                "{misplaced} stem{plural_s(misplaced)} {is_are(misplaced)} in the wrong place",
+                "{misplaced} {was_were(misplaced)} close, wrong position"
+            ],
+            "wrong": [
+                "{wrong} {is_are(wrong)} completely off",
+                "{wrong} stem{plural_s(wrong)} {dont_doesnt(wrong)} belong here",
+                "{wrong} {was_were(wrong)} not right for what I was thinking"
+            ],
+            "rules": {
+                "omit_zero_exact": true,
+                "omit_zero_misplaced": true,
+                "omit_zero_wrong": false
+            }
+        },
+        "glue": {
+            "between": ", ",
+            "last_joiner": ", and ",
+            "end": "."
+        },
+        "probabilities": {
+            "request_filler_before": 0.5,
+            "request_filler_after": 0.5,
+            "response_filler_before": 0.5,
+            "response_filler_after": 0.5
+        },
+        "grammar": {
+            "plural_s": true,
+            "is_are": true,
+            "was_were": true,
+            "dont_doesnt": true
+        }
+    },
+    "filler": {
+        "default": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm feeling easy to please.",
+                        "I'm in a good mood.",
+                        "I trust your hands."
+                    ],
+                    "suffixes": [
+                        "Surprise me, but keep it tidy.",
+                        "Let's make this pleasant.",
+                        "Make it feel effortless."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Nice—heading the right way.",
+                            "I like that adjustment.",
+                            "You tightened it up."
+                        ],
+                        "suffixes": [
+                            "Keep pushing like that.",
+                            "Do that again.",
+                            "We're closing in."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Hmm, about the same.",
+                            "No better, no worse.",
+                            "We're holding steady."
+                        ],
+                        "suffixes": [
+                            "Try a bolder change.",
+                            "Nudge a few pieces.",
+                            "Let's mix it up."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's a step back.",
+                            "We drifted off.",
+                            "You lost ground there."
+                        ],
+                        "suffixes": [
+                            "Pull it back in.",
+                            "Refocus and correct.",
+                            "Let's fix that fast."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep this efficient.",
+                        "Straight to it.",
+                        "I'm here for results."
+                    ],
+                    "suffixes": [
+                        "Keep it neat.",
+                        "No fuss.",
+                        "Make it clean."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Good correction.",
+                            "Better.",
+                            "That's progress."
+                        ],
+                        "suffixes": [
+                            "Stay on that line.",
+                            "Keep trimming errors.",
+                            "We're trending up."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Same outcome.",
+                            "No change.",
+                            "Status unchanged."
+                        ],
+                        "suffixes": [
+                            "Shift positions.",
+                            "Try a different move.",
+                            "Rearrange a few."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse than before.",
+                            "That added noise.",
+                            "We slipped."
+                        ],
+                        "suffixes": [
+                            "Reverse course.",
+                            "Undo that angle.",
+                            "Cut the misses."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't waste my time.",
+                        "Move it.",
+                        "Keep up."
+                    ],
+                    "suffixes": [
+                        "Make it tight.",
+                        "No mistakes.",
+                        "Get it right."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally, an improvement.",
+                            "There—better.",
+                            "That's more like it."
+                        ],
+                        "suffixes": [
+                            "Keep that pace.",
+                            "Stay sharp.",
+                            "Do not slip now."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No better.",
+                            "Still off.",
+                            "Stuck in place."
+                        ],
+                        "suffixes": [
+                            "Change something real.",
+                            "Make a real move.",
+                            "Shift more than one."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Wrong direction.",
+                            "That set me back.",
+                            "You're losing me."
+                        ],
+                        "suffixes": [
+                            "Fix it.",
+                            "Tighten up.",
+                            "Correct it now."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I came for service.",
+                        "I expect precision.",
+                        "Enough talk."
+                    ],
+                    "suffixes": [
+                        "Deliver exactly what I asked.",
+                        "Make it correct.",
+                        "No more guesses."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Acceptable improvement.",
+                            "Fine, better.",
+                            "You corrected something."
+                        ],
+                        "suffixes": [
+                            "Continue like that.",
+                            "Keep cutting the errors.",
+                            "Stay exact."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still not right.",
+                            "No real change.",
+                            "This isn't progress."
+                        ],
+                        "suffixes": [
+                            "Make a stronger change.",
+                            "Try a different alignment.",
+                            "Do it properly."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse. Not acceptable.",
+                            "Backwards.",
+                            "That's sloppy."
+                        ],
+                        "suffixes": [
+                            "Redo it.",
+                            "Fix it immediately.",
+                            "Start correcting now."
+                        ]
+                    }
+                }
+            }
+        },
+        "pirate": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm grinnin' already.",
+                        "I've got fair winds today.",
+                        "I'm in high spirits."
+                    ],
+                    "suffixes": [
+                        "Make it neat as a coil.",
+                        "Keep it shipshape.",
+                        "Let it sing like a shanty."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Aye, that's a better tack.",
+                            "Now we're catchin' wind.",
+                            "That course feels true."
+                        ],
+                        "suffixes": [
+                            "Hold that heading.",
+                            "Trim the sails just so.",
+                            "Keep steerin' smart."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Dead calm there.",
+                            "No gain on that reach.",
+                            "We're not movin'."
+                        ],
+                        "suffixes": [
+                            "Shift the rig.",
+                            "Try another bearing.",
+                            "Recast the lines."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Ye veered off-course.",
+                            "That be leeward trouble.",
+                            "We're takin' on water."
+                        ],
+                        "suffixes": [
+                            "Correct yer heading.",
+                            "Haul it back.",
+                            "Right the ship, now."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep this tight.",
+                        "No dawdlin'.",
+                        "Straight to the helm."
+                    ],
+                    "suffixes": [
+                        "Make it tidy.",
+                        "No loose knots.",
+                        "Mind the lines."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better set.",
+                            "Tighter trim.",
+                            "Good wind there."
+                        ],
+                        "suffixes": [
+                            "Stay the course.",
+                            "Keep the canvas full.",
+                            "Hold fast."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No tide change.",
+                            "Still adrift.",
+                            "Same waters."
+                        ],
+                        "suffixes": [
+                            "Shift a spar.",
+                            "Try a new tack.",
+                            "Reset the lines."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's a foul current.",
+                            "Downwind and wrong.",
+                            "We're off the chart."
+                        ],
+                        "suffixes": [
+                            "Turn her about.",
+                            "Reel it back in.",
+                            "Set a clean course."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Move smartly.",
+                        "Don't make me bark.",
+                        "Hands to work."
+                    ],
+                    "suffixes": [
+                        "Make it exact.",
+                        "No slack.",
+                        "Do it right."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally, wind in the sails.",
+                            "Aye, that's progress.",
+                            "Now she answers the wheel."
+                        ],
+                        "suffixes": [
+                            "Keep her steady.",
+                            "Don't lose way.",
+                            "Press the advantage."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still stuck.",
+                            "No better.",
+                            "Same drift."
+                        ],
+                        "suffixes": [
+                            "Make a bold turn.",
+                            "Shift hard to starboard.",
+                            "Change your set."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Wrong waters.",
+                            "Ye're sinkin' us.",
+                            "That's scuppered."
+                        ],
+                        "suffixes": [
+                            "Fix it now.",
+                            "Right the keel.",
+                            "Haul and reset."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I came for proper rigging.",
+                        "I pay for precision.",
+                        "Enough jabber."
+                    ],
+                    "suffixes": [
+                        "Deliver clean lines.",
+                        "Do it by the book.",
+                        "Make it exact, sailor."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Acceptable course correction.",
+                            "Better trim.",
+                            "Fine, that holds."
+                        ],
+                        "suffixes": [
+                            "Keep cutting slack.",
+                            "Stay tight.",
+                            "Maintain that correction."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still wrong.",
+                            "No headway.",
+                            "Unchanged set."
+                        ],
+                        "suffixes": [
+                            "Set a different tack.",
+                            "Re-rig it.",
+                            "Do it properly."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Backwards.",
+                            "This won't sail.",
+                            "That's a mess."
+                        ],
+                        "suffixes": [
+                            "Redo it now.",
+                            "Heave to and fix it.",
+                            "Correct it fast."
+                        ]
+                    }
+                }
+            }
+        },
+        "executive": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm feeling optimistic.",
+                        "I've got time for excellence.",
+                        "Let's make this premium."
+                    ],
+                    "suffixes": [
+                        "Keep it polished.",
+                        "Make it look intentional.",
+                        "Show me clarity."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That's an improvement.",
+                            "Quality is trending up.",
+                            "You reduced waste."
+                        ],
+                        "suffixes": [
+                            "Sustain that pace.",
+                            "Keep optimizing.",
+                            "Lock it in."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No movement on KPIs.",
+                            "Flat results.",
+                            "That didn't shift outcomes."
+                        ],
+                        "suffixes": [
+                            "Change the strategy.",
+                            "Try a different lever.",
+                            "Adjust the execution."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Regression detected.",
+                            "That increased defects.",
+                            "We lost efficiency."
+                        ],
+                        "suffixes": [
+                            "Course-correct now.",
+                            "Reverse that change.",
+                            "Cut the errors."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's be efficient.",
+                        "Keep it within spec.",
+                        "I'm focused on delivery."
+                    ],
+                    "suffixes": [
+                        "No unnecessary steps.",
+                        "Keep signals clean.",
+                        "Make it crisp."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better signal.",
+                            "Improved metrics.",
+                            "Good delta."
+                        ],
+                        "suffixes": [
+                            "Keep compounding gains.",
+                            "Maintain velocity.",
+                            "Press the advantage."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No delta.",
+                            "Static.",
+                            "Unchanged."
+                        ],
+                        "suffixes": [
+                            "Pivot.",
+                            "Test a new angle.",
+                            "Reshape the plan."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Negative trend.",
+                            "Bad variance.",
+                            "Quality dropped."
+                        ],
+                        "suffixes": [
+                            "Stabilize now.",
+                            "Roll back.",
+                            "Patch the leak."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't waste budget.",
+                        "Clock's running.",
+                        "I need results."
+                    ],
+                    "suffixes": [
+                        "Deliver accuracy.",
+                        "No misses.",
+                        "Hit the mark."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally trending positive.",
+                            "Better.",
+                            "Acceptable gain."
+                        ],
+                        "suffixes": [
+                            "Keep it up.",
+                            "Scale that win.",
+                            "Stay precise."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still flat.",
+                            "No improvement.",
+                            "Same defects."
+                        ],
+                        "suffixes": [
+                            "Change approach.",
+                            "Reallocate effort.",
+                            "Act decisively."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Unacceptable decline.",
+                            "Costs went up.",
+                            "We regressed."
+                        ],
+                        "suffixes": [
+                            "Fix immediately.",
+                            "Stop the bleed.",
+                            "Correct course now."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I expect standards.",
+                        "This is a paid engagement.",
+                        "I'm not here to coach."
+                    ],
+                    "suffixes": [
+                        "Deliver to spec.",
+                        "Meet requirements.",
+                        "No excuses."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Meets threshold.",
+                            "Fine, improved.",
+                            "That's within tolerance."
+                        ],
+                        "suffixes": [
+                            "Continue.",
+                            "Maintain discipline.",
+                            "Keep cleaning errors."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still off-spec.",
+                            "No meaningful change.",
+                            "Not acceptable yet."
+                        ],
+                        "suffixes": [
+                            "Do it right.",
+                            "Make a substantial change.",
+                            "Fix alignment."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse outcome.",
+                            "Degraded quality.",
+                            "This fails QA."
+                        ],
+                        "suffixes": [
+                            "Redo properly.",
+                            "Correct it now.",
+                            "Bring it to spec."
+                        ]
+                    }
+                }
+            }
+        },
+        "scientist": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm eager to test a clean setup.",
+                        "I'm ready for good data.",
+                        "I'm feeling confident in the variables."
+                    ],
+                    "suffixes": [
+                        "Keep noise low.",
+                        "Control the inputs.",
+                        "Let's keep the signal crisp."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That reduced error.",
+                            "Improved outcome detected.",
+                            "Better fit to the model."
+                        ],
+                        "suffixes": [
+                            "Replicate that change.",
+                            "Proceed with the same method.",
+                            "Continue optimizing."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No significant change.",
+                            "Flat result.",
+                            "Outcome unchanged."
+                        ],
+                        "suffixes": [
+                            "Adjust the configuration.",
+                            "Alter one factor at a time.",
+                            "Try a different parameter."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Error increased.",
+                            "Worse variance.",
+                            "Outlier behavior grew."
+                        ],
+                        "suffixes": [
+                            "Reverse that tweak.",
+                            "Stabilize the system.",
+                            "Correct the deviation."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's proceed methodically.",
+                        "I want a controlled trial.",
+                        "Keep the procedure tight."
+                    ],
+                    "suffixes": [
+                        "Minimize confounds.",
+                        "Document the step.",
+                        "Keep it reproducible."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Positive delta noted.",
+                            "Trend is favorable.",
+                            "Confidence increased."
+                        ],
+                        "suffixes": [
+                            "Maintain this protocol.",
+                            "Keep refining.",
+                            "Iterate carefully."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Signal is static.",
+                            "No measurable drift.",
+                            "Same distribution."
+                        ],
+                        "suffixes": [
+                            "Change one variable.",
+                            "Test a new arrangement.",
+                            "Explore another hypothesis."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Negative delta observed.",
+                            "Degradation detected.",
+                            "More noise in the data."
+                        ],
+                        "suffixes": [
+                            "Revert and recalibrate.",
+                            "Mitigate the error source.",
+                            "Rebalance the inputs."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "I won't fund mistakes.",
+                        "Be precise.",
+                        "Execute correctly."
+                    ],
+                    "suffixes": [
+                        "No sloppiness.",
+                        "Deliver accuracy.",
+                        "Follow the protocol."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally, an improvement.",
+                            "Acceptable correction.",
+                            "Variance dropped."
+                        ],
+                        "suffixes": [
+                            "Continue exactly like that.",
+                            "Hold this standard.",
+                            "Do not drift."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No better.",
+                            "Still off-spec.",
+                            "No meaningful shift."
+                        ],
+                        "suffixes": [
+                            "Change a major factor.",
+                            "Make a real adjustment.",
+                            "Redo the alignment."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Unacceptable regression.",
+                            "More error introduced.",
+                            "Quality declined."
+                        ],
+                        "suffixes": [
+                            "Fix it now.",
+                            "Return to baseline.",
+                            "Correct the method."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I expect rigor.",
+                        "I'm here for exact results.",
+                        "I have no patience for guesswork."
+                    ],
+                    "suffixes": [
+                        "Deliver a clean outcome.",
+                        "Keep it exact.",
+                        "No more trial-and-error."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Improvement acknowledged.",
+                            "Better measurement.",
+                            "Errors reduced."
+                        ],
+                        "suffixes": [
+                            "Proceed.",
+                            "Keep cutting noise.",
+                            "Maintain precision."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Not progress.",
+                            "Status unchanged.",
+                            "Still not acceptable."
+                        ],
+                        "suffixes": [
+                            "Make a substantial change.",
+                            "Fix alignment properly.",
+                            "Produce measurable gains."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse result.",
+                            "Defects increased.",
+                            "This fails standards."
+                        ],
+                        "suffixes": [
+                            "Redo the step.",
+                            "Correct immediately.",
+                            "Bring it to spec now."
+                        ]
+                    }
+                }
+            }
+        },
+        "poet": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm in the mood for grace.",
+                        "I'm ready for rhythm.",
+                        "I'm open to a gentle cadence."
+                    ],
+                    "suffixes": [
+                        "Keep it musical.",
+                        "Let it breathe.",
+                        "Make it sing softly."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That line lands.",
+                            "The cadence improves.",
+                            "The stanza tightens."
+                        ],
+                        "suffixes": [
+                            "Keep that meter.",
+                            "Carry that rhythm forward.",
+                            "Hold the tone."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "The verse doesn't move.",
+                            "Same beat.",
+                            "No new rhyme."
+                        ],
+                        "suffixes": [
+                            "Shift the pattern.",
+                            "Change the foot.",
+                            "Find a stronger turn."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "The meter breaks.",
+                            "That rhyme stumbles.",
+                            "The image dulls."
+                        ],
+                        "suffixes": [
+                            "Rewrite that thought.",
+                            "Restore the flow.",
+                            "Cut the slack."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep it balanced.",
+                        "I want steady rhythm.",
+                        "I'm after clean lines."
+                    ],
+                    "suffixes": [
+                        "No clutter.",
+                        "Keep the phrasing clear.",
+                        "Hold the pace."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better rhythm.",
+                            "Cleaner phrasing.",
+                            "The image sharpens."
+                        ],
+                        "suffixes": [
+                            "Stay with that line.",
+                            "Build on that beat.",
+                            "Keep the diction tight."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still flat.",
+                            "No lift.",
+                            "Unmoved."
+                        ],
+                        "suffixes": [
+                            "Change the emphasis.",
+                            "Turn the verse.",
+                            "Try a new arrangement."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "It sours.",
+                            "That drags.",
+                            "Clumsy turn."
+                        ],
+                        "suffixes": [
+                            "Cut and refine.",
+                            "Recover the shape.",
+                            "Tighten the line."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't waste a word.",
+                        "Make it crisp.",
+                        "Say it right."
+                    ],
+                    "suffixes": [
+                        "No filler.",
+                        "Keep it exact.",
+                        "Choose every beat."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally, a true line.",
+                            "That scans.",
+                            "Better form."
+                        ],
+                        "suffixes": [
+                            "Keep that control.",
+                            "Hold that music.",
+                            "Don't slip."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still off meter.",
+                            "No improvement.",
+                            "It plods."
+                        ],
+                        "suffixes": [
+                            "Change the structure.",
+                            "Find a real turn.",
+                            "Rework the phrasing."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's a misstep.",
+                            "Sloppy rhyme.",
+                            "Broken cadence."
+                        ],
+                        "suffixes": [
+                            "Fix it now.",
+                            "Clean the line.",
+                            "Reset the form."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I expect craft.",
+                        "I'm here for clarity.",
+                        "Spare me the fluff."
+                    ],
+                    "suffixes": [
+                        "Deliver strong lines.",
+                        "Make it taut.",
+                        "Keep it honest."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Improved verse.",
+                            "Better image.",
+                            "Cleaner cadence."
+                        ],
+                        "suffixes": [
+                            "Continue.",
+                            "Keep the pressure.",
+                            "Hold the voice."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still muddled.",
+                            "No shape yet.",
+                            "Not working."
+                        ],
+                        "suffixes": [
+                            "Make a decisive edit.",
+                            "Change direction.",
+                            "Refine the structure."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse lines.",
+                            "It falls apart.",
+                            "This fails the ear."
+                        ],
+                        "suffixes": [
+                            "Rewrite properly.",
+                            "Cut and rebuild.",
+                            "Make it sound."
+                        ]
+                    }
+                }
+            }
+        },
+        "noble": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm inclined toward elegance.",
+                        "I'm ready for refinement.",
+                        "I welcome a tasteful touch."
+                    ],
+                    "suffixes": [
+                        "Keep it dignified.",
+                        "Make it graceful.",
+                        "Mind the presentation."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That suits me.",
+                            "Your taste improves.",
+                            "Better composed."
+                        ],
+                        "suffixes": [
+                            "Maintain decorum.",
+                            "Proceed with poise.",
+                            "Hold that standard."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No elevation yet.",
+                            "Unmoved in quality.",
+                            "Still ordinary."
+                        ],
+                        "suffixes": [
+                            "Refine your choices.",
+                            "Arrange with care.",
+                            "Polish the form."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That lacks taste.",
+                            "A decline in form.",
+                            "Unbecoming."
+                        ],
+                        "suffixes": [
+                            "Correct this at once.",
+                            "Restore elegance.",
+                            "Improve the finish."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep standards.",
+                        "I want proper order.",
+                        "Attend to the details."
+                    ],
+                    "suffixes": [
+                        "No excess.",
+                        "Balanced and neat.",
+                        "Presentably done."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Acceptable progress.",
+                            "A finer touch.",
+                            "Better arranged."
+                        ],
+                        "suffixes": [
+                            "Maintain this level.",
+                            "Continue carefully.",
+                            "Keep it proper."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No change in standing.",
+                            "Still plain.",
+                            "Not improved."
+                        ],
+                        "suffixes": [
+                            "Reconsider placement.",
+                            "Polish the layout.",
+                            "Choose with discretion."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Standards slipped.",
+                            "Quality fell.",
+                            "Poorly done."
+                        ],
+                        "suffixes": [
+                            "Set it right.",
+                            "Redeem the form.",
+                            "Correct swiftly."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Do not test my patience.",
+                        "I expect excellence.",
+                        "Work properly."
+                    ],
+                    "suffixes": [
+                        "No mistakes.",
+                        "Present it with care.",
+                        "Deliver at once."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "At last, worthy.",
+                            "An improvement.",
+                            "That will do."
+                        ],
+                        "suffixes": [
+                            "Continue in this vein.",
+                            "Do not falter.",
+                            "Keep your composure."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still lacking.",
+                            "No better.",
+                            "Unchanged."
+                        ],
+                        "suffixes": [
+                            "Make a real correction.",
+                            "Improve the order.",
+                            "Refine immediately."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Intolerable.",
+                            "Beneath standard.",
+                            "Unacceptable."
+                        ],
+                        "suffixes": [
+                            "Fix it now.",
+                            "Make it proper.",
+                            "Raise the quality."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I require proper service.",
+                        "I expect discretion and care.",
+                        "I won't excuse errors."
+                    ],
+                    "suffixes": [
+                        "Bring it to standard.",
+                        "Attend to accuracy.",
+                        "Do it correctly."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Improvement acknowledged.",
+                            "Better.",
+                            "Acceptable for now."
+                        ],
+                        "suffixes": [
+                            "Continue.",
+                            "Maintain standard.",
+                            "Do not regress."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Not satisfactory.",
+                            "No progress.",
+                            "Still wrong."
+                        ],
+                        "suffixes": [
+                            "Correct the arrangement.",
+                            "Make a decisive fix.",
+                            "Do your duty."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse.",
+                            "This offends taste.",
+                            "Poor service."
+                        ],
+                        "suffixes": [
+                            "Rectify immediately.",
+                            "Restore quality.",
+                            "Fix this at once."
+                        ]
+                    }
+                }
+            }
+        },
+        "hippie": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm feeling mellow.",
+                        "I'm vibing easy.",
+                        "I'm ready for something gentle."
+                    ],
+                    "suffixes": [
+                        "Keep it flowing.",
+                        "Let it feel natural.",
+                        "Make it feel light."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That's smoother.",
+                            "The energy clears.",
+                            "That feels right."
+                        ],
+                        "suffixes": [
+                            "Stay in that groove.",
+                            "Keep it easy.",
+                            "Let it keep flowing."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Same vibe.",
+                            "No shift yet.",
+                            "Still flat energy."
+                        ],
+                        "suffixes": [
+                            "Change the flow.",
+                            "Try a new move.",
+                            "Reshape the feel."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's harsh.",
+                            "The vibe slips.",
+                            "Energy gets noisy."
+                        ],
+                        "suffixes": [
+                            "Soften it up.",
+                            "Ease it back.",
+                            "Reset the feel."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep it simple.",
+                        "I want calm.",
+                        "I'm here for balance."
+                    ],
+                    "suffixes": [
+                        "No tension.",
+                        "Keep it centered.",
+                        "Make it peaceful."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better flow.",
+                            "Cleaner energy.",
+                            "Good shift."
+                        ],
+                        "suffixes": [
+                            "Hold that balance.",
+                            "Stay gentle.",
+                            "Keep it aligned."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still static.",
+                            "No lift.",
+                            "Same feel."
+                        ],
+                        "suffixes": [
+                            "Try a smoother turn.",
+                            "Change the pattern.",
+                            "Shift a few pieces."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That jars.",
+                            "It spikes.",
+                            "Too rigid."
+                        ],
+                        "suffixes": [
+                            "Loosen it.",
+                            "Back it off.",
+                            "Find the ease again."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't make this a drag.",
+                        "Move with purpose.",
+                        "Keep it real."
+                    ],
+                    "suffixes": [
+                        "No mess.",
+                        "Keep it tight.",
+                        "Make it right now."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Okay, better.",
+                            "That's the groove.",
+                            "Now it flows."
+                        ],
+                        "suffixes": [
+                            "Stick with it.",
+                            "Don't overwork it.",
+                            "Keep it steady."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No better.",
+                            "Still stuck.",
+                            "It's not moving."
+                        ],
+                        "suffixes": [
+                            "Make a real change.",
+                            "Switch it up.",
+                            "Do something that breathes."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's off.",
+                            "Too forced.",
+                            "You're clashing."
+                        ],
+                        "suffixes": [
+                            "Fix it.",
+                            "Smooth it out.",
+                            "Reset and try again."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I came for something that feels right.",
+                        "I need you tuned in.",
+                        "I'm not here for static."
+                    ],
+                    "suffixes": [
+                        "Deliver a clean feel.",
+                        "Make it honest.",
+                        "No noise."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better vibe.",
+                            "You cleared it up.",
+                            "That sits right."
+                        ],
+                        "suffixes": [
+                            "Keep it there.",
+                            "Stay grounded.",
+                            "Hold that alignment."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still off.",
+                            "No real change.",
+                            "This doesn't land."
+                        ],
+                        "suffixes": [
+                            "Shift the arrangement.",
+                            "Try a simpler move.",
+                            "Make a meaningful change."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse feel.",
+                            "More static.",
+                            "That jars me."
+                        ],
+                        "suffixes": [
+                            "Redo it gently.",
+                            "Find the flow again.",
+                            "Fix it cleanly."
+                        ]
+                    }
+                }
+            }
+        },
+        "grandparent": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm feeling sweet today.",
+                        "I'm easy to please.",
+                        "I'm in no rush."
+                    ],
+                    "suffixes": [
+                        "Make it neat.",
+                        "Keep it tidy.",
+                        "Do it just so."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That's better, dear.",
+                            "Good fix.",
+                            "You're getting there."
+                        ],
+                        "suffixes": [
+                            "Keep going like that.",
+                            "Do another just like it.",
+                            "Stay steady."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No change yet.",
+                            "Still the same.",
+                            "Not quite there."
+                        ],
+                        "suffixes": [
+                            "Try moving a couple.",
+                            "Adjust a bit more.",
+                            "Change the lineup."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That slipped.",
+                            "Worse than before.",
+                            "Oh no, that's off."
+                        ],
+                        "suffixes": [
+                            "Fix it up.",
+                            "Put it right.",
+                            "Try again, please."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's be practical.",
+                        "I like things orderly.",
+                        "I want it done right."
+                    ],
+                    "suffixes": [
+                        "No fuss.",
+                        "Keep it simple.",
+                        "Make it clear."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better.",
+                            "That helps.",
+                            "Good change."
+                        ],
+                        "suffixes": [
+                            "Keep at it.",
+                            "Stay with that.",
+                            "Make another like it."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still the same.",
+                            "No better yet.",
+                            "Not moving."
+                        ],
+                        "suffixes": [
+                            "Try swapping a few.",
+                            "Change your approach.",
+                            "Move things around."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's worse.",
+                            "You lost ground.",
+                            "Not like that."
+                        ],
+                        "suffixes": [
+                            "Fix it now.",
+                            "Put it right, please.",
+                            "Tidy it back up."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't dawdle.",
+                        "Do it properly.",
+                        "Mind yourself."
+                    ],
+                    "suffixes": [
+                        "No mistakes.",
+                        "Get it right.",
+                        "Make it exact."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally better.",
+                            "There we go.",
+                            "That's the idea."
+                        ],
+                        "suffixes": [
+                            "Keep it up.",
+                            "Don't slip.",
+                            "Finish it right."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still not better.",
+                            "No improvement.",
+                            "Same trouble."
+                        ],
+                        "suffixes": [
+                            "Make a real change.",
+                            "Try again seriously.",
+                            "Fix your approach."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse now.",
+                            "I won't accept that.",
+                            "That won't do."
+                        ],
+                        "suffixes": [
+                            "Correct it now.",
+                            "Set it straight.",
+                            "Do it right this time."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I came for good service.",
+                        "I expect you to pay attention.",
+                        "I don't have all day."
+                    ],
+                    "suffixes": [
+                        "Do it right.",
+                        "Make it correct.",
+                        "No more errors."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better.",
+                            "That'll pass.",
+                            "Improved enough."
+                        ],
+                        "suffixes": [
+                            "Continue like that.",
+                            "Keep fixing.",
+                            "Stay on it."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still not right.",
+                            "No change worth noting.",
+                            "Not yet acceptable."
+                        ],
+                        "suffixes": [
+                            "Fix the placement.",
+                            "Try a proper change.",
+                            "Do it neatly."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's worse.",
+                            "I'm disappointed.",
+                            "Poor work."
+                        ],
+                        "suffixes": [
+                            "Redo it now.",
+                            "Correct this.",
+                            "Make it proper."
+                        ]
+                    }
+                }
+            }
+        },
+        "gangster": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm feelin' generous.",
+                        "I'm in a good mood.",
+                        "I got time today."
+                    ],
+                    "suffixes": [
+                        "Keep it classy.",
+                        "Make it clean.",
+                        "Don't overcomplicate it."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Nice move.",
+                            "That's cleaner.",
+                            "You tightened it."
+                        ],
+                        "suffixes": [
+                            "Keep it that way.",
+                            "Run it back like that.",
+                            "Stay sharp."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Same story.",
+                            "No change.",
+                            "Flat result."
+                        ],
+                        "suffixes": [
+                            "Switch it up.",
+                            "Try a new angle.",
+                            "Move a couple pieces."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Bad look.",
+                            "That's sloppy.",
+                            "You lost control."
+                        ],
+                        "suffixes": [
+                            "Fix it fast.",
+                            "Clean it up.",
+                            "Do it right."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's do business.",
+                        "Keep this tight.",
+                        "I want it done right."
+                    ],
+                    "suffixes": [
+                        "No loose ends.",
+                        "Make it airtight.",
+                        "Keep it tidy."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better.",
+                            "That plays.",
+                            "We're good there."
+                        ],
+                        "suffixes": [
+                            "Stay on that.",
+                            "Keep it tight.",
+                            "Hold the line."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still nothing.",
+                            "No movement.",
+                            "Not impressed."
+                        ],
+                        "suffixes": [
+                            "Change the setup.",
+                            "Try another route.",
+                            "Shift your placements."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's a miss.",
+                            "Wrong direction.",
+                            "This won't fly."
+                        ],
+                        "suffixes": [
+                            "Set it straight.",
+                            "Fix it now.",
+                            "Do it clean."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't test me.",
+                        "Clock's ticking.",
+                        "Get serious."
+                    ],
+                    "suffixes": [
+                        "No mistakes.",
+                        "Hit the mark.",
+                        "Make it exact."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally.",
+                            "Good recovery.",
+                            "That's respect."
+                        ],
+                        "suffixes": [
+                            "Keep that energy.",
+                            "Don't slip.",
+                            "Finish strong."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still off.",
+                            "No better.",
+                            "Same mess."
+                        ],
+                        "suffixes": [
+                            "Make a real change.",
+                            "Fix the layout.",
+                            "Move more than one."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse.",
+                            "You're losing me.",
+                            "Not acceptable."
+                        ],
+                        "suffixes": [
+                            "Correct it now.",
+                            "Clean it up.",
+                            "Make it right."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I pay for results.",
+                        "I expect precision.",
+                        "I'm not here to coach."
+                    ],
+                    "suffixes": [
+                        "Deliver exact.",
+                        "No excuses.",
+                        "Get it done."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Fine.",
+                            "That's better.",
+                            "Good enough."
+                        ],
+                        "suffixes": [
+                            "Keep cutting the misses.",
+                            "Stay focused.",
+                            "Continue."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still wrong.",
+                            "No progress.",
+                            "Not good yet."
+                        ],
+                        "suffixes": [
+                            "Do it correctly.",
+                            "Make a decisive change.",
+                            "Fix the alignment."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Backwards.",
+                            "This is bad work.",
+                            "No way."
+                        ],
+                        "suffixes": [
+                            "Redo it.",
+                            "Correct it fast.",
+                            "Bring it up to par."
+                        ]
+                    }
+                }
+            }
+        },
+        "detective": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm ready to close this.",
+                        "I'm feeling sharp.",
+                        "I've got a clear hunch."
+                    ],
+                    "suffixes": [
+                        "Keep the facts tidy.",
+                        "Make the pattern pop.",
+                        "Lay it out clean."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That tightens the case.",
+                            "Good lead.",
+                            "Evidence improves."
+                        ],
+                        "suffixes": [
+                            "Follow that thread.",
+                            "Keep connecting dots.",
+                            "Stay on that trail."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No new evidence.",
+                            "Still no break.",
+                            "Case hasn't moved."
+                        ],
+                        "suffixes": [
+                            "Change your angle.",
+                            "Rearrange the pieces.",
+                            "Try another approach."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Bad lead.",
+                            "False trail.",
+                            "That muddies the file."
+                        ],
+                        "suffixes": [
+                            "Cut it out.",
+                            "Reset the board.",
+                            "Clean the picture."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep it by the book.",
+                        "I'm working the case clean.",
+                        "I want a clear picture."
+                    ],
+                    "suffixes": [
+                        "No distractions.",
+                        "Keep it straight.",
+                        "Make the evidence plain."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better pattern.",
+                            "Clarity rising.",
+                            "Solid clue."
+                        ],
+                        "suffixes": [
+                            "Keep pressing.",
+                            "Stay precise.",
+                            "Work that angle."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "No movement.",
+                            "Still hazy.",
+                            "Unchanged."
+                        ],
+                        "suffixes": [
+                            "Try a sharper swap.",
+                            "Shift positions.",
+                            "Test another placement."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse picture.",
+                            "That obscures things.",
+                            "Bad read."
+                        ],
+                        "suffixes": [
+                            "Fix your layout.",
+                            "Correct the spread.",
+                            "Bring it back in focus."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't waste my time.",
+                        "Stick to facts.",
+                        "Work clean."
+                    ],
+                    "suffixes": [
+                        "No errors.",
+                        "Make it exact.",
+                        "Do it right now."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally, a break.",
+                            "That checks out.",
+                            "Good correction."
+                        ],
+                        "suffixes": [
+                            "Keep that line.",
+                            "Stay on target.",
+                            "Finish it."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still nothing.",
+                            "No better.",
+                            "Same fog."
+                        ],
+                        "suffixes": [
+                            "Change your approach.",
+                            "Reshape the spread.",
+                            "Make a clear move."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's a bad lead.",
+                            "Worse read.",
+                            "Off the mark."
+                        ],
+                        "suffixes": [
+                            "Fix it now.",
+                            "Set it straight.",
+                            "Clean the case file."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I came for answers.",
+                        "I expect competence.",
+                        "I don't need guesses."
+                    ],
+                    "suffixes": [
+                        "Bring me clarity.",
+                        "Do it properly.",
+                        "Make it tight."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Acceptable progress.",
+                            "That aligns.",
+                            "Better clarity."
+                        ],
+                        "suffixes": [
+                            "Proceed.",
+                            "Keep it tight.",
+                            "Close the gap."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still unclear.",
+                            "No real progress.",
+                            "Not good enough."
+                        ],
+                        "suffixes": [
+                            "Change the placement.",
+                            "Try a stronger rearrangement.",
+                            "Make a decisive move."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Backwards.",
+                            "Worse picture.",
+                            "Wrong direction."
+                        ],
+                        "suffixes": [
+                            "Correct immediately.",
+                            "Fix the layout.",
+                            "Bring it into focus."
+                        ]
+                    }
+                }
+            }
+        },
+        "cowhand": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm in a good mood, partner.",
+                        "I'm feeling easy.",
+                        "I got time for a neat job."
+                    ],
+                    "suffixes": [
+                        "Keep it square.",
+                        "Make it tidy.",
+                        "Line it up true."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That's steadier.",
+                            "Good wrangling.",
+                            "You tightened the herd."
+                        ],
+                        "suffixes": [
+                            "Keep riding that line.",
+                            "Stay on that trail.",
+                            "Hold it together."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Same pasture.",
+                            "No headway.",
+                            "Still in place."
+                        ],
+                        "suffixes": [
+                            "Shift a few head.",
+                            "Try another gate.",
+                            "Repen the spread."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's scattered.",
+                            "Wrong corral.",
+                            "You lost the drive."
+                        ],
+                        "suffixes": [
+                            "Round it back up.",
+                            "Set 'em straight.",
+                            "Fix the lineup."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep it square.",
+                        "I want it proper.",
+                        "Do it clean."
+                    ],
+                    "suffixes": [
+                        "No drift.",
+                        "Keep it tight.",
+                        "Make it right."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better trail.",
+                            "Stronger drive.",
+                            "Good handle."
+                        ],
+                        "suffixes": [
+                            "Stay on it.",
+                            "Keep it fenced in.",
+                            "Hold the course."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still stuck.",
+                            "No movement.",
+                            "Flat trail."
+                        ],
+                        "suffixes": [
+                            "Change the path.",
+                            "Move a few.",
+                            "Reset the spread."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse drive.",
+                            "Strayed off.",
+                            "That's a tangle."
+                        ],
+                        "suffixes": [
+                            "Untangle it.",
+                            "Bring 'em back.",
+                            "Fix the line."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Quit lollygaggin'.",
+                        "Get to work.",
+                        "Don't make me say it twice."
+                    ],
+                    "suffixes": [
+                        "No mistakes.",
+                        "Do it right.",
+                        "Make it exact."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally movin'.",
+                            "Better.",
+                            "That'll ride."
+                        ],
+                        "suffixes": [
+                            "Keep that pace.",
+                            "Don't lose it.",
+                            "Finish the job."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still stuck.",
+                            "No better.",
+                            "Same pen."
+                        ],
+                        "suffixes": [
+                            "Make a hard change.",
+                            "Shift more than one.",
+                            "Rework the penning."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Backwards.",
+                            "That's a mess.",
+                            "Wrong way."
+                        ],
+                        "suffixes": [
+                            "Fix it now.",
+                            "Set it right.",
+                            "Get it together."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I came for straight work.",
+                        "I expect grit.",
+                        "I ain't got patience for fumbling."
+                    ],
+                    "suffixes": [
+                        "Do it proper.",
+                        "Bring it in neat.",
+                        "Keep it on the rail."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Good enough.",
+                            "That'll do.",
+                            "Better penning."
+                        ],
+                        "suffixes": [
+                            "Keep going.",
+                            "Stay true.",
+                            "Hold that line."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still not right.",
+                            "No real change.",
+                            "Not there yet."
+                        ],
+                        "suffixes": [
+                            "Shift the lot.",
+                            "Move it properly.",
+                            "Make a real fix."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse.",
+                            "I don't accept that.",
+                            "Wrong corral."
+                        ],
+                        "suffixes": [
+                            "Redo it.",
+                            "Correct it fast.",
+                            "Set it straight now."
+                        ]
+                    }
+                }
+            }
+        },
+        "clown": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm all smiles.",
+                        "I'm ready for fun.",
+                        "I'm in a playful mood."
+                    ],
+                    "suffixes": [
+                        "Keep it snappy.",
+                        "Make it crisp.",
+                        "Give me a clean bit."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "That lands.",
+                            "Good gag.",
+                            "Nice recovery."
+                        ],
+                        "suffixes": [
+                            "Keep the momentum.",
+                            "Do it again.",
+                            "Finish big."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Flat beat.",
+                            "No laugh yet.",
+                            "Still warm-up."
+                        ],
+                        "suffixes": [
+                            "Change the timing.",
+                            "Try a new setup.",
+                            "Shuffle the beats."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That flops.",
+                            "Wrong timing.",
+                            "You stepped on it."
+                        ],
+                        "suffixes": [
+                            "Reset the bit.",
+                            "Tighten the act.",
+                            "Fix the rhythm."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's keep it tight.",
+                        "I want clean timing.",
+                        "I'm looking for a good beat."
+                    ],
+                    "suffixes": [
+                        "No stumble.",
+                        "Make it tidy.",
+                        "Keep it crisp."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better tempo.",
+                            "Good timing.",
+                            "That clicks."
+                        ],
+                        "suffixes": [
+                            "Keep it rolling.",
+                            "Stay in rhythm.",
+                            "Hold the bounce."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still warm-up.",
+                            "No lift yet.",
+                            "Even beat."
+                        ],
+                        "suffixes": [
+                            "Switch the order.",
+                            "Try a sharper turn.",
+                            "Re-time the move."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse timing.",
+                            "Missed beat.",
+                            "Awkward step."
+                        ],
+                        "suffixes": [
+                            "Fix the pace.",
+                            "Tighten the mark.",
+                            "Reset and go again."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't botch the act.",
+                        "Hit your mark.",
+                        "Keep focus."
+                    ],
+                    "suffixes": [
+                        "No slips.",
+                        "Make it exact.",
+                        "Do it right now."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally a laugh.",
+                            "That works.",
+                            "You nailed it."
+                        ],
+                        "suffixes": [
+                            "Keep that rhythm.",
+                            "Don't lose the beat.",
+                            "Finish strong."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still not funny.",
+                            "No improvement.",
+                            "Same dead air."
+                        ],
+                        "suffixes": [
+                            "Change the order.",
+                            "Make a bold turn.",
+                            "Set a better pace."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That dies.",
+                            "Worse beat.",
+                            "Not acceptable."
+                        ],
+                        "suffixes": [
+                            "Fix it fast.",
+                            "Clean the timing.",
+                            "Reset the act."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I booked a show.",
+                        "I expect timing.",
+                        "I'm not here to direct."
+                    ],
+                    "suffixes": [
+                        "Deliver cleanly.",
+                        "Keep it tight.",
+                        "No excuses."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Fine.",
+                            "That plays.",
+                            "Better rhythm."
+                        ],
+                        "suffixes": [
+                            "Continue.",
+                            "Stay on pace.",
+                            "Keep the bounce."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still flat.",
+                            "No change worth noting.",
+                            "Not good enough."
+                        ],
+                        "suffixes": [
+                            "Do a real change.",
+                            "Re-time the set.",
+                            "Fix the pacing."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Backwards.",
+                            "Awkward.",
+                            "That fails."
+                        ],
+                        "suffixes": [
+                            "Redo it now.",
+                            "Correct the beat.",
+                            "Make it clean."
+                        ]
+                    }
+                }
+            }
+        },
+        "chef": {
+            "happy": {
+                "requests": {
+                    "prefixes": [
+                        "I'm hungry for balance.",
+                        "I'm ready for a clean plate.",
+                        "I've got an appetite for precision."
+                    ],
+                    "suffixes": [
+                        "Keep it plated well.",
+                        "Make it harmonious.",
+                        "Serve it neat."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better seasoning.",
+                            "Cleaner plating.",
+                            "You cut the excess."
+                        ],
+                        "suffixes": [
+                            "Keep that flavor.",
+                            "Stay consistent.",
+                            "Finish strong."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still bland.",
+                            "No new balance.",
+                            "Even but flat."
+                        ],
+                        "suffixes": [
+                            "Change the mix.",
+                            "Shift the components.",
+                            "Plate it differently."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Over-seasoned.",
+                            "Messy plate.",
+                            "Balance slipped."
+                        ],
+                        "suffixes": [
+                            "Fix the mix.",
+                            "Clean the plate.",
+                            "Rework the build."
+                        ]
+                    }
+                }
+            },
+            "neutral": {
+                "requests": {
+                    "prefixes": [
+                        "Let's cook it right.",
+                        "I want proper balance.",
+                        "Keep the prep clean."
+                    ],
+                    "suffixes": [
+                        "No waste.",
+                        "Make it exact.",
+                        "Serve it tidy."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Better balance.",
+                            "Good adjustment.",
+                            "Flavor improved."
+                        ],
+                        "suffixes": [
+                            "Keep that ratio.",
+                            "Maintain the standard.",
+                            "Carry it through."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Same taste.",
+                            "No lift.",
+                            "Still flat."
+                        ],
+                        "suffixes": [
+                            "Change the proportions.",
+                            "Swap the positions.",
+                            "Try a sharper edit."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Worse balance.",
+                            "Off flavor.",
+                            "Bad plating."
+                        ],
+                        "suffixes": [
+                            "Fix immediately.",
+                            "Rebuild cleanly.",
+                            "Get it back in balance."
+                        ]
+                    }
+                }
+            },
+            "angry": {
+                "requests": {
+                    "prefixes": [
+                        "Don't overcook this.",
+                        "Move with purpose.",
+                        "Deliver precision."
+                    ],
+                    "suffixes": [
+                        "No mistakes.",
+                        "Serve it perfect.",
+                        "Plate it right now."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Finally edible.",
+                            "Better dish.",
+                            "You corrected it."
+                        ],
+                        "suffixes": [
+                            "Keep that heat.",
+                            "Don't slip.",
+                            "Finish the plate."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still under.",
+                            "No improvement.",
+                            "Same problem."
+                        ],
+                        "suffixes": [
+                            "Change the build.",
+                            "Make a real edit.",
+                            "Fix the ratio."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "That's ruined.",
+                            "Worse dish.",
+                            "Not acceptable."
+                        ],
+                        "suffixes": [
+                            "Redo now.",
+                            "Correct the balance.",
+                            "Re-plate properly."
+                        ]
+                    }
+                }
+            },
+            "complaint": {
+                "requests": {
+                    "prefixes": [
+                        "I expect quality.",
+                        "I'm paying for craft.",
+                        "I don't tolerate mistakes."
+                    ],
+                    "suffixes": [
+                        "Deliver the standard.",
+                        "Make it correct.",
+                        "No excuses."
+                    ]
+                },
+                "responses": {
+                    "positive": {
+                        "prefixes": [
+                            "Acceptable improvement.",
+                            "Better.",
+                            "Now we're cooking."
+                        ],
+                        "suffixes": [
+                            "Continue.",
+                            "Hold that quality.",
+                            "Keep the balance."
+                        ]
+                    },
+                    "neutral": {
+                        "prefixes": [
+                            "Still not right.",
+                            "No meaningful change.",
+                            "This isn't serviceable."
+                        ],
+                        "suffixes": [
+                            "Rebuild properly.",
+                            "Fix the plate.",
+                            "Do it to standard."
+                        ]
+                    },
+                    "negative": {
+                        "prefixes": [
+                            "Backwards.",
+                            "Worse service.",
+                            "Unacceptable dish."
+                        ],
+                        "suffixes": [
+                            "Redo it correctly.",
+                            "Correct immediately.",
+                            "Bring it to standard now."
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

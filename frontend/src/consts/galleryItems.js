@@ -1,5 +1,11 @@
 export const GALLERY_ITEMS = [
   {
+    title: 'Master Florist',
+    tagline: 'Arrange custom bouquets under pressure',
+    img: 'assets/masterFloristThumbnail.png',
+    link: '#/gallery/master-florist',
+  },
+  {
     title: 'Predict Four',
     tagline: 'Connect Four with predictive scoring',
     img: 'assets/predictFourThumbnail.png',
@@ -54,4 +60,3 @@ export const GALLERY_ITEMS = [
     link: '#/gallery/fizzbuzz',
   },
 ];
-

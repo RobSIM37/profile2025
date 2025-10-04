@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2025-10-02T20:54:07.0542583-04:00",
+  "sourceFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\raw",
+  "outputFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\calendar",
+  "files": [
+    {
+      "entryType": "numbers",
+      "label": "0",
+      "fileName": "calendar_number_0.png",
+      "size": {
+        "width": 90,
+        "height": 129
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "1",
+      "fileName": "calendar_number_1.png",
+      "size": {
+        "width": 91,
+        "height": 129
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "2",
+      "fileName": "calendar_number_2.png",
+      "size": {
+        "width": 90,
+        "height": 129
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "3",
+      "fileName": "calendar_number_3.png",
+      "size": {
+        "width": 90,
+        "height": 129
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "4",
+      "fileName": "calendar_number_4.png",
+      "size": {
+        "width": 90,
+        "height": 129
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "5",
+      "fileName": "calendar_number_5.png",
+      "size": {
+        "width": 90,
+        "height": 129
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "6",
+      "fileName": "calendar_number_6.png",
+      "size": {
+        "width": 91,
+        "height": 128
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "7",
+      "fileName": "calendar_number_7.png",
+      "size": {
+        "width": 91,
+        "height": 128
+      }
+    },
+    {
+      "entryType": "numbers",
+      "label": "8",
+      "fileName": "calendar_number_8.png",
+      "size": {
+        "width": 90,
+        "height": 128
+      }
+    }
+  ]
+}

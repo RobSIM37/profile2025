@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "label": "days-since-calendar",
+      "fileName": "days-since-calendar.png",
+      "size": {
+        "width": 500,
+        "height": 346
+      }
+    },
+    {
+      "label": "most-days-calendar",
+      "fileName": "most-days-calendar.png",
+      "size": {
+        "width": 500,
+        "height": 346
+      }
+    }
+  ]
+}

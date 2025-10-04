@@ -1,0 +1,50 @@
+{
+  "files": [
+    "vase.png",
+    "vaseLip.png",
+    "daisy.png",
+    "iris.png",
+    "lily.png",
+    "marigold.png",
+    "rose.png",
+    "violet.png"
+  ],
+  "flowers": [
+    {
+      "name": "Daisy",
+      "file": "daisy.png",
+      "color": "yellow",
+      "code": "y"
+    },
+    {
+      "name": "Iris",
+      "file": "iris.png",
+      "color": "purple",
+      "code": "p"
+    },
+    {
+      "name": "Lily",
+      "file": "lily.png",
+      "color": "white",
+      "code": "w"
+    },
+    {
+      "name": "Marigold",
+      "file": "marigold.png",
+      "color": "orange",
+      "code": "o"
+    },
+    {
+      "name": "Rose",
+      "file": "rose.png",
+      "color": "red",
+      "code": "r"
+    },
+    {
+      "name": "Violet",
+      "file": "violet.png",
+      "color": "blue",
+      "code": "b"
+    }
+  ]
+}

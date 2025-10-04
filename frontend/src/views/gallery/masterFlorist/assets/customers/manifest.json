@@ -1,0 +1,2347 @@
+{
+  "generatedAt": "2025-10-03T10:22:31.8224019-04:00",
+  "sourceFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\sprite-sheets",
+  "outputFolder": "C:\\Users\\robsi\\source\\repos\\profile\\frontend\\src\\views\\gallery\\masterFlorist\\assets\\customers",
+  "files": [
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_chef_happy_walking.png",
+      "size": {
+        "width": 180,
+        "height": 321
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_chef_happy_idle.png",
+      "size": {
+        "width": 199,
+        "height": 321
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_chef_happy_talking.png",
+      "size": {
+        "width": 194,
+        "height": 321
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_chef_neutral_walking.png",
+      "size": {
+        "width": 176,
+        "height": 316
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_chef_neutral_idle.png",
+      "size": {
+        "width": 192,
+        "height": 317
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_chef_neutral_talking.png",
+      "size": {
+        "width": 199,
+        "height": 316
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_chef_angry_walking.png",
+      "size": {
+        "width": 176,
+        "height": 303
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_chef_angry_idle.png",
+      "size": {
+        "width": 194,
+        "height": 301
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_chef_angry_talking.png",
+      "size": {
+        "width": 195,
+        "height": 301
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_clown_happy_walking.png",
+      "size": {
+        "width": 169,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_clown_happy_idle.png",
+      "size": {
+        "width": 191,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_clown_happy_talking.png",
+      "size": {
+        "width": 192,
+        "height": 289
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_clown_neutral_walking.png",
+      "size": {
+        "width": 166,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_clown_neutral_idle.png",
+      "size": {
+        "width": 192,
+        "height": 287
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_clown_neutral_talking.png",
+      "size": {
+        "width": 190,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_clown_angry_walking.png",
+      "size": {
+        "width": 167,
+        "height": 284
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_clown_angry_idle.png",
+      "size": {
+        "width": 191,
+        "height": 285
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_clown_angry_talking.png",
+      "size": {
+        "width": 190,
+        "height": 284
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_cowhand_happy_walking.png",
+      "size": {
+        "width": 190,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_cowhand_happy_idle.png",
+      "size": {
+        "width": 193,
+        "height": 287
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_cowhand_happy_talking.png",
+      "size": {
+        "width": 194,
+        "height": 287
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_cowhand_neutral_walking.png",
+      "size": {
+        "width": 187,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_cowhand_neutral_idle.png",
+      "size": {
+        "width": 189,
+        "height": 282
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_cowhand_neutral_talking.png",
+      "size": {
+        "width": 191,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_cowhand_angry_walking.png",
+      "size": {
+        "width": 184,
+        "height": 279
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_cowhand_angry_idle.png",
+      "size": {
+        "width": 189,
+        "height": 280
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_cowhand_angry_talking.png",
+      "size": {
+        "width": 191,
+        "height": 280
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_default_happy_walking.png",
+      "size": {
+        "width": 171,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_default_happy_idle.png",
+      "size": {
+        "width": 199,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_default_happy_talking.png",
+      "size": {
+        "width": 199,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_default_neutral_walking.png",
+      "size": {
+        "width": 172,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_default_neutral_idle.png",
+      "size": {
+        "width": 199,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_default_neutral_talking.png",
+      "size": {
+        "width": 197,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_default_angry_walking.png",
+      "size": {
+        "width": 170,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_default_angry_idle.png",
+      "size": {
+        "width": 198,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_default_angry_talking.png",
+      "size": {
+        "width": 196,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_detective_happy_walking.png",
+      "size": {
+        "width": 192,
+        "height": 312
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_detective_happy_idle.png",
+      "size": {
+        "width": 192,
+        "height": 312
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_detective_happy_talking.png",
+      "size": {
+        "width": 191,
+        "height": 312
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_detective_neutral_walking.png",
+      "size": {
+        "width": 187,
+        "height": 302
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_detective_neutral_idle.png",
+      "size": {
+        "width": 186,
+        "height": 301
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_detective_neutral_talking.png",
+      "size": {
+        "width": 189,
+        "height": 301
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_detective_angry_walking.png",
+      "size": {
+        "width": 184,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_detective_angry_idle.png",
+      "size": {
+        "width": 187,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_detective_angry_talking.png",
+      "size": {
+        "width": 188,
+        "height": 291
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_executive_happy_walking.png",
+      "size": {
+        "width": 168,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_executive_happy_idle.png",
+      "size": {
+        "width": 197,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_executive_happy_talking.png",
+      "size": {
+        "width": 193,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_executive_neutral_walking.png",
+      "size": {
+        "width": 173,
+        "height": 304
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_executive_neutral_idle.png",
+      "size": {
+        "width": 196,
+        "height": 304
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_executive_neutral_talking.png",
+      "size": {
+        "width": 196,
+        "height": 305
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_executive_angry_walking.png",
+      "size": {
+        "width": 172,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_executive_angry_idle.png",
+      "size": {
+        "width": 196,
+        "height": 298
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_executive_angry_talking.png",
+      "size": {
+        "width": 196,
+        "height": 298
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_ganster_happy_walking.png",
+      "size": {
+        "width": 197,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_ganster_happy_idle.png",
+      "size": {
+        "width": 194,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_ganster_happy_talking.png",
+      "size": {
+        "width": 194,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_ganster_neutral_walking.png",
+      "size": {
+        "width": 192,
+        "height": 291
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_ganster_neutral_idle.png",
+      "size": {
+        "width": 194,
+        "height": 292
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_ganster_neutral_talking.png",
+      "size": {
+        "width": 193,
+        "height": 293
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_ganster_angry_walking.png",
+      "size": {
+        "width": 189,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_ganster_angry_idle.png",
+      "size": {
+        "width": 191,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_ganster_angry_talking.png",
+      "size": {
+        "width": 192,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_grandparent_happy_walking.png",
+      "size": {
+        "width": 176,
+        "height": 302
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_grandparent_happy_idle.png",
+      "size": {
+        "width": 195,
+        "height": 303
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_grandparent_happy_talking.png",
+      "size": {
+        "width": 193,
+        "height": 303
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_grandparent_neutral_walking.png",
+      "size": {
+        "width": 175,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_grandparent_neutral_idle.png",
+      "size": {
+        "width": 193,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_grandparent_neutral_talking.png",
+      "size": {
+        "width": 191,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_grandparent_angry_walking.png",
+      "size": {
+        "width": 176,
+        "height": 291
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_grandparent_angry_idle.png",
+      "size": {
+        "width": 193,
+        "height": 292
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_grandparent_angry_talking.png",
+      "size": {
+        "width": 193,
+        "height": 293
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_hippie_happy_walking.png",
+      "size": {
+        "width": 175,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_hippie_happy_idle.png",
+      "size": {
+        "width": 193,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_hippie_happy_talking.png",
+      "size": {
+        "width": 192,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_hippie_neutral_walking.png",
+      "size": {
+        "width": 176,
+        "height": 277
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_hippie_neutral_idle.png",
+      "size": {
+        "width": 191,
+        "height": 277
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_hippie_neutral_talking.png",
+      "size": {
+        "width": 190,
+        "height": 277
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_hippie_angry_walking.png",
+      "size": {
+        "width": 176,
+        "height": 271
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_hippie_angry_idle.png",
+      "size": {
+        "width": 190,
+        "height": 271
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_hippie_angry_talking.png",
+      "size": {
+        "width": 193,
+        "height": 271
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_noble_happy_walking.png",
+      "size": {
+        "width": 167,
+        "height": 305
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_noble_happy_idle.png",
+      "size": {
+        "width": 197,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_noble_happy_talking.png",
+      "size": {
+        "width": 198,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_noble_neutral_walking.png",
+      "size": {
+        "width": 170,
+        "height": 299
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_noble_neutral_idle.png",
+      "size": {
+        "width": 196,
+        "height": 299
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_noble_neutral_talking.png",
+      "size": {
+        "width": 194,
+        "height": 298
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_noble_angry_walking.png",
+      "size": {
+        "width": 166,
+        "height": 294
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_noble_angry_idle.png",
+      "size": {
+        "width": 196,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_noble_angry_talking.png",
+      "size": {
+        "width": 195,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_pirate_happy_walking.png",
+      "size": {
+        "width": 185,
+        "height": 314
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_pirate_happy_idle.png",
+      "size": {
+        "width": 197,
+        "height": 313
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_pirate_happy_talking.png",
+      "size": {
+        "width": 198,
+        "height": 314
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_pirate_neutral_walking.png",
+      "size": {
+        "width": 179,
+        "height": 308
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_pirate_neutral_idle.png",
+      "size": {
+        "width": 198,
+        "height": 311
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_pirate_neutral_talking.png",
+      "size": {
+        "width": 193,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_pirate_angry_walking.png",
+      "size": {
+        "width": 181,
+        "height": 308
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_pirate_angry_idle.png",
+      "size": {
+        "width": 195,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_pirate_angry_talking.png",
+      "size": {
+        "width": 197,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_poet_happy_walking.png",
+      "size": {
+        "width": 174,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_poet_happy_idle.png",
+      "size": {
+        "width": 194,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_poet_happy_talking.png",
+      "size": {
+        "width": 195,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_poet_neutral_walking.png",
+      "size": {
+        "width": 169,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_poet_neutral_idle.png",
+      "size": {
+        "width": 198,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_poet_neutral_talking.png",
+      "size": {
+        "width": 193,
+        "height": 287
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_poet_angry_walking.png",
+      "size": {
+        "width": 167,
+        "height": 282
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_poet_angry_idle.png",
+      "size": {
+        "width": 199,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_poet_angry_talking.png",
+      "size": {
+        "width": 197,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "female_scientist_happy_walking.png",
+      "size": {
+        "width": 169,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "female_scientist_happy_idle.png",
+      "size": {
+        "width": 194,
+        "height": 296
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "female_scientist_happy_talking.png",
+      "size": {
+        "width": 194,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "female_scientist_neutral_walking.png",
+      "size": {
+        "width": 165,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "female_scientist_neutral_idle.png",
+      "size": {
+        "width": 196,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "female_scientist_neutral_talking.png",
+      "size": {
+        "width": 196,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "female_scientist_angry_walking.png",
+      "size": {
+        "width": 166,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "female_scientist_angry_idle.png",
+      "size": {
+        "width": 197,
+        "height": 289
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "female_scientist_angry_talking.png",
+      "size": {
+        "width": 198,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_chef_happy_walking.png",
+      "size": {
+        "width": 198,
+        "height": 346
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_chef_happy_idle.png",
+      "size": {
+        "width": 215,
+        "height": 346
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_chef_happy_talking.png",
+      "size": {
+        "width": 205,
+        "height": 345
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_chef_neutral_walking.png",
+      "size": {
+        "width": 197,
+        "height": 339
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_chef_neutral_idle.png",
+      "size": {
+        "width": 213,
+        "height": 336
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_chef_neutral_talking.png",
+      "size": {
+        "width": 206,
+        "height": 337
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_chef_angry_walking.png",
+      "size": {
+        "width": 192,
+        "height": 328
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_chef_angry_idle.png",
+      "size": {
+        "width": 210,
+        "height": 328
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_chef_angry_talking.png",
+      "size": {
+        "width": 211,
+        "height": 328
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_clown_happy_walking.png",
+      "size": {
+        "width": 197,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_clown_happy_idle.png",
+      "size": {
+        "width": 206,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_clown_happy_talking.png",
+      "size": {
+        "width": 204,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_clown_neutral_walking.png",
+      "size": {
+        "width": 193,
+        "height": 285
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_clown_neutral_idle.png",
+      "size": {
+        "width": 208,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_clown_neutral_talking.png",
+      "size": {
+        "width": 205,
+        "height": 286
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_clown_angry_walking.png",
+      "size": {
+        "width": 192,
+        "height": 285
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_clown_angry_idle.png",
+      "size": {
+        "width": 209,
+        "height": 285
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_clown_angry_talking.png",
+      "size": {
+        "width": 208,
+        "height": 285
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_cowhand_happy_walking.png",
+      "size": {
+        "width": 209,
+        "height": 302
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_cowhand_happy_idle.png",
+      "size": {
+        "width": 214,
+        "height": 302
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_cowhand_happy_talking.png",
+      "size": {
+        "width": 205,
+        "height": 301
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_cowhand_neutral_walking.png",
+      "size": {
+        "width": 193,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_cowhand_neutral_idle.png",
+      "size": {
+        "width": 200,
+        "height": 294
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_cowhand_neutral_talking.png",
+      "size": {
+        "width": 200,
+        "height": 294
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_cowhand_angry_walking.png",
+      "size": {
+        "width": 192,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_cowhand_angry_idle.png",
+      "size": {
+        "width": 199,
+        "height": 293
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_cowhand_angry_talking.png",
+      "size": {
+        "width": 198,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_default_happy_walking.png",
+      "size": {
+        "width": 166,
+        "height": 256
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_default_happy_idle.png",
+      "size": {
+        "width": 189,
+        "height": 256
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_default_happy_talking.png",
+      "size": {
+        "width": 187,
+        "height": 257
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_default_neutral_walking.png",
+      "size": {
+        "width": 169,
+        "height": 257
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_default_neutral_idle.png",
+      "size": {
+        "width": 188,
+        "height": 257
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_default_neutral_talking.png",
+      "size": {
+        "width": 189,
+        "height": 257
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_default_angry_walking.png",
+      "size": {
+        "width": 165,
+        "height": 258
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_default_angry_idle.png",
+      "size": {
+        "width": 188,
+        "height": 258
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_default_angry_talking.png",
+      "size": {
+        "width": 188,
+        "height": 257
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_detective_happy_walking.png",
+      "size": {
+        "width": 204,
+        "height": 314
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_detective_happy_idle.png",
+      "size": {
+        "width": 214,
+        "height": 317
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_detective_happy_talking.png",
+      "size": {
+        "width": 207,
+        "height": 316
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_detective_neutral_walking.png",
+      "size": {
+        "width": 202,
+        "height": 309
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_detective_neutral_idle.png",
+      "size": {
+        "width": 211,
+        "height": 308
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_detective_neutral_talking.png",
+      "size": {
+        "width": 209,
+        "height": 307
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_detective_angry_walking.png",
+      "size": {
+        "width": 202,
+        "height": 308
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_detective_angry_idle.png",
+      "size": {
+        "width": 212,
+        "height": 307
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_detective_angry_talking.png",
+      "size": {
+        "width": 211,
+        "height": 306
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_executive_happy_walking.png",
+      "size": {
+        "width": 188,
+        "height": 299
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_executive_happy_idle.png",
+      "size": {
+        "width": 218,
+        "height": 305
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_executive_happy_talking.png",
+      "size": {
+        "width": 227,
+        "height": 305
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_executive_neutral_walking.png",
+      "size": {
+        "width": 182,
+        "height": 289
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_executive_neutral_idle.png",
+      "size": {
+        "width": 218,
+        "height": 289
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_executive_neutral_talking.png",
+      "size": {
+        "width": 227,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_executive_angry_walking.png",
+      "size": {
+        "width": 172,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_executive_angry_idle.png",
+      "size": {
+        "width": 219,
+        "height": 289
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_executive_angry_talking.png",
+      "size": {
+        "width": 219,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_ganster_happy_walking.png",
+      "size": {
+        "width": 205,
+        "height": 312
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_ganster_happy_idle.png",
+      "size": {
+        "width": 230,
+        "height": 312
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_ganster_happy_talking.png",
+      "size": {
+        "width": 228,
+        "height": 313
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_ganster_neutral_walking.png",
+      "size": {
+        "width": 210,
+        "height": 305
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_ganster_neutral_idle.png",
+      "size": {
+        "width": 232,
+        "height": 305
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_ganster_neutral_talking.png",
+      "size": {
+        "width": 229,
+        "height": 306
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_ganster_angry_walking.png",
+      "size": {
+        "width": 209,
+        "height": 300
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_ganster_angry_idle.png",
+      "size": {
+        "width": 231,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_ganster_angry_talking.png",
+      "size": {
+        "width": 230,
+        "height": 297
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_grandparent_happy_walking.png",
+      "size": {
+        "width": 189,
+        "height": 275
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_grandparent_happy_idle.png",
+      "size": {
+        "width": 206,
+        "height": 277
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_grandparent_happy_talking.png",
+      "size": {
+        "width": 202,
+        "height": 277
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_grandparent_neutral_walking.png",
+      "size": {
+        "width": 189,
+        "height": 274
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_grandparent_neutral_idle.png",
+      "size": {
+        "width": 206,
+        "height": 276
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_grandparent_neutral_talking.png",
+      "size": {
+        "width": 204,
+        "height": 275
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_grandparent_angry_walking.png",
+      "size": {
+        "width": 187,
+        "height": 273
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_grandparent_angry_idle.png",
+      "size": {
+        "width": 207,
+        "height": 275
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_grandparent_angry_talking.png",
+      "size": {
+        "width": 206,
+        "height": 275
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_hippie_happy_walking.png",
+      "size": {
+        "width": 170,
+        "height": 284
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_hippie_happy_idle.png",
+      "size": {
+        "width": 206,
+        "height": 284
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_hippie_happy_talking.png",
+      "size": {
+        "width": 206,
+        "height": 284
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_hippie_neutral_walking.png",
+      "size": {
+        "width": 169,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_hippie_neutral_idle.png",
+      "size": {
+        "width": 207,
+        "height": 282
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_hippie_neutral_talking.png",
+      "size": {
+        "width": 207,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_hippie_angry_walking.png",
+      "size": {
+        "width": 174,
+        "height": 285
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_hippie_angry_idle.png",
+      "size": {
+        "width": 207,
+        "height": 284
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_hippie_angry_talking.png",
+      "size": {
+        "width": 207,
+        "height": 285
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_noble_happy_walking.png",
+      "size": {
+        "width": 184,
+        "height": 282
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_noble_happy_idle.png",
+      "size": {
+        "width": 206,
+        "height": 282
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_noble_happy_talking.png",
+      "size": {
+        "width": 207,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_noble_neutral_walking.png",
+      "size": {
+        "width": 188,
+        "height": 282
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_noble_neutral_idle.png",
+      "size": {
+        "width": 212,
+        "height": 282
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_noble_neutral_talking.png",
+      "size": {
+        "width": 212,
+        "height": 283
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_noble_angry_walking.png",
+      "size": {
+        "width": 186,
+        "height": 274
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_noble_angry_idle.png",
+      "size": {
+        "width": 211,
+        "height": 274
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_noble_angry_talking.png",
+      "size": {
+        "width": 214,
+        "height": 275
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_pirate_happy_walking.png",
+      "size": {
+        "width": 195,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_pirate_happy_idle.png",
+      "size": {
+        "width": 214,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_pirate_happy_talking.png",
+      "size": {
+        "width": 218,
+        "height": 295
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_pirate_neutral_walking.png",
+      "size": {
+        "width": 190,
+        "height": 291
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_pirate_neutral_idle.png",
+      "size": {
+        "width": 214,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_pirate_neutral_talking.png",
+      "size": {
+        "width": 217,
+        "height": 291
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_pirate_angry_walking.png",
+      "size": {
+        "width": 195,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_pirate_angry_idle.png",
+      "size": {
+        "width": 212,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_pirate_angry_talking.png",
+      "size": {
+        "width": 215,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_poet_happy_walking.png",
+      "size": {
+        "width": 188,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_poet_happy_idle.png",
+      "size": {
+        "width": 211,
+        "height": 291
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_poet_happy_talking.png",
+      "size": {
+        "width": 208,
+        "height": 291
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_poet_neutral_walking.png",
+      "size": {
+        "width": 182,
+        "height": 292
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_poet_neutral_idle.png",
+      "size": {
+        "width": 209,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_poet_neutral_talking.png",
+      "size": {
+        "width": 207,
+        "height": 290
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_poet_angry_walking.png",
+      "size": {
+        "width": 175,
+        "height": 287
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_poet_angry_idle.png",
+      "size": {
+        "width": 210,
+        "height": 287
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_poet_angry_talking.png",
+      "size": {
+        "width": 210,
+        "height": 288
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "walking",
+      "fileName": "male_scientist_happy_walking.png",
+      "size": {
+        "width": 189,
+        "height": 304
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "idle",
+      "fileName": "male_scientist_happy_idle.png",
+      "size": {
+        "width": 215,
+        "height": 305
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "happy",
+      "pose": "talking",
+      "fileName": "male_scientist_happy_talking.png",
+      "size": {
+        "width": 213,
+        "height": 304
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "walking",
+      "fileName": "male_scientist_neutral_walking.png",
+      "size": {
+        "width": 177,
+        "height": 299
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "idle",
+      "fileName": "male_scientist_neutral_idle.png",
+      "size": {
+        "width": 217,
+        "height": 300
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "neutral",
+      "pose": "talking",
+      "fileName": "male_scientist_neutral_talking.png",
+      "size": {
+        "width": 214,
+        "height": 299
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "walking",
+      "fileName": "male_scientist_angry_walking.png",
+      "size": {
+        "width": 183,
+        "height": 300
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "idle",
+      "fileName": "male_scientist_angry_idle.png",
+      "size": {
+        "width": 215,
+        "height": 300
+      }
+    },
+    {
+      "entryType": "persona",
+      "mood": "angry",
+      "pose": "talking",
+      "fileName": "male_scientist_angry_talking.png",
+      "size": {
+        "width": 214,
+        "height": 300
+      }
+    }
+  ]
+}
