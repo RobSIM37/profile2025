@@ -564,12 +564,21 @@
   border-radius: calc(var(--radius) / 1.5);
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
-.mf-chat-log.scroll-themed {
-  --scrollbar-track: rgba(0, 0, 0, 0.2);
-  --scrollbar-thumb: rgba(255, 255, 255, 0.35);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.55);
+.mf-chat-log.scroll-themed::-webkit-scrollbar {
+  width: 12px;
+}
+
+.mf-chat-log.scroll-themed::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 999px;
+}
+
+.mf-chat-log.scroll-themed::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .mf-chat-message {
