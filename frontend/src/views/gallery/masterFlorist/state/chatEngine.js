@@ -108,6 +108,9 @@ function buildGuessGridAttachment(rows) {
   const normalizedRows = Array.isArray(rows) ? rows : [];
   const mappedRows = normalizedRows.map((row) =>
     row.map((code) => {
+      if (code == null) {
+        return null;
+      }
       const color = FLOWER_COLOR_BY_CODE[code] || '#d0d0d0';
       return {
         code,
@@ -124,3 +127,4 @@ function buildGuessGridAttachment(rows) {
 function bumpVersion(session) {
   session.version = (session.version ?? 0) + 1;
 }
+

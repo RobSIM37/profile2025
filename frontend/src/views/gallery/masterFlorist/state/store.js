@@ -14,7 +14,6 @@ const SETTINGS_STORAGE_KEY = `${STORAGE_PREFIX}settings`;
 const LONGEST_STREAK_STORAGE_KEY = `${STORAGE_PREFIX}longestStreak`;
 const DAY_ADVANCE_INTERVAL_MS = 30_000;
 const MAX_CALENDAR_DISPLAY_VALUE = 99;
-const TEMP_DISABLE_COMPLAINT_TRIGGER = true;
 
 const DEFAULT_VIEWPORT = {
   width: MF_CANVAS_WIDTH,
@@ -427,7 +426,6 @@ export function handleMasterFloristPuzzleSuccess(state) {
   if (!state) return;
   if (state.solveTestTimerStart != null && getPuzzleSlotLimit(state.puzzle) === 6) {
     const elapsed = Date.now() - state.solveTestTimerStart;
-    console.log(`[MasterFloristTest] 6-slot solve time: ${elapsed}ms`);
     state.solveTestTimerStart = null;
   }
   if (!state.stats) {
@@ -444,9 +442,6 @@ export function handleMasterFloristPuzzleSuccess(state) {
 
 export function handleMasterFloristComplaint(state) {
   if (!state) return;
-  if (TEMP_DISABLE_COMPLAINT_TRIGGER) {
-    return;
-  }
   if (!state.stats) {
     state.stats = loadStoredStats();
   }

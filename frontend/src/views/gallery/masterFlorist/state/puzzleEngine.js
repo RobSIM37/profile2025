@@ -186,6 +186,9 @@ export function getFlowerGroup(code) {
   return null;
 }
 
+export function __resolveSlotCountForTest(options) {
+  return resolveSlotCount(options);
+}
 function resolveSlotCount({ mood, override, difficulty, rng }) {
   if (Number.isFinite(override) && override > 0) {
     return Math.min(DEFAULT_SLOT_COUNT, Math.max(1, Math.floor(override)));

@@ -28,9 +28,13 @@ const PERSONAL_SPACE_STEP = 12;
 const ADVANCE_ANIM_FRAMES = 10;
 
 const GAME_OVER_MESSAGE = 'The flower shop had to close due to too many complaints.';
-const TEMP_SINGLE_CUSTOMER_POOL = true;
-
 const MOOD_SEQUENCE = ['happy', 'neutral', 'angry', 'complaint'];
+
+const BASE_QUEUE_MOOD_THRESHOLDS_MS = Object.freeze({
+  happy: 120_000,
+  neutral: 80_000,
+  angry: 40_000,
+});
 
 const FOOT_TRAFFIC_INTERVALS = {
   relaxed: 1500,
@@ -44,19 +48,27 @@ const FOOT_TRAFFIC_SPAWN_CHANCE = {
   brisk: 0.35,
 };
 
-const ATMOSPHERE_PROFILES = {
+const FOOT_TRAFFIC_PATIENCE_MULTIPLIERS = Object.freeze({
+  relaxed: 1.2,
+  steady: 1,
+  brisk: 0.8,
+});
+
+const ATMOSPHERE_PROFILES = Object.freeze({
   soothing: {
-    queue: { happy: 24000, neutral: 20000, angry: 16000 },
+    queue: { happy: 1.25, neutral: 1.15, angry: 1.05 },
   },
   balanced: {
-    queue: { happy: 16000, neutral: 14000, angry: 12000 },
+    queue: { happy: 1, neutral: 1, angry: 1 },
   },
   tense: {
-    queue: { happy: 10000, neutral: 8000, angry: 6000 },
+    queue: { happy: 0.85, neutral: 0.8, angry: 0.75 },
   },
-};
+});
 
 const DEFAULT_ATMOSPHERE_PROFILE = ATMOSPHERE_PROFILES.balanced;
+
+const ACTIVE_CUSTOMER_QUEUE_MULTIPLIER = 1.75;
 
 const VASE_AREA = MASTER_FLORIST_LAYOUT?.vase?.area || { left: 220, right: MF_CANVAS_WIDTH - 220 };
 const VASE_LEFT = VASE_AREA.left ?? 220;
@@ -110,7 +122,10 @@ export function initializeCustomerParade(state, { spriteLibrary, chat } = {}) {
 
   const footTrafficLabel = state?.settings?.footTraffic;
   state.customerParade.spawnIntervalMs = resolveFootTrafficInterval(footTrafficLabel);
-  state.customerParade.atmosphere = resolveAtmosphereProfile(state?.settings?.atmosphere);
+  state.customerParade.footTrafficPatienceMultiplier = resolveFootTrafficPatienceMultiplier(footTrafficLabel);
+  state.customerParade.atmosphere = resolveAtmosphereProfile(state?.settings?.atmosphere, footTrafficLabel);
+  state.customerParade.debugMoodDecayLog = Boolean(state?.settings?.debugMoodDecayLog);
+  state.customerParade.moodDecayEvents = state.customerParade.debugMoodDecayLog ? [] : null;
 
   const bag = populateGrabBag(state.customerParade);
   if (bag.length === 0) {
@@ -519,9 +534,11 @@ function advanceActor(parade, actor, deltaMs) {
       if (!actor.requestPresented && actor.timeInState >= ACTIVE_IDLE_MS) {
         startActiveTalking(parade, actor);
       }
+      maybeDecayActiveMood(parade, actor, deltaMs);
       break;
     case 'activeTalking':
       updateActiveTalking(parade, actor, deltaMs);
+      maybeDecayActiveMood(parade, actor, deltaMs);
       break;
     default:
       break;
@@ -607,6 +624,7 @@ function startActiveTalking(parade, actor) {
   actor.timeInState = 0;
   actor.talkElapsed = 0;
   actor.mouthTimer = 0;
+  actor.activeMoodTimer = 0;
 }
 
 function updateActiveTalking(parade, actor, deltaMs) {
@@ -639,6 +657,7 @@ function brieflyTalk(parade, actor) {
   actor.timeInState = 0;
   actor.talkElapsed = 0;
   actor.mouthTimer = 0;
+  actor.activeMoodTimer = 0;
   actor.requestPresented = true;
 }
 
@@ -767,21 +786,42 @@ export function handleMasterFloristGuessResult(state, evaluation = {}) {
 
 function maybeDecayQueueMood(parade, actor, deltaMs) {
   if (!parade?.atmosphere || deltaMs <= 0) return;
-  if (actor.pendingActive) return;
+  if (!actor || actor.pendingActive) return;
   const mood = getActorMood(actor);
+  if (mood === 'complaint') return;
   const thresholds = parade.atmosphere.queue || {};
   const threshold = thresholds[mood];
   if (!Number.isFinite(threshold) || threshold <= 0) return;
   actor.queueMoodTimer = (actor.queueMoodTimer || 0) + deltaMs;
+  actor.activeMoodTimer = 0;
   if (actor.queueMoodTimer >= threshold) {
     actor.queueMoodTimer = 0;
     stepActorMood(parade, actor, { reason: 'The customer is getting impatient while waiting.' });
   }
 }
 
+function maybeDecayActiveMood(parade, actor, deltaMs) {
+  if (!parade?.atmosphere || deltaMs <= 0) return;
+  if (!actor || actor.state === 'departing') return;
+  const mood = getActorMood(actor);
+  if (mood === 'complaint') return;
+  const thresholds = parade.atmosphere.active || {};
+  const threshold = thresholds[mood];
+  if (!Number.isFinite(threshold) || threshold <= 0) return;
+  actor.activeMoodTimer = (actor.activeMoodTimer || 0) + deltaMs;
+  if (actor.activeMoodTimer >= threshold) {
+    actor.activeMoodTimer = 0;
+    stepActorMood(parade, actor, {
+      reason: 'The customer is losing patience while being served.',
+      isActive: true,
+    });
+  }
+}
+
 function stepActorMood(parade, actor, { reason, isActive } = {}) {
   if (!actor) return false;
   const currentIndex = actor.moodStageIndex ?? Math.max(0, MOOD_SEQUENCE.indexOf(actor.mood ?? 'happy'));
+  const previousMood = MOOD_SEQUENCE[Math.min(currentIndex, MOOD_SEQUENCE.length - 1)] || getActorMood(actor);
   if (currentIndex >= MOOD_SEQUENCE.length - 1) {
     handleCustomerComplaint(parade, actor, { reason, isActive });
     return false;
@@ -791,7 +831,15 @@ function stepActorMood(parade, actor, { reason, isActive } = {}) {
   actor.moodStageIndex = nextIndex;
   const nextMood = getActorMood(actor);
   actor.mood = nextMood;
+  actor.queueMoodTimer = 0;
+  actor.activeMoodTimer = 0;
   updateActorMoodFrames(parade, actor);
+  logMoodDecayEvent(parade, actor, {
+    from: previousMood,
+    to: nextMood,
+    reason,
+    context: isActive ? 'active' : 'queue',
+  });
 
   if (nextMood === 'complaint') {
     handleCustomerComplaint(parade, actor, { reason, isActive });
@@ -851,6 +899,30 @@ function handleCustomerComplaint(parade, actor, { reason, isActive } = {}) {
   }
 }
 
+function logMoodDecayEvent(parade, actor, { from, to, reason, context } = {}) {
+  if (!parade?.debugMoodDecayLog) return;
+  const entry = {
+    timestamp: Date.now(),
+    actorId: actor?.id ?? null,
+    sheet: actor?.sheet ?? null,
+    from: from || null,
+    to: to || null,
+    reason: reason || null,
+    context: context || actor?.state || null,
+  };
+  if (Array.isArray(parade.moodDecayEvents)) {
+    parade.moodDecayEvents.push(entry);
+  }
+  try {
+    console.debug(
+      '[MasterFlorist][Mood]',
+      entry.actorId,
+      `${entry.from} -> ${entry.to}`,
+      entry.context,
+      entry.reason || '',
+    );
+  } catch {}
+}
 function getActorMood(actor) {
   const index = Math.max(0, Math.min(MOOD_SEQUENCE.length - 1, actor?.moodStageIndex ?? MOOD_SEQUENCE.indexOf(actor?.mood ?? 'happy')));
   return MOOD_SEQUENCE[index];
@@ -866,13 +938,39 @@ function resolveFootTrafficInterval(label) {
   return FOOT_TRAFFIC_INTERVALS[key] || SPAWN_INTERVAL_MS;
 }
 
-function resolveAtmosphereProfile(label) {
+function resolveAtmosphereProfile(label, footTrafficLabel) {
   const key = (label || '').toLowerCase();
   const base = ATMOSPHERE_PROFILES[key] || DEFAULT_ATMOSPHERE_PROFILE;
+  const queueMultipliers = base.queue || {};
+  const footMultiplier = resolveFootTrafficPatienceMultiplier(footTrafficLabel);
+  const queue = Object.create(null);
+
+  for (const moodKey of Object.keys(BASE_QUEUE_MOOD_THRESHOLDS_MS)) {
+    const baseMs = BASE_QUEUE_MOOD_THRESHOLDS_MS[moodKey];
+    const moodMultiplier = queueMultipliers[moodKey] ?? 1;
+    queue[moodKey] = Math.round(baseMs * moodMultiplier * footMultiplier);
+  }
+
   return {
     label: key && ATMOSPHERE_PROFILES[key] ? key : 'balanced',
-    queue: { ...base.queue },
+    queue,
+    active: buildActiveMoodThresholds(queue),
   };
+}
+
+function resolveFootTrafficPatienceMultiplier(label) {
+  const key = (label || '').toLowerCase();
+  return FOOT_TRAFFIC_PATIENCE_MULTIPLIERS[key] ?? FOOT_TRAFFIC_PATIENCE_MULTIPLIERS.steady;
+}
+
+function buildActiveMoodThresholds(queueThresholds) {
+  const active = Object.create(null);
+  if (!queueThresholds) return active;
+  for (const moodKey of Object.keys(queueThresholds)) {
+    const baseMs = queueThresholds[moodKey];
+    active[moodKey] = Math.round(baseMs * ACTIVE_CUSTOMER_QUEUE_MULTIPLIER);
+  }
+  return active;
 }
 
 function getFootTrafficChance(parade) {
@@ -958,10 +1056,6 @@ function populateGrabBag(parade) {
     bag.push(name);
   }
   shuffleArray(bag);
-  if (TEMP_SINGLE_CUSTOMER_POOL) {
-    parade.grabBag = bag.length ? [bag[0]] : [];
-    return parade.grabBag;
-  }
   parade.grabBag = bag;
   return bag;
 }
@@ -1035,4 +1129,6 @@ function randomBetween(range) {
   if (!Number.isFinite(max) || max <= min) return min;
   return min + Math.random() * (max - min);
 }
+
+
 

@@ -133,8 +133,10 @@ export function createCustomerArea({ messages = [] } = {}) {
       rowEl.style.justifyContent = 'center';
       rowEl.style.gap = '6px';
       (Array.isArray(row) ? row : []).forEach((slot) => {
-        const code = typeof slot === 'object' ? slot.code : slot;
-        const color = (typeof slot === 'object' && slot.color) || '#d0d0d0';
+        const isObject = slot && typeof slot === 'object';
+        const code = isObject ? slot.code : slot;
+        const hasCode = code != null;
+        const color = hasCode ? ((isObject && slot.color) || '#d0d0d0') : 'transparent';
         const dot = document.createElement('span');
         dot.className = 'mf-chat-guess-dot';
         dot.style.display = 'inline-block';
@@ -142,8 +144,9 @@ export function createCustomerArea({ messages = [] } = {}) {
         dot.style.height = '18px';
         dot.style.borderRadius = '50%';
         dot.style.background = color;
-        dot.style.boxShadow = '0 0 0 1px rgba(0, 0, 0, 0.2)';
-        dot.title = typeof code === 'string' ? code.toUpperCase() : '';
+        dot.style.boxShadow = hasCode ? '0 0 0 1px rgba(0, 0, 0, 0.2)' : 'none';
+        dot.style.visibility = hasCode ? 'visible' : 'hidden';
+        dot.title = hasCode && typeof code === 'string' ? code.toUpperCase() : '';
         rowEl.append(dot);
       });
       grid.append(rowEl);

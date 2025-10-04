@@ -28,7 +28,8 @@ export function buildCustomerFeedback({ puzzle, evaluation, previousEvaluation, 
   const tone = resolveTone(counts.wrong, previousWrong, slotCount);
   const turnIndex = resolveTurnIndex(puzzle);
   const rng = createTurnRng(puzzle, turnIndex);
-  const responseText = buildResponseText({ personaKey, mood, tone, counts, rng });
+  const allowFiller = turnIndex === 0;
+  const responseText = buildResponseText({ personaKey, mood, tone, counts, rng, allowFiller });
   return createPayload(responseText);
 }
 
@@ -41,7 +42,8 @@ export function buildCustomerAcceptance({ puzzle, evaluation, previousEvaluation
   const tone = counts.wrong === 0 ? 'positive' : resolveTone(counts.wrong, previousWrong, slotCount);
   const turnIndex = resolveTurnIndex(puzzle);
   const rng = createTurnRng(puzzle, turnIndex);
-  const responseText = buildResponseText({ personaKey, mood, tone, counts, rng });
+  const allowFiller = turnIndex === 0;
+  const responseText = buildResponseText({ personaKey, mood, tone, counts, rng, allowFiller });
   return createPayload(responseText);
 }
 
@@ -64,15 +66,15 @@ function buildRequestText({ personaKey, mood, slotCount, rng }) {
   return joinUtteranceParts([before, core, after]);
 }
 
-function buildResponseText({ personaKey, mood, tone, counts, rng }) {
+function buildResponseText({ personaKey, mood, tone, counts, rng, allowFiller = true }) {
   const templates = CONFIG.templates || {};
   const probabilities = templates.probabilities || DEFAULT_PROBABILITIES;
   const normalizedTone = KNOWN_TONES.includes(tone) ? tone : 'neutral';
   const beforeChance = probabilities.response_filler_before ?? DEFAULT_PROBABILITIES.response_filler_before;
-  const before = maybePickResponseFiller({ personaKey, mood, tone: normalizedTone, chance: beforeChance, kind: 'prefixes', rng });
+  const before = allowFiller ? maybePickResponseFiller({ personaKey, mood, tone: normalizedTone, chance: beforeChance, kind: 'prefixes', rng }) : '';
   const clauseText = buildClauseText({ counts, rng });
   const afterChance = probabilities.response_filler_after ?? DEFAULT_PROBABILITIES.response_filler_after;
-  const after = maybePickResponseFiller({ personaKey, mood, tone: normalizedTone, chance: afterChance, kind: 'suffixes', rng });
+  const after = allowFiller ? maybePickResponseFiller({ personaKey, mood, tone: normalizedTone, chance: afterChance, kind: 'suffixes', rng }) : '';
   return joinUtteranceParts([before, clauseText, after]);
 }
 
@@ -365,3 +367,8 @@ function normaliseDialogConfig(raw) {
     filler,
   };
 }
+
+
+
+
+
