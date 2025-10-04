@@ -13,12 +13,12 @@
             ],
             "misplaced": [
                 "{misplaced} {is_are(misplaced)} right but in the wrong spot",
-                "{misplaced} stem{plural_s(misplaced)} belong somewhere else",
+                "{misplaced} stem{plural_s(misplaced)} {is_are(misplaced)} in the wrong place",
                 "{misplaced} {was_were(misplaced)} close, wrong position"
             ],
             "wrong": [
                 "{wrong} {is_are(wrong)} completely off",
-                "{wrong} stem{plural_s(wrong)} don't belong",
+                "{wrong} stem{plural_s(wrong)} {dont_doesnt(wrong)} belong here",
                 "{wrong} {was_were(wrong)} not part of this"
             ],
             "rules": {
@@ -41,7 +41,8 @@
         "grammar": {
             "plural_s": true,
             "is_are": true,
-            "was_were": true
+            "was_were": true,
+            "dont_doesnt": true
         }
     },
     "filler": {

@@ -154,7 +154,7 @@ export function createMasterFloristState() {
   resetMasterFloristCalendar(state);
   resetMasterFloristTimers(state);
 
-  startMasterFloristPuzzle(state, { mood: 'happy', seed });
+  startMasterFloristPuzzle(state, { mood: 'happy', seed, announce: false });
   return state;
 }
 
@@ -178,7 +178,7 @@ export function resetMasterFloristState(state) {
   state.solveTestTimerStart = null;
   resetMasterFloristCalendar(state);
   resetMasterFloristTimers(state);
-  startMasterFloristPuzzle(state, { mood: 'happy', seed: freshSeed });
+  startMasterFloristPuzzle(state, { mood: 'happy', seed: freshSeed, announce: false });
   if (!state.settings) {
     state.settings = loadStoredSettings();
   }
@@ -362,7 +362,10 @@ export function canSubmitMasterFloristGuess(state) {
   return filled >= slotCount && slotCount > 0;
 }
 
-export function startMasterFloristPuzzle(state, { mood = 'happy', customer = null, seed = Date.now() } = {}) {
+export function startMasterFloristPuzzle(
+  state,
+  { mood = 'happy', customer = null, seed = Date.now(), announce = Boolean(customer) } = {},
+) {
   if (!state || state.gameOver) return;
   if (!Array.isArray(state.puzzleHistory)) {
     state.puzzleHistory = [];
@@ -395,7 +398,9 @@ export function startMasterFloristPuzzle(state, { mood = 'happy', customer = nul
   state.showButton = null;
 
   state.chatSession = createChatSession({ puzzle, customer: activeCustomer });
-  addCustomerPuzzleIntro(state.chatSession, { puzzle, customer: activeCustomer });
+  if (announce && activeCustomer) {
+    addCustomerPuzzleIntro(state.chatSession, { puzzle, customer: activeCustomer });
+  }
   state._chatSyncedVersion = null;
   syncMasterFloristChat(state);
 }
@@ -408,7 +413,7 @@ export function appendMasterFloristFeedback(state, evaluation) {
   const previousEvaluation = previousEntry?.evaluation || null;
   const customer = state.activeCustomer || state.chatSession.customer || null;
   const payload = evaluation?.isMatch
-    ? buildCustomerAcceptance({ puzzle: state.puzzle, evaluation, customer })
+    ? buildCustomerAcceptance({ puzzle: state.puzzle, evaluation, previousEvaluation, customer })
     : buildCustomerFeedback({
         puzzle: state.puzzle,
         evaluation,
