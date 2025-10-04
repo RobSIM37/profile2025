@@ -399,7 +399,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
     ctx.save();
     ctx.lineWidth = 3;
     roundRect(ctx, x, y, width, height, 16, true, true, {
-      fillStyle: enabled ? '#4b7358' : 'rgba(75, 115, 88, 0.45)',
+      fillStyle: enabled ? '#40ADD3' : 'rgba(64, 173, 211, 0.45)',
       strokeStyle: enabled ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.15)',
     });
 
@@ -1094,7 +1094,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
 function createBackgroundSprite() {
   const image = new Image();
   image.decoding = 'async';
-  image.src = new URL('../assets/background.png', import.meta.url).href;
+  image.src = new URL('../assets/backgrounds/background.png', import.meta.url).href;
 
   let ready = false;
   image.addEventListener('load', () => {

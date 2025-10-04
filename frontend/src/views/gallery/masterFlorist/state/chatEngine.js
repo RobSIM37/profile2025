@@ -1,11 +1,14 @@
-import { FLOWER_COLOR_BY_CODE, buildGuessGridRows, normalizeGuessCodes } from './puzzleEngine.js';
+import { MF_DROP_ZONE_COUNT } from '../canvas/constants.js';
+import { FLOWER_COLOR_BY_CODE, normalizeGuessCodes } from './puzzleEngine.js';
 import { buildCustomerIntro } from './dialogueEngine.js';
 
 export function createChatSession({ puzzle = null, customer = null } = {}) {
+  const customerLabel = resolveCustomerLabel(customer);
   return {
     id: `mf-chat-${puzzle?.id ?? Date.now()}`,
     puzzleId: puzzle?.id ?? null,
     customer,
+    customerLabel,
     entries: [],
     version: 0,
   };
@@ -13,16 +16,25 @@ export function createChatSession({ puzzle = null, customer = null } = {}) {
 
 export function addCustomerPuzzleIntro(session, { puzzle, customer } = {}) {
   if (!session) return;
-  const payload = buildCustomerIntro({ puzzle, customer: customer ?? session.customer });
-  session.entries.push(createEntry('customer', payload));
+  const effectiveCustomer = customer ?? session.customer;
+  if (customer) {
+    session.customer = customer;
+    session.customerLabel = resolveCustomerLabel(customer);
+  }
+  const payload = buildCustomerIntro({ puzzle, customer: effectiveCustomer });
+  const label = payload?.label || session.customerLabel || resolveCustomerLabel(effectiveCustomer);
+  const entryPayload = { ...(payload || {}), label };
+  session.entries.push(createEntry('customer', entryPayload));
   bumpVersion(session);
 }
 
-export function recordPlayerGuess(session, { puzzle, guessCodes, evaluation } = {}) {
+export function recordPlayerGuess(session, { puzzle, guessCodes, evaluation, displayGuess } = {}) {
   if (!session) return;
   const normalizedGuess = normalizeGuessCodes(guessCodes, puzzle?.slotCount);
-  const rows = buildGuessGridRows(normalizedGuess, 3);
-  const gridAttachment = buildGuessGridAttachment(rows);
+  const normalizedDisplay = Array.isArray(displayGuess)
+    ? normalizeGuessCodes(displayGuess, MF_DROP_ZONE_COUNT)
+    : normalizeGuessCodes(guessCodes, MF_DROP_ZONE_COUNT);
+  const gridAttachment = buildGuessGridAttachment(normalizedDisplay);
   session.entries.push(
     createEntry('player', {
       text: "How's this?",
@@ -30,6 +42,7 @@ export function recordPlayerGuess(session, { puzzle, guessCodes, evaluation } = 
       meta: {
         evaluation,
         guess: normalizedGuess,
+        displayGuess: normalizedDisplay,
       },
     }),
   );
@@ -39,8 +52,11 @@ export function recordPlayerGuess(session, { puzzle, guessCodes, evaluation } = 
 export function addCustomerResponse(session, payload) {
   if (!session) return;
   if (payload == null) return;
-  const entryPayload = typeof payload === 'string' ? { text: payload } : payload;
-  session.entries.push(createEntry('customer', entryPayload));
+  const basePayload = typeof payload === 'string' ? { text: payload } : { ...payload };
+  if (!basePayload.label) {
+    basePayload.label = session.customerLabel || resolveCustomerLabel(session.customer);
+  }
+  session.entries.push(createEntry('customer', basePayload));
   bumpVersion(session);
 }
 
@@ -104,27 +120,71 @@ function defaultLabel(role) {
   }
 }
 
-function buildGuessGridAttachment(rows) {
-  const normalizedRows = Array.isArray(rows) ? rows : [];
-  const mappedRows = normalizedRows.map((row) =>
-    row.map((code) => {
-      if (code == null) {
-        return null;
-      }
-      const color = FLOWER_COLOR_BY_CODE[code] || '#d0d0d0';
-      return {
-        code,
-        color,
-      };
-    }),
-  );
+function resolveCustomerLabel(customer) {
+  if (customer && typeof customer.label === 'string' && customer.label.trim().length) {
+    return customer.label.trim();
+  }
+  if (customer && typeof customer.persona === 'string' && customer.persona.trim().length) {
+    return formatPersonaLabel(customer.persona);
+  }
+  if (customer && typeof customer.name === 'string' && customer.name.trim().length) {
+    return customer.name.trim();
+  }
+  if (customer && typeof customer.sheet === 'string' && customer.sheet.trim().length) {
+    return formatPersonaLabel(customer.sheet);
+  }
+  return defaultLabel('customer');
+}
+
+function formatPersonaLabel(raw) {
+  if (typeof raw !== 'string') {
+    return defaultLabel('customer');
+  }
+  const trimmed = raw.trim();
+  if (!trimmed.length) {
+    return defaultLabel('customer');
+  }
+  return trimmed
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+const CHAT_GUESS_GRID_COLUMNS = 3;
+const CHAT_GUESS_GRID_ROWS = 2;
+const CHAT_GUESS_GRID_SIZE = CHAT_GUESS_GRID_COLUMNS * CHAT_GUESS_GRID_ROWS;
+
+function buildGuessGridAttachment(codes) {
+  const normalizedCodes = normalizeGuessCodes(codes, CHAT_GUESS_GRID_SIZE);
+  const mappedSlots = normalizedCodes.map((code) => {
+    if (code == null) return null;
+    return {
+      code,
+      color: FLOWER_COLOR_BY_CODE[code] || '#d0d0d0',
+    };
+  });
   return {
     type: 'guess-grid',
-    rows: mappedRows,
+    slots: mappedSlots,
+    columns: CHAT_GUESS_GRID_COLUMNS,
+    rows: CHAT_GUESS_GRID_ROWS,
   };
 }
 
 function bumpVersion(session) {
   session.version = (session.version ?? 0) + 1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 

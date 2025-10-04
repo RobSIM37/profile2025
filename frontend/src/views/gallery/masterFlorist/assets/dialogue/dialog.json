@@ -19,7 +19,7 @@
             "wrong": [
                 "{wrong} {is_are(wrong)} completely off",
                 "{wrong} stem{plural_s(wrong)} {dont_doesnt(wrong)} belong here",
-                "{wrong} {was_were(wrong)} not right for what I was thinkingz"
+                "{wrong} {was_were(wrong)} not right for what I was thinking"
             ],
             "rules": {
                 "omit_zero_exact": true,

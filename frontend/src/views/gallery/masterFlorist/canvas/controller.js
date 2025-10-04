@@ -345,8 +345,11 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     return Math.max(0, Math.min(solution.length, rawLimit));
   }
 
-  function clearLastSlot(solution, limit) {
-    for (let i = Math.min(limit, solution.length) - 1; i >= 0; i -= 1) {
+  function clearLastSlot(solution /* , limit */) {
+    if (!Array.isArray(solution)) {
+      return false;
+    }
+    for (let i = solution.length - 1; i >= 0; i -= 1) {
       if (solution[i] != null) {
         updateMasterFloristSolution(state, i, null);
         return true;
@@ -355,9 +358,12 @@ export function createMasterFloristCanvasController({ canvas, state, onStateChan
     return false;
   }
 
-  function clearAllSlots(solution, limit) {
+  function clearAllSlots(solution /* , limit */) {
+    if (!Array.isArray(solution)) {
+      return false;
+    }
     let cleared = false;
-    for (let i = 0; i < limit && i < solution.length; i += 1) {
+    for (let i = 0; i < solution.length; i += 1) {
       if (solution[i] != null) {
         updateMasterFloristSolution(state, i, null);
         cleared = true;
@@ -437,3 +443,4 @@ function isPointInShowButton(button, point) {
   if (width == null || height == null) return false;
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
+

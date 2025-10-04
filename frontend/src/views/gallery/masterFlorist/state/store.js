@@ -6,7 +6,7 @@ import {
   addSystemMessage,
   recordPlayerGuess,
 } from './chatEngine.js';
-import { createPuzzle, evaluateGuess, MASTER_FLORIST_DEFAULT_DIFFICULTY, MASTER_FLORIST_DIFFICULTY_LEVELS } from './puzzleEngine.js';
+import { createPuzzle, evaluateGuess, normalizeGuessCodes, MASTER_FLORIST_DEFAULT_DIFFICULTY, MASTER_FLORIST_DIFFICULTY_LEVELS } from './puzzleEngine.js';
 import { buildCustomerFeedback, buildCustomerAcceptance } from './dialogueEngine.js';
 
 const STORAGE_PREFIX = 'mf:';
@@ -304,6 +304,7 @@ export function submitMasterFloristGuess(state) {
   if (!canSubmitMasterFloristGuess(state)) return null;
   const slotCount = getPuzzleSlotLimit(state.puzzle);
   const solution = Array.isArray(state.puzzle.solution) ? state.puzzle.solution : [];
+  const chatGuess = normalizeGuessCodes(solution, MF_DROP_ZONE_COUNT);
   const collapsed = collapseMasterFloristSolution(solution, slotCount);
   const guess = collapsed.slice(0, slotCount);
   while (guess.length < slotCount) {
@@ -327,6 +328,7 @@ export function submitMasterFloristGuess(state) {
       puzzle: state.puzzle,
       guessCodes: evaluation.guess,
       evaluation,
+      displayGuess: chatGuess,
     });
     appendMasterFloristFeedback(state, evaluation);
   }
@@ -789,3 +791,6 @@ function getLocalStorage() {
   } catch {}
   return null;
 }
+
+
+

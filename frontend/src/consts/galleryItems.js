@@ -1,8 +1,8 @@
-﻿export const GALLERY_ITEMS = [
+export const GALLERY_ITEMS = [
   {
     title: 'Master Florist',
     tagline: 'Arrange custom bouquets under pressure',
-    img: 'assets/masterFloristThumbnail.svg',
+    img: 'assets/masterFloristThumbnail.png',
     link: '#/gallery/master-florist',
   },
   {

@@ -530,20 +530,20 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-4);
-  width: 100%;
+  width: 960px;
   max-width: 100%;
   min-width: 0;
   min-height: 0;
   height: 100%;
   max-height: none;
-  flex: 1 1 auto;
-  margin: 0;
+  flex: 0 0 auto;
+  margin: 0 auto;
   box-sizing: border-box;
   overflow: hidden;
   background: var(--bg-elev);
   border-radius: var(--radius);
   box-shadow: 0 0 0 1px var(--border);
-  align-self: stretch;
+  align-items: stretch;
 }
 
 .mf-chat-log {
@@ -560,7 +560,7 @@
   max-height: 100%;
   flex: 1 1 auto;
   box-sizing: border-box;
-  background: rgba(0, 0, 0, 0.15);
+  background: #FFE797;
   border-radius: calc(var(--radius) / 1.5);
   overflow-x: hidden;
   overflow-y: auto;
@@ -591,10 +591,13 @@
 }
 
 .mf-chat-message.is-player {
-  background: rgba(167, 210, 255, 0.55);
+  background: #ffffff;
+  color: #090909;
+  border: 1px solid rgba(0, 0, 0, 0.18);
   align-self: flex-end;
   text-align: right;
 }
+
 
 .mf-chat-label {
   font-size: 0.7rem;
@@ -626,6 +629,11 @@
   text-align: right;
   justify-self: end;
 }
+.mf-chat-message.is-player .mf-chat-label {
+  color: #505050;
+  opacity: 0.85;
+}
+
 .mf-chat-segment {
   display: inline;
 }
@@ -644,3 +652,9 @@
   color: #ffffff;
   font-weight: 600;
 }
+
+
+
+
+
+

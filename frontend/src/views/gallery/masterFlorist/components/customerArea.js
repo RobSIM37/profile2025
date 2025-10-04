@@ -113,48 +113,89 @@ export function createCustomerArea({ messages = [] } = {}) {
   function renderAttachment(attachment) {
     if (!attachment || typeof attachment !== 'object') return null;
     if (attachment.type === 'guess-grid') {
-      return renderGuessGrid(attachment.rows);
+      return renderGuessGrid(attachment);
     }
     return null;
   }
 
-  function renderGuessGrid(rows) {
+  function renderGuessGrid(attachment) {
+    const columns = Number.isFinite(attachment?.columns) ? attachment.columns : 3;
+    const rows = Number.isFinite(attachment?.rows) ? attachment.rows : 2;
+    const totalSlots = Math.max(0, columns * rows);
+
     const grid = document.createElement('div');
     grid.className = 'mf-chat-guess-grid';
     grid.style.display = 'grid';
-    grid.style.gap = '4px';
-    grid.style.padding = '6px 4px';
+    grid.style.gridTemplateColumns = 'repeat(' + columns + ', 20px)';
+    grid.style.gridAutoRows = '20px';
+    grid.style.columnGap = '8px';
+    grid.style.rowGap = '8px';
+    grid.style.padding = '8px';
     grid.style.borderRadius = '12px';
     grid.style.background = 'rgba(255, 255, 255, 0.08)';
+    grid.style.alignItems = 'center';
+    grid.style.justifyItems = 'center';
 
-    (Array.isArray(rows) ? rows : []).forEach((row) => {
-      const rowEl = document.createElement('div');
-      rowEl.style.display = 'flex';
-      rowEl.style.justifyContent = 'center';
-      rowEl.style.gap = '6px';
-      (Array.isArray(row) ? row : []).forEach((slot) => {
-        const isObject = slot && typeof slot === 'object';
-        const code = isObject ? slot.code : slot;
-        const hasCode = code != null;
-        const color = hasCode ? ((isObject && slot.color) || '#d0d0d0') : 'transparent';
+    const slots = normalizeGuessGridSlots(attachment, totalSlots);
+
+    for (let i = 0; i < totalSlots; i += 1) {
+      const slot = slots[i];
+      const cell = document.createElement('div');
+      cell.style.width = '20px';
+      cell.style.height = '20px';
+      cell.style.display = 'flex';
+      cell.style.alignItems = 'center';
+      cell.style.justifyContent = 'center';
+
+      if (slot) {
         const dot = document.createElement('span');
         dot.className = 'mf-chat-guess-dot';
         dot.style.display = 'inline-block';
         dot.style.width = '18px';
         dot.style.height = '18px';
         dot.style.borderRadius = '50%';
-        dot.style.background = color;
-        dot.style.boxShadow = hasCode ? '0 0 0 1px rgba(0, 0, 0, 0.2)' : 'none';
-        dot.style.visibility = hasCode ? 'visible' : 'hidden';
-        dot.title = hasCode && typeof code === 'string' ? code.toUpperCase() : '';
-        rowEl.append(dot);
-      });
-      grid.append(rowEl);
-    });
+        dot.style.background = slot.color || '#d0d0d0';
+        dot.style.boxShadow = '0 0 0 1px rgba(0, 0, 0, 0.2)';
+        dot.title = typeof slot.code === 'string' ? slot.code.toUpperCase() : '';
+        cell.append(dot);
+      }
+
+      grid.append(cell);
+    }
 
     return grid;
   }
 
+  function normalizeGuessGridSlots(attachment, totalSlots) {
+    const rows = Array.isArray(attachment?.rows) ? attachment.rows : [];
+    const flattenedRows = rows.reduce((acc, row) => {
+      if (Array.isArray(row)) {
+        row.forEach((slot) => acc.push(slot));
+      }
+      return acc;
+    }, []);
+    const rawSlots = Array.isArray(attachment?.slots) ? attachment.slots : flattenedRows;
+
+    const normalized = rawSlots.map((slot) => {
+      if (!slot) return null;
+      if (typeof slot === 'object') {
+        const code = typeof slot.code === 'string' ? slot.code : null;
+        if (!code) return null;
+        const color = typeof slot.color === 'string' ? slot.color : '#d0d0d0';
+        return { code, color };
+      }
+      if (typeof slot === 'string') {
+        return { code: slot, color: '#d0d0d0' };
+      }
+      return null;
+    });
+
+    const result = normalized.slice(0, totalSlots);
+    while (result.length < totalSlots) {
+      result.push(null);
+    }
+    return result;
+  }
   function resolveLabel(role, explicitLabel) {
     if (typeof explicitLabel === 'string' && explicitLabel.length) {
       return explicitLabel;
@@ -197,3 +238,10 @@ export function createCustomerArea({ messages = [] } = {}) {
     };
   }
 }
+
+
+
+
+
+
+
