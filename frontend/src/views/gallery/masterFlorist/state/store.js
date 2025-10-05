@@ -8,7 +8,7 @@ import {
 } from './chatEngine.js';
 import { createPuzzle, evaluateGuess, normalizeGuessCodes, MASTER_FLORIST_DEFAULT_DIFFICULTY, MASTER_FLORIST_DIFFICULTY_LEVELS } from './puzzleEngine.js';
 import { buildCustomerFeedback, buildCustomerAcceptance } from './dialogueEngine.js';
-import { isSlotDisabledForLength } from './slots.js';
+import { isSlotDisabledForLength, getEnabledSlotsForLength } from './slots.js';
 
 const STORAGE_PREFIX = 'mf:';
 const SETTINGS_STORAGE_KEY = `${STORAGE_PREFIX}settings`;
@@ -153,6 +153,7 @@ export function createMasterFloristState() {
 
   resetMasterFloristCalendar(state);
   resetMasterFloristTimers(state);
+  resetSpeechBubbleState(state);
 
   startMasterFloristPuzzle(state, { mood: 'happy', seed, announce: false });
   return state;
@@ -166,6 +167,7 @@ export function resetMasterFloristState(state) {
   state.drag = null;
   state.arrangementOffsetY = 0;
   resetMasterFloristHandoff(state);
+  resetSpeechBubbleState(state);
   state.clock = { tick: 0, elapsedMs: 0, deltaMs: 0 };
   state.viewport = { ...DEFAULT_VIEWPORT };
   state.puzzleHistory = [];
@@ -318,6 +320,18 @@ export function submitMasterFloristGuess(state) {
     guess.push(null);
   }
 
+  const previousEntry = Array.isArray(state.puzzle?.history) && state.puzzle.history.length
+    ? state.puzzle.history[state.puzzle.history.length - 1]
+    : null;
+  const previousGuess = Array.isArray(previousEntry?.guess)
+    ? previousEntry.guess
+    : Array.isArray(previousEntry?.evaluation?.guess)
+      ? previousEntry.evaluation.guess
+      : null;
+  if (Array.isArray(previousGuess) && areGuessArraysEqual(previousGuess, guess)) {
+    return null;
+  }
+
   const evaluation = evaluateGuess(state.puzzle, guess);
   const entry = {
     guess: evaluation.guess,
@@ -331,13 +345,13 @@ export function submitMasterFloristGuess(state) {
   state.puzzle.history.push(entry);
 
   if (state.chatSession) {
-    recordPlayerGuess(state.chatSession, {
+    const guessEntry = recordPlayerGuess(state.chatSession, {
       puzzle: state.puzzle,
       guessCodes: evaluation.guess,
       evaluation,
       displayGuess: chatGuess,
     });
-    appendMasterFloristFeedback(state, evaluation);
+    appendMasterFloristFeedback(state, { evaluation, guessEntry });
   }
 
   syncMasterFloristChat(state);
@@ -402,25 +416,30 @@ export function startMasterFloristPuzzle(
   state.drag = null;
   state.arrangementOffsetY = 0;
   resetMasterFloristHandoff(state);
+  resetSpeechBubbleState(state);
   state.activeCustomer = activeCustomer;
   state.showButton = null;
 
   state.chatSession = createChatSession({ puzzle, customer: activeCustomer });
+  let introEntry = null;
   if (announce && activeCustomer) {
-    addCustomerPuzzleIntro(state.chatSession, { puzzle, customer: activeCustomer });
+    introEntry = addCustomerPuzzleIntro(state.chatSession, { puzzle, customer: activeCustomer });
   }
   state._chatSyncedVersion = null;
   syncMasterFloristChat(state);
+  if (introEntry) {
+    appendSpeechBubbleIntro(state, introEntry, puzzle);
+  }
 }
 
 
-export function appendMasterFloristFeedback(state, evaluation) {
-  if (!state?.chatSession || !state?.puzzle) return;
+export function appendMasterFloristFeedback(state, { evaluation, guessEntry } = {}) {
+  if (!state?.chatSession || !state?.puzzle || !evaluation) return null;
   const history = Array.isArray(state.puzzle.history) ? state.puzzle.history : [];
   const previousEntry = history.length >= 2 ? history[history.length - 2] : null;
   const previousEvaluation = previousEntry?.evaluation || null;
   const customer = state.activeCustomer || state.chatSession.customer || null;
-  const payload = evaluation?.isMatch
+  const payload = evaluation.isMatch
     ? buildCustomerAcceptance({ puzzle: state.puzzle, evaluation, previousEvaluation, customer })
     : buildCustomerFeedback({
         puzzle: state.puzzle,
@@ -428,8 +447,16 @@ export function appendMasterFloristFeedback(state, evaluation) {
         previousEvaluation,
         customer,
       });
-  addCustomerResponse(state.chatSession, payload);
+  const customerEntry = addCustomerResponse(state.chatSession, payload);
+  appendSpeechBubbleTurn(state, {
+    evaluation,
+    customerEntry,
+    guessEntry,
+    puzzle: state.puzzle,
+  });
+  return customerEntry;
 }
+
 
 export function handleMasterFloristPuzzleSuccess(state) {
   if (!state) return;
@@ -653,6 +680,19 @@ export function collapseMasterFloristSolution(solution = [], limit = MF_DROP_ZON
   return collapsed;
 }
 
+function areGuessArraysEqual(left, right) {
+  if (!Array.isArray(left) || !Array.isArray(right)) return false;
+  if (left.length !== right.length) return false;
+  for (let i = 0; i < left.length; i += 1) {
+    const a = left[i] ?? null;
+    const b = right[i] ?? null;
+    if (a !== b) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export function isMasterFloristSolutionMatch(state) {
   if (!state?.puzzle) return false;
   const slotCount = getPuzzleSlotLimit(state.puzzle);
@@ -791,6 +831,237 @@ function persistLongestStreak(value) {
   } catch {}
 }
 
+function createSpeechBubbleState() {
+  return {
+    entries: [],
+    activeIndex: 0,
+    hoverGrid: false,
+    followLatest: true,
+    bodyBounds: null,
+    gridBounds: null,
+  };
+}
+
+function ensureSpeechBubbleState(state) {
+  if (!state) return createSpeechBubbleState();
+  if (!state.speechBubble) {
+    state.speechBubble = createSpeechBubbleState();
+  }
+  return state.speechBubble;
+}
+
+export function resetSpeechBubbleState(state) {
+  if (!state) return;
+  state.speechBubble = createSpeechBubbleState();
+}
+
+export function setSpeechBubbleIndex(state, index, { userAdjusted = false } = {}) {
+  const bubble = ensureSpeechBubbleState(state);
+  const entries = bubble.entries;
+  if (!Array.isArray(entries) || entries.length === 0) {
+    const previousFollow = bubble.followLatest;
+    bubble.activeIndex = 0;
+    bubble.followLatest = true;
+    return !previousFollow;
+  }
+  const lastIndex = entries.length - 1;
+  const numericIndex = Number.isFinite(index) ? Math.floor(index) : bubble.activeIndex;
+  const target = Math.max(0, Math.min(lastIndex, numericIndex));
+  const changed = bubble.activeIndex !== target;
+  bubble.activeIndex = target;
+  if (userAdjusted) {
+    bubble.followLatest = target === lastIndex;
+  } else if (target === lastIndex) {
+    bubble.followLatest = true;
+  }
+  return changed;
+}
+
+export function adjustSpeechBubbleIndex(state, delta, { userAdjusted = false } = {}) {
+  if (!Number.isFinite(delta) || delta === 0) return false;
+  const bubble = ensureSpeechBubbleState(state);
+  if (!Array.isArray(bubble.entries) || bubble.entries.length === 0) {
+    return false;
+  }
+  const lastIndex = bubble.entries.length - 1;
+  const step = delta > 0 ? Math.ceil(delta) : Math.floor(delta);
+  const target = Math.max(0, Math.min(lastIndex, bubble.activeIndex + step));
+  return setSpeechBubbleIndex(state, target, { userAdjusted });
+}
+
+export function setSpeechBubbleHover(state, hovering) {
+  const bubble = ensureSpeechBubbleState(state);
+  const next = Boolean(hovering);
+  if (bubble.hoverGrid === next) {
+    return false;
+  }
+  bubble.hoverGrid = next;
+  return true;
+}
+
+export function loadSpeechBubbleEntrySolution(state, index, { userAdjusted = false } = {}) {
+  const bubble = ensureSpeechBubbleState(state);
+  if (!Array.isArray(bubble.entries) || bubble.entries.length === 0) {
+    return setSpeechBubbleIndex(state, index, { userAdjusted });
+  }
+  const lastIndex = bubble.entries.length - 1;
+  const numericIndex = Number.isFinite(index) ? Math.floor(index) : bubble.activeIndex;
+  const target = Math.max(0, Math.min(lastIndex, numericIndex));
+  const entry = bubble.entries[target] || null;
+  const indexChanged = setSpeechBubbleIndex(state, target, { userAdjusted });
+  const puzzle = state?.puzzle;
+  if (!puzzle || !entry || entry.kind !== 'turn') {
+    return indexChanged;
+  }
+  if (entry.puzzleId && puzzle.id && entry.puzzleId !== puzzle.id) {
+    return indexChanged;
+  }
+  if (!Array.isArray(entry.guessCodes) || entry.guessCodes.length === 0) {
+    return indexChanged;
+  }
+  const solution = puzzle.solution;
+  if (!Array.isArray(solution) || solution.length === 0) {
+    return indexChanged;
+  }
+  const slotCount = getPuzzleSlotLimit(puzzle);
+  if (slotCount <= 0) {
+    return indexChanged;
+  }
+  const normalized = normalizeGuessCodes(entry.guessCodes, slotCount);
+  const enabledSlots = getEnabledSlotsForLength(slotCount);
+  const mapped = new Array(solution.length).fill(null);
+  for (let i = 0; i < enabledSlots.length; i += 1) {
+    const slotIndex = enabledSlots[i];
+    if (slotIndex < mapped.length) {
+      mapped[slotIndex] = i < normalized.length ? normalized[i] : null;
+    }
+  }
+  let changed = false;
+  for (let i = 0; i < solution.length; i += 1) {
+    const nextValue = mapped[i] ?? null;
+    if (solution[i] !== nextValue) {
+      solution[i] = nextValue;
+      changed = true;
+    }
+  }
+  state.pendingDrops = [];
+  state.drag = null;
+  state.hoverStemId = null;
+  return changed || indexChanged;
+}
+
+function pushSpeechBubbleEntry(bubble, entry) {
+  if (!bubble || !entry) return;
+  const wasFollowing = bubble.followLatest !== false && bubble.activeIndex >= bubble.entries.length - 1;
+  bubble.entries.push(entry);
+  if (bubble.followLatest || wasFollowing) {
+    bubble.activeIndex = bubble.entries.length - 1;
+    bubble.followLatest = true;
+  }
+}
+
+function appendSpeechBubbleIntro(state, entry, puzzle) {
+  if (!state || !entry) return;
+  const formatted = formatSpeechBubbleEntry({ entry, kind: 'intro', puzzle });
+  if (!formatted) return;
+  const bubble = ensureSpeechBubbleState(state);
+  pushSpeechBubbleEntry(bubble, formatted);
+  if (Array.isArray(bubble.entries) && bubble.entries.length) {
+    setSpeechBubbleIndex(state, bubble.entries.length - 1);
+  }
+}
+
+function appendSpeechBubbleTurn(state, { evaluation, customerEntry, guessEntry, puzzle } = {}) {
+  if (!state || !customerEntry) return;
+  const formatted = formatSpeechBubbleEntry({
+    entry: customerEntry,
+    kind: 'turn',
+    puzzle,
+    evaluation,
+    guessEntry,
+  });
+  if (!formatted) return;
+  const bubble = ensureSpeechBubbleState(state);
+  pushSpeechBubbleEntry(bubble, formatted);
+  if (Array.isArray(bubble.entries) && bubble.entries.length) {
+    setSpeechBubbleIndex(state, bubble.entries.length - 1);
+  }
+}
+
+function formatSpeechBubbleEntry({ entry, kind, puzzle, evaluation, guessEntry } = {}) {
+  if (!entry) return null;
+  const text = deriveSpeechEntryText(entry);
+  const segments = cloneSpeechEntrySegments(entry);
+  const targetPuzzle = puzzle || null;
+  const slotCount = getPuzzleSlotLimit(targetPuzzle);
+  const effectiveGuessLength = slotCount > 0 ? slotCount : MF_DROP_ZONE_COUNT;
+
+  const payload = {
+    id: entry.id || `mf-speech-${Math.random().toString(16).slice(2, 8)}`,
+    kind: kind || 'turn',
+    text,
+    segments,
+    puzzleId: targetPuzzle?.id ?? null,
+    slotCount,
+    createdAt: Date.now(),
+  };
+
+  if (evaluation) {
+    payload.evaluation = {
+      exactMatches: Number(evaluation.exactMatches) || 0,
+      partialMatches: Number(evaluation.partialMatches) || 0,
+      isMatch: Boolean(evaluation.isMatch),
+      slotStates: Array.isArray(evaluation.slotStates) ? [...evaluation.slotStates] : [],
+    };
+    const guessSource = Array.isArray(evaluation.guess)
+      ? evaluation.guess
+      : Array.isArray(guessEntry?.meta?.guess)
+        ? guessEntry.meta.guess
+        : null;
+    const normalizedGuess = guessSource ? normalizeGuessCodes(guessSource, effectiveGuessLength) : null;
+    payload.guessCodes = slotCount > 0 && normalizedGuess ? normalizedGuess.slice(0, slotCount) : null;
+  } else {
+    payload.evaluation = null;
+    payload.guessCodes = null;
+  }
+
+  const displaySource = Array.isArray(guessEntry?.meta?.displayGuess) && guessEntry.meta.displayGuess.length
+    ? guessEntry.meta.displayGuess
+    : payload.guessCodes;
+
+  payload.displayGuess = displaySource ? normalizeGuessCodes(displaySource, MF_DROP_ZONE_COUNT) : null;
+
+  return payload;
+}
+
+function deriveSpeechEntryText(entry) {
+  if (!entry) return '';
+  if (typeof entry.text === 'string' && entry.text.trim().length) {
+    return entry.text.trim();
+  }
+  if (Array.isArray(entry.segments) && entry.segments.length) {
+    return entry.segments
+      .map((segment) => (typeof segment?.text === 'string' ? segment.text : ''))
+      .join('')
+      .trim();
+  }
+  return '';
+}
+
+function cloneSpeechEntrySegments(entry) {
+  if (!entry || !Array.isArray(entry.segments)) {
+    return [];
+  }
+  return entry.segments
+    .map((segment) => {
+      const text = typeof segment?.text === 'string' ? segment.text : '';
+      if (!text.length) return null;
+      const token = typeof segment?.token === 'string' ? segment.token : 'plain';
+      return { text, token };
+    })
+    .filter(Boolean);
+}
+
 function getLocalStorage() {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -799,6 +1070,14 @@ function getLocalStorage() {
   } catch {}
   return null;
 }
+
+
+
+
+
+
+
+
 
 
 

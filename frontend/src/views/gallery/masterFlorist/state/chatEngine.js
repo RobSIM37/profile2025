@@ -15,7 +15,7 @@ export function createChatSession({ puzzle = null, customer = null } = {}) {
 }
 
 export function addCustomerPuzzleIntro(session, { puzzle, customer } = {}) {
-  if (!session) return;
+  if (!session) return null;
   const effectiveCustomer = customer ?? session.customer;
   if (customer) {
     session.customer = customer;
@@ -24,40 +24,44 @@ export function addCustomerPuzzleIntro(session, { puzzle, customer } = {}) {
   const payload = buildCustomerIntro({ puzzle, customer: effectiveCustomer });
   const label = payload?.label || session.customerLabel || resolveCustomerLabel(effectiveCustomer);
   const entryPayload = { ...(payload || {}), label };
-  session.entries.push(createEntry('customer', entryPayload));
+  const entry = createEntry('customer', entryPayload);
+  session.entries.push(entry);
   bumpVersion(session);
+  return entry;
 }
 
 export function recordPlayerGuess(session, { puzzle, guessCodes, evaluation, displayGuess } = {}) {
-  if (!session) return;
+  if (!session) return null;
   const normalizedGuess = normalizeGuessCodes(guessCodes, puzzle?.slotCount);
   const normalizedDisplay = Array.isArray(displayGuess)
     ? normalizeGuessCodes(displayGuess, MF_DROP_ZONE_COUNT)
     : normalizeGuessCodes(guessCodes, MF_DROP_ZONE_COUNT);
   const gridAttachment = buildGuessGridAttachment(normalizedDisplay);
-  session.entries.push(
-    createEntry('player', {
-      text: "How's this?",
-      attachments: [gridAttachment],
-      meta: {
-        evaluation,
-        guess: normalizedGuess,
-        displayGuess: normalizedDisplay,
-      },
-    }),
-  );
+  const entry = createEntry('player', {
+    text: "How's this?",
+    attachments: [gridAttachment],
+    meta: {
+      evaluation,
+      guess: normalizedGuess,
+      displayGuess: normalizedDisplay,
+    },
+  });
+  session.entries.push(entry);
   bumpVersion(session);
+  return entry;
 }
 
 export function addCustomerResponse(session, payload) {
-  if (!session) return;
+  if (!session) return null;
   if (payload == null) return;
   const basePayload = typeof payload === 'string' ? { text: payload } : { ...payload };
   if (!basePayload.label) {
     basePayload.label = session.customerLabel || resolveCustomerLabel(session.customer);
   }
-  session.entries.push(createEntry('customer', basePayload));
+  const entry = createEntry('customer', basePayload);
+  session.entries.push(entry);
   bumpVersion(session);
+  return entry;
 }
 
 export function addSystemMessage(session, text, { label } = {}) {
@@ -175,6 +179,15 @@ function buildGuessGridAttachment(codes) {
 function bumpVersion(session) {
   session.version = (session.version ?? 0) + 1;
 }
+
+
+
+
+
+
+
+
+
 
 
 

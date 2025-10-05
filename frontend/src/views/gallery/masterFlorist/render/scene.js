@@ -73,8 +73,61 @@ const CALENDAR_LAYOUT = Object.freeze({
   width: 165,
   gap: 24,
   offsetX: 30,
-  offsetY: -110,
+  offsetY: -10,
 });
+
+
+const SPEECH_BUBBLE_LAYOUT = Object.freeze({
+  body: Object.freeze({
+    x: 10,
+    y: 10,
+    width: 355,
+    height: 120,
+    cornerRadius: 28,
+  }),
+  pointer: Object.freeze({
+    width: 90,
+    baseCenterX: 95,
+    baseY: 128,
+    tipX: 95,
+    tipY: 186,
+  }),
+  style: Object.freeze({
+    fill: 'rgba(255, 255, 255, 0.96)',
+    stroke: 'rgba(38, 31, 28, 0.35)',
+    lineWidth: 3,
+    shadowColor: 'rgba(0, 0, 0, 0.18)',
+    shadowBlur: 12,
+    shadowOffsetX: 0,
+    shadowOffsetY: 6,
+    pointerTopStroke: '#ffffff',
+    pointerTopLineWidth: 2,
+    pointerTopInset: 1,
+  }),
+});
+const SPEECH_BUBBLE_CONTENT = Object.freeze({
+  paddingX: 18,
+  paddingY: 18,
+  gap: 16,
+  textFont: '16px "Segoe UI", sans-serif',
+  textColor: '#271d17',
+  lineHeight: 20,
+  maxLines: 5,
+  indexFont: '12px "Segoe UI", sans-serif',
+  indexColor: 'rgba(39, 29, 23, 0.55)',
+  placeholder: '...'
+});
+
+const SPEECH_BUBBLE_GRID = Object.freeze({
+  columns: 3,
+  rows: 2,
+  cornerRadius: 14,
+  dotGap: 12,
+  background: 'rgba(255, 255, 255, 0.08)',
+  stroke: 'rgba(39, 29, 23, 0.25)',
+  hoverStroke: '#40ADD3'
+});
+const SPEECH_BUBBLE_GRID_SCALE = 0.5;
 
 const CALENDAR_TRANSITION_MS = 450;
 const CALENDAR_DROP_PX = 40;
@@ -364,6 +417,7 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
       ctx.save();
       ctx.drawImage(img, left, top, width, height);
       ctx.restore();
+      if (actor && actor.id === activeId) { paintSpeechBubbleForActor(actor); }
 
       const actorMetrics = { top, left, width, height, overlap: actorOverlap };
       if (shouldPaintCarriedArrangement(actor, handoffStatusForActors)) {
@@ -374,6 +428,377 @@ export function createMasterFloristRenderer({ canvas, state } = {}) {
         drawComplaintIndicator(left + width / 2, top - 10);
       }
     });
+  }
+
+  function paintSpeechBubbleForActor(actor) {
+  const layout = SPEECH_BUBBLE_LAYOUT;
+  if (!layout) return;
+
+  const bodyConfig = layout.body || {};
+  const bodyWidth = Number(bodyConfig.width) || 0;
+  const bodyHeight = Number(bodyConfig.height) || 0;
+  if (bodyWidth <= 0 || bodyHeight <= 0) return;
+
+  const bodyLeft = Number(bodyConfig.x) || 0;
+  const bodyTop = Number(bodyConfig.y) || 0;
+  const bodyRight = bodyLeft + bodyWidth;
+  const bodyBottom = bodyTop + bodyHeight;
+  const cornerRadiusRaw = Number(bodyConfig.cornerRadius);
+  const cornerRadius = Number.isFinite(cornerRadiusRaw)
+    ? Math.max(0, Math.min(cornerRadiusRaw, bodyWidth / 2, bodyHeight / 2))
+    : Math.min(28, bodyWidth / 2, bodyHeight / 2);
+
+  const pointerConfig = layout.pointer || {};
+  const pointerWidthRaw = Number(pointerConfig.width);
+  const pointerWidth =
+    Number.isFinite(pointerWidthRaw) && pointerWidthRaw > 0
+      ? pointerWidthRaw
+      : Math.min(bodyWidth / 2, 120);
+  const pointerHalfWidth = pointerWidth / 2;
+  const baseCenterRaw = Number(pointerConfig.baseCenterX);
+  const pointerBaseCenterX = Number.isFinite(baseCenterRaw)
+    ? baseCenterRaw
+    : bodyLeft + bodyWidth / 2;
+  const pointerBaseYRaw = Number(pointerConfig.baseY);
+  const pointerBaseY = Number.isFinite(pointerBaseYRaw)
+    ? pointerBaseYRaw
+    : bodyBottom;
+  const pointerTipXRaw = Number(pointerConfig.tipX);
+  const pointerTipX = Number.isFinite(pointerTipXRaw)
+    ? pointerTipXRaw
+    : pointerBaseCenterX;
+  const pointerTipYRaw = Number(pointerConfig.tipY);
+  const pointerTipY = Number.isFinite(pointerTipYRaw)
+    ? pointerTipYRaw
+    : pointerBaseY + Math.max(40, bodyHeight * 0.4);
+  const pointerBaseLeft = pointerBaseCenterX - pointerHalfWidth;
+  const pointerBaseRight = pointerBaseCenterX + pointerHalfWidth;
+
+  const style = layout.style || {};
+  const isTalkingLoopActive = actor?.state === 'activeTalking';
+
+  ctx.save();
+  ctx.fillStyle = style.fill || 'rgba(255, 255, 255, 0.95)';
+  ctx.strokeStyle = style.stroke || 'rgba(38, 31, 28, 0.35)';
+  ctx.lineWidth = style.lineWidth ?? 3;
+  ctx.shadowColor = style.shadowColor || 'rgba(0, 0, 0, 0.15)';
+  ctx.shadowBlur = style.shadowBlur ?? 10;
+  ctx.shadowOffsetX = style.shadowOffsetX ?? 0;
+  ctx.shadowOffsetY = style.shadowOffsetY ?? 4;
+
+  ctx.beginPath();
+  ctx.moveTo(bodyLeft + cornerRadius, bodyTop);
+  ctx.lineTo(bodyRight - cornerRadius, bodyTop);
+  ctx.quadraticCurveTo(bodyRight, bodyTop, bodyRight, bodyTop + cornerRadius);
+  ctx.lineTo(bodyRight, bodyBottom - cornerRadius);
+  ctx.quadraticCurveTo(bodyRight, bodyBottom, bodyRight - cornerRadius, bodyBottom);
+  ctx.lineTo(bodyLeft + cornerRadius, bodyBottom);
+  ctx.quadraticCurveTo(bodyLeft, bodyBottom, bodyLeft, bodyBottom - cornerRadius);
+  ctx.lineTo(bodyLeft, bodyTop + cornerRadius);
+  ctx.quadraticCurveTo(bodyLeft, bodyTop, bodyLeft + cornerRadius, bodyTop);
+  ctx.closePath();
+  ctx.fill();
+  if (style.stroke !== false) {
+    ctx.stroke();
+  }
+
+  if (isTalkingLoopActive) {
+    ctx.beginPath();
+    ctx.moveTo(pointerBaseLeft, pointerBaseY);
+    ctx.lineTo(pointerBaseRight, pointerBaseY);
+    ctx.lineTo(pointerTipX, pointerTipY);
+    ctx.closePath();
+    ctx.fill();
+
+    if (style.stroke !== false) {
+      ctx.save();
+      ctx.strokeStyle = style.stroke || 'rgba(38, 31, 28, 0.35)';
+      ctx.lineWidth = style.lineWidth ?? 3;
+      ctx.beginPath();
+      ctx.moveTo(pointerTipX, pointerTipY);
+      ctx.lineTo(pointerBaseLeft, pointerBaseY);
+      ctx.moveTo(pointerTipX, pointerTipY);
+      ctx.lineTo(pointerBaseRight, pointerBaseY);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    if (style.pointerTopStroke) {
+      ctx.save();
+      ctx.strokeStyle = style.pointerTopStroke;
+      ctx.lineWidth = style.pointerTopLineWidth ?? Math.max(2, ctx.lineWidth ?? 2);
+      const insetRaw = Number(style.pointerTopInset);
+      const inset = Number.isFinite(insetRaw) ? Math.max(0, insetRaw) : 0;
+      ctx.beginPath();
+      ctx.moveTo(pointerBaseLeft + inset, pointerBaseY);
+      ctx.lineTo(pointerBaseRight - inset, pointerBaseY);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  ctx.restore();
+
+  const bubbleState = gameState?.speechBubble || null;
+  let activeEntry = null;
+  let activeIndex = 0;
+  let totalEntries = 0;
+  let hoverGrid = false;
+  if (bubbleState) {
+    const entries = Array.isArray(bubbleState.entries) ? bubbleState.entries : [];
+    totalEntries = entries.length;
+    if (totalEntries > 0) {
+      activeIndex = Math.max(0, Math.min(totalEntries - 1, bubbleState.activeIndex ?? 0));
+      activeEntry = entries[activeIndex] || null;
+    }
+    hoverGrid = Boolean(bubbleState.hoverGrid);
+  }
+
+  const contentMetrics = renderSpeechBubbleEntryContent({
+    entry: activeEntry,
+    bodyBounds: { left: bodyLeft, top: bodyTop, width: bodyWidth, height: bodyHeight },
+    activeIndex,
+    totalEntries,
+    hoverGrid,
+  });
+
+  if (bubbleState) {
+    bubbleState.bodyBounds = { x: bodyLeft, y: bodyTop, width: bodyWidth, height: bodyHeight };
+    bubbleState.gridBounds = contentMetrics?.gridBounds || null;
+  }
+}
+
+
+  function renderSpeechBubbleEntryContent({ entry, bodyBounds, activeIndex = 0, totalEntries = 0, hoverGrid = false }) {
+    if (!bodyBounds) {
+      return null;
+    }
+    const paddingX = SPEECH_BUBBLE_CONTENT.paddingX;
+    const paddingY = SPEECH_BUBBLE_CONTENT.paddingY;
+    const gap = SPEECH_BUBBLE_CONTENT.gap;
+    const lineHeight = SPEECH_BUBBLE_CONTENT.lineHeight;
+
+    const innerWidth = Math.max(0, bodyBounds.width - paddingX * 2);
+    const innerHeight = Math.max(0, bodyBounds.height - paddingY * 2);
+
+    let entryText = getSpeechEntryText(entry) || SPEECH_BUBBLE_CONTENT.placeholder;
+    const pageLabel = totalEntries > 1 ? ` (${activeIndex + 1}/${totalEntries})` : '';
+    if (pageLabel) {
+      entryText = entryText.length ? `${entryText}${pageLabel}` : pageLabel.trim();
+    }
+    const hasGuess = entry && Array.isArray(entry.displayGuess) && entry.displayGuess.some((code) => code != null);
+
+    let textWidth = innerWidth;
+    let gridBounds = null;
+    if (hasGuess && innerWidth > 120) {
+      const proposedGridWidth = Math.min(140, Math.max(110, innerWidth * 0.42));
+      const scaledGridWidth = proposedGridWidth * SPEECH_BUBBLE_GRID_SCALE;
+      const scaledGridHeight = innerHeight * SPEECH_BUBBLE_GRID_SCALE;
+      const remainingWidth = innerWidth - scaledGridWidth - gap;
+      if (remainingWidth >= 120 && scaledGridWidth > 0) {
+        const verticalInset = (innerHeight - scaledGridHeight) / 2;
+        gridBounds = {
+          x: bodyBounds.left + bodyBounds.width - paddingX - scaledGridWidth,
+          y: bodyBounds.top + paddingY + Math.max(0, verticalInset),
+          width: scaledGridWidth,
+          height: Math.max(0, scaledGridHeight),
+        };
+        textWidth = gridBounds.x - gap - (bodyBounds.left + paddingX);
+      }
+    }
+
+    const textBounds = {
+      x: bodyBounds.left + paddingX,
+      y: bodyBounds.top + paddingY,
+      width: Math.max(0, textWidth),
+      height: innerHeight,
+    };
+
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    ctx.font = SPEECH_BUBBLE_CONTENT.textFont;
+    ctx.fillStyle = SPEECH_BUBBLE_CONTENT.textColor;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    const wrappedLines = wrapSpeechBubbleText(entryText, textBounds.width, SPEECH_BUBBLE_CONTENT.maxLines);
+    let currentY = textBounds.y;
+    for (let i = 0; i < wrappedLines.length; i += 1) {
+      ctx.fillText(wrappedLines[i], textBounds.x, currentY);
+      currentY += lineHeight;
+    }
+
+    if (gridBounds) {
+      drawSpeechBubbleGuessGrid(entry.displayGuess, gridBounds, hoverGrid);
+    }
+
+
+    ctx.restore();
+
+    return { textBounds, gridBounds };
+  }
+
+  function getSpeechEntryText(entry) {
+    if (!entry) return '';
+    if (typeof entry.text === 'string' && entry.text.trim().length) {
+      return entry.text.trim();
+    }
+    if (Array.isArray(entry.segments) && entry.segments.length) {
+      return entry.segments
+        .map((segment) => (typeof segment?.text === 'string' ? segment.text : ''))
+        .join('')
+        .trim();
+    }
+    return '';
+  }
+
+  function wrapSpeechBubbleText(text, maxWidth, maxLines) {
+    if (!text || !text.length || maxWidth <= 0) {
+      return [];
+    }
+    const words = text.split(/\s+/).filter(Boolean);
+    const lines = [];
+    let current = '';
+    for (let i = 0; i < words.length; i += 1) {
+      const word = words[i];
+      const candidate = current ? current + ' ' + word : word;
+      if (ctx.measureText(candidate).width <= maxWidth) {
+        current = candidate;
+      } else {
+        if (current) {
+          lines.push(current);
+        }
+        if (ctx.measureText(word).width <= maxWidth) {
+          current = word;
+        } else {
+          const fragments = breakSpeechBubbleWord(word, maxWidth);
+          if (fragments.length) {
+            const lastFragment = fragments.pop();
+            lines.push(...fragments);
+            current = lastFragment;
+          } else {
+            current = word;
+          }
+        }
+      }
+      if (lines.length === maxLines) {
+        current = '';
+        break;
+      }
+    }
+    if (current) {
+      lines.push(current);
+    }
+
+    if (lines.length > maxLines) {
+      lines.length = maxLines;
+    }
+
+    if (lines.length === maxLines) {
+      let last = lines[maxLines - 1];
+      const ellipsis = '…';
+      while (last.length && ctx.measureText(last + ellipsis).width > maxWidth) {
+        last = last.slice(0, -1);
+      }
+      lines[maxLines - 1] = last.trimEnd() + ellipsis;
+    }
+
+    return lines;
+  }
+
+  function breakSpeechBubbleWord(word, maxWidth) {
+    const fragments = [];
+    let buffer = '';
+    for (let i = 0; i < word.length; i += 1) {
+      const char = word.charAt(i);
+      const nextCandidate = buffer + char;
+      if (ctx.measureText(nextCandidate).width <= maxWidth || buffer.length === 0) {
+        buffer = nextCandidate;
+      } else {
+        fragments.push(buffer);
+        buffer = char;
+      }
+    }
+    if (buffer) {
+      fragments.push(buffer);
+    }
+    return fragments;
+  }
+
+  function drawSpeechBubbleGuessGrid(codes, bounds, isHovered) {
+    const columns = SPEECH_BUBBLE_GRID.columns;
+    const rows = SPEECH_BUBBLE_GRID.rows;
+    const totalSlots = columns * rows;
+    const normalizedCodes = normalizeSpeechBubbleGuess(codes, totalSlots);
+    const scale = SPEECH_BUBBLE_GRID_SCALE;
+
+    ctx.save();
+    ctx.shadowColor = 'transparent';
+    const cornerRadius = Math.max(2, SPEECH_BUBBLE_GRID.cornerRadius * scale);
+    const hoverStrokeWidth = Math.max(1, 2 * scale);
+    const idleStrokeWidth = Math.max(1, 1.5 * scale);
+    roundRect(
+      ctx,
+      bounds.x,
+      bounds.y,
+      bounds.width,
+      bounds.height,
+      cornerRadius,
+      true,
+      true,
+      {
+        fillStyle: SPEECH_BUBBLE_GRID.background,
+        strokeStyle: isHovered ? SPEECH_BUBBLE_GRID.hoverStroke : SPEECH_BUBBLE_GRID.stroke,
+        lineWidth: isHovered ? hoverStrokeWidth : idleStrokeWidth,
+      },
+    );
+
+    const gap = Math.max(0, SPEECH_BUBBLE_GRID.dotGap * scale);
+    const availableWidth = Math.max(0, bounds.width - gap * (columns - 1));
+    const availableHeight = Math.max(0, bounds.height - gap * (rows - 1));
+    const cellWidth = columns > 0 ? availableWidth / columns : 0;
+    const cellHeight = rows > 0 ? availableHeight / rows : 0;
+    const diameter = Math.max(0, Math.min(cellWidth, cellHeight));
+    const radius = Math.max(0.5, diameter * 0.45);
+
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < columns; col += 1) {
+        const index = row * columns + col;
+        const code = normalizedCodes[index];
+        const centerX = bounds.x + col * (cellWidth + gap) + cellWidth / 2;
+        const centerY = bounds.y + row * (cellHeight + gap) + cellHeight / 2;
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        if (code) {
+          const meta = getFlowerMeta(code);
+          ctx.fillStyle = meta.color || '#d0d0d0';
+          ctx.fill();
+        } else {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+          ctx.fill();
+        }
+        ctx.lineWidth = Math.max(0.5, 1.5 * scale);
+        ctx.strokeStyle = code ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.12)';
+        ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  function normalizeSpeechBubbleGuess(codes, totalSlots) {
+    const result = new Array(totalSlots).fill(null);
+    if (!Array.isArray(codes)) {
+      return result;
+    }
+    for (let i = 0; i < totalSlots; i += 1) {
+      const code = codes[i];
+      if (typeof code === 'string' && code.trim().length) {
+        result[i] = code.trim().toLowerCase();
+      }
+    }
+    return result;
   }
 
   function selectActorFrame(actor) {
@@ -1326,6 +1751,18 @@ function createCalendarNumberSprite(meta) {
     },
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
