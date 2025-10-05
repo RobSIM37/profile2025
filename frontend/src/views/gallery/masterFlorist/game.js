@@ -1,4 +1,3 @@
-import { createCustomerArea } from './components/customerArea.js';
 import { createWorkingArea } from './components/workingArea.js';
 import { makeGallerySubheader } from '../../../components/ui/subheader.js';
 import { openModal } from '../../../components/ui/modal.js';
@@ -50,10 +49,9 @@ export function render() {
   const section = document.createElement('section');
   section.className = 'stack mf-game-section';
 
-  const customerArea = createCustomerArea();
   const { workingArea, canvasHost, canvasElement } = createWorkingArea();
 
-  section.append(workingArea, customerArea.root);
+  section.append(workingArea);
   layout.append(section);
   frag.append(layout);
 
@@ -89,7 +87,6 @@ export function render() {
       },
     });
   };
-  state.customerUi = customerArea;
   syncMasterFloristChat(state);
 
   const renderer = createMasterFloristRenderer({ canvas: canvasElement, state });
@@ -143,7 +140,6 @@ export function render() {
       loop.start();
     }
     const changed = setLoopRunning(true);
-    customerArea.setPaused?.(false);
     if (changed) {
       renderer.render();
     }
@@ -153,7 +149,6 @@ export function render() {
     if (loop.isRunning) {
       loop.stop();
     }
-    customerArea.setPaused?.(true);
 
     let changed = setLoopRunning(false);
     if (state.drag) {
@@ -196,7 +191,7 @@ export function render() {
   let paradeReady = false;
   loadCustomerSpriteLibrary()
     .then((library) => {
-      initializeCustomerParade(state, { spriteLibrary: library, chat: customerArea });
+      initializeCustomerParade(state, { spriteLibrary: library });
       paradeReady = true;
       renderer.render();
       syncMasterFloristChat(state);
@@ -230,7 +225,6 @@ export function render() {
     unsubscribe();
     loop.dispose();
     state.loopRunning = false;
-    customerArea.setPaused?.(false);
     sizer.unmount();
     controller.unmount();
     renderer.dispose();
