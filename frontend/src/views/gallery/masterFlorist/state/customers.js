@@ -42,9 +42,9 @@ const FOOT_TRAFFIC_INTERVALS = {
 };
 
 const FOOT_TRAFFIC_SPAWN_CHANCE = {
-  relaxed: 0.10,
-  steady: 0.14,
-  brisk: 0.18,
+  relaxed: 0.8,
+  steady: 0.12,
+  brisk: 0.14,
 };
 
 const FOOT_TRAFFIC_PATIENCE_MULTIPLIERS = Object.freeze({
