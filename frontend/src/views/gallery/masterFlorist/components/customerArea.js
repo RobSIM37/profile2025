@@ -143,12 +143,12 @@ export function createCustomerArea({ messages = [] } = {}) {
     const grid = document.createElement('div');
     grid.className = 'mf-chat-guess-grid';
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(' + columns + ', 20px)';
-    grid.style.gridAutoRows = '20px';
-    grid.style.columnGap = '8px';
-    grid.style.rowGap = '8px';
-    grid.style.padding = '8px';
-    grid.style.borderRadius = '12px';
+    grid.style.gridTemplateColumns = 'repeat(' + columns + ', 10px)';
+    grid.style.gridAutoRows = '10px';
+    grid.style.columnGap = '4px';
+    grid.style.rowGap = '4px';
+    grid.style.padding = '4px';
+    grid.style.borderRadius = '6px';
     grid.style.background = 'rgba(255, 255, 255, 0.08)';
     grid.style.alignItems = 'center';
     grid.style.justifyItems = 'center';
@@ -158,8 +158,8 @@ export function createCustomerArea({ messages = [] } = {}) {
     for (let i = 0; i < totalSlots; i += 1) {
       const slot = slots[i];
       const cell = document.createElement('div');
-      cell.style.width = '20px';
-      cell.style.height = '20px';
+      cell.style.width = '10px';
+      cell.style.height = '10px';
       cell.style.display = 'flex';
       cell.style.alignItems = 'center';
       cell.style.justifyContent = 'center';
@@ -168,8 +168,8 @@ export function createCustomerArea({ messages = [] } = {}) {
         const dot = document.createElement('span');
         dot.className = 'mf-chat-guess-dot';
         dot.style.display = 'inline-block';
-        dot.style.width = '18px';
-        dot.style.height = '18px';
+        dot.style.width = '9px';
+        dot.style.height = '9px';
         dot.style.borderRadius = '50%';
         dot.style.background = slot.color || '#d0d0d0';
         dot.style.boxShadow = '0 0 0 1px rgba(0, 0, 0, 0.2)';
@@ -255,6 +255,7 @@ export function createCustomerArea({ messages = [] } = {}) {
     };
   }
 }
+
 
 
 

@@ -24,7 +24,7 @@
             "rules": {
                 "omit_zero_exact": true,
                 "omit_zero_misplaced": true,
-                "omit_zero_wrong": false
+                "omit_zero_wrong": true
             }
         },
         "glue": {

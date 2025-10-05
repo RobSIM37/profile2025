@@ -28,7 +28,7 @@ export function buildCustomerFeedback({ puzzle, evaluation, previousEvaluation, 
   const tone = resolveTone(counts.wrong, previousWrong, slotCount);
   const turnIndex = resolveTurnIndex(puzzle);
   const rng = createTurnRng(puzzle, turnIndex);
-  const allowFiller = turnIndex === 0;
+  const allowFiller = turnIndex > 1;
   const responseText = buildResponseText({ personaKey, mood, tone, counts, rng, allowFiller });
   return createPayload(responseText);
 }
@@ -42,7 +42,7 @@ export function buildCustomerAcceptance({ puzzle, evaluation, previousEvaluation
   const tone = counts.wrong === 0 ? 'positive' : resolveTone(counts.wrong, previousWrong, slotCount);
   const turnIndex = resolveTurnIndex(puzzle);
   const rng = createTurnRng(puzzle, turnIndex);
-  const allowFiller = turnIndex === 0;
+  const allowFiller = turnIndex > 1;
   const responseText = buildResponseText({ personaKey, mood, tone, counts, rng, allowFiller });
   return createPayload(responseText);
 }
@@ -293,13 +293,34 @@ function clampCount(value, max) {
 
 function resolvePersonaKey(customer) {
   const filler = CONFIG.filler || {};
-  const sheet = typeof customer?.sheet === 'string' ? customer.sheet.trim().toLowerCase() : '';
-  if (sheet && filler[sheet]) return sheet;
-  if (sheet) {
-    const prefix = sheet.split('_')[0];
-    if (prefix && filler[prefix]) return prefix;
+  const candidates = [];
+  const persona = typeof customer?.persona === 'string' ? customer.persona.trim().toLowerCase() : '';
+  if (persona) {
+    candidates.push(persona);
   }
-  return filler.default ? 'default' : '';
+  const sheet = typeof customer?.sheet === 'string' ? customer.sheet.trim().toLowerCase() : '';
+  if (sheet) {
+    candidates.push(sheet);
+    const parts = sheet.split('_').filter(Boolean);
+    if (parts.length > 1) {
+      const tail = parts.slice(1).join('_');
+      if (tail) candidates.push(tail);
+    }
+    const last = parts[parts.length - 1];
+    if (last) candidates.push(last);
+  }
+  if (filler.default) {
+    candidates.push('default');
+  }
+  const seen = new Set();
+  for (const key of candidates) {
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    if (filler[key]) {
+      return key;
+    }
+  }
+  return '';
 }
 
 function resolveTurnIndex(puzzle) {

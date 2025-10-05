@@ -1,4 +1,4 @@
-import {
+﻿import {
   SLOT_POSITIONS,
   SLOT_SIZE,
   SOURCE_BOXES,
@@ -6,7 +6,16 @@ import {
   SLOT_CLICK_BOUNDS,
   isSlotDisabledForLength,
 } from '../state/slots.js';
-import { hasActiveMasterFloristCustomer, updateMasterFloristSolution, setMasterFloristDrag, updateMasterFloristDrag, isMasterFloristHandoffActive } from '../state/store.js';
+import {
+  hasActiveMasterFloristCustomer,
+  updateMasterFloristSolution,
+  setMasterFloristDrag,
+  updateMasterFloristDrag,
+  isMasterFloristHandoffActive,
+  adjustSpeechBubbleIndex,
+  loadSpeechBubbleEntrySolution,
+  setSpeechBubbleHover,
+} from '../state/store.js';
 
 const FLOWER_KEY_BINDINGS = Object.freeze({
   a: 'r',
@@ -51,6 +60,7 @@ export function createMasterFloristCanvasController({
     bind(canvas, 'pointermove', handlePointerMove);
     bind(canvas, 'pointerup', handlePointerUp);
     bind(canvas, 'pointerleave', handlePointerLeave);
+    bind(canvas, 'wheel', handleWheel, { passive: false });
     const keyTarget = canvas?.ownerDocument || (typeof document !== 'undefined' ? document : null);
     if (keyTarget) {
       bind(keyTarget, 'keydown', handleKeyDown, { passive: false });
@@ -88,6 +98,15 @@ export function createMasterFloristCanvasController({
 
   function handlePointerDown(event) {
     const point = mapPointer(event);
+    const bubbleResult = handleSpeechBubblePointerDown(point);
+    if (bubbleResult.handled) {
+      if (bubbleResult.changed) {
+        onStateChange?.();
+      }
+      event.preventDefault();
+      return;
+    }
+
     const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
     const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
     const loopButton = state?.loopButton;
@@ -172,26 +191,18 @@ export function createMasterFloristCanvasController({
   }
 
   function handlePointerMove(event) {
+    const point = mapPointer(event);
+    const hoverChanged = updateSpeechBubbleHover(point);
+
     if (isInteractionLocked()) {
-      return;
-    }
-    if (isLoopPaused()) {
-      let changed = false;
-      if (state.hoverStemId != null) {
-        state.hoverStemId = null;
-        changed = true;
-      }
-      if (state.drag) {
-        setMasterFloristDrag(state, null);
-        changed = true;
-      }
-      if (changed) {
+      if (hoverChanged) {
         onStateChange?.();
       }
       return;
     }
-    if (!hasActiveMasterFloristCustomer(state)) {
-      let changed = false;
+
+    if (isLoopPaused()) {
+      let changed = hoverChanged;
       if (state.hoverStemId != null) {
         state.hoverStemId = null;
         changed = true;
@@ -206,22 +217,45 @@ export function createMasterFloristCanvasController({
       return;
     }
 
-    const point = mapPointer(event);
+    if (!hasActiveMasterFloristCustomer(state)) {
+      let changed = hoverChanged;
+      if (state.hoverStemId != null) {
+        state.hoverStemId = null;
+        changed = true;
+      }
+      if (state.drag) {
+        setMasterFloristDrag(state, null);
+        changed = true;
+      }
+      if (changed) {
+        onStateChange?.();
+      }
+      return;
+    }
+
     const arrangementOffsetY = state?.arrangementOffsetY ?? 0;
     const arrangementPoint = { x: point.x, y: point.y - arrangementOffsetY };
     const slotCount = resolveActiveSlotLimit();
     const hoverIndex = findSlotIndex(arrangementPoint.x, arrangementPoint.y, slotCount);
-    state.hoverStemId = hoverIndex != null ? 'slot-' + hoverIndex : null;
+    const nextHoverId = hoverIndex != null ? 'slot-' + hoverIndex : null;
+    let changed = hoverChanged;
+
+    if (state.hoverStemId !== nextHoverId) {
+      state.hoverStemId = nextHoverId;
+      changed = true;
+    }
 
     if (state.drag && (state.drag.pointerId == null || state.drag.pointerId === event.pointerId)) {
       updateMasterFloristDrag(state, { x: point.x, y: point.y });
+      changed = true;
       onStateChange?.();
       return;
     }
 
-    onStateChange?.();
+    if (changed) {
+      onStateChange?.();
+    }
   }
-
   function handlePointerUp(event) {
     canvas.releasePointerCapture?.(event.pointerId);
     const point = mapPointer(event);
@@ -317,17 +351,28 @@ export function createMasterFloristCanvasController({
   }
 
   function handlePointerLeave() {
+    const hoverChanged = setSpeechBubbleHover(state, false);
     if (!hasActiveMasterFloristCustomer(state) || isLoopPaused()) {
+      let changed = hoverChanged;
       if (state.hoverStemId != null) {
         state.hoverStemId = null;
+        changed = true;
+      }
+      if (changed) {
         onStateChange?.();
       }
       return;
     }
-    state.hoverStemId = null;
-    onStateChange?.();
-  }
 
+    let changed = hoverChanged;
+    if (state.hoverStemId != null) {
+      state.hoverStemId = null;
+      changed = true;
+    }
+    if (changed) {
+      onStateChange?.();
+    }
+  }
   function handleKeyDown(event) {
     const key = typeof event.key === 'string' ? event.key : '';
     const normalized = key.length === 1 ? key.toLowerCase() : key.toLowerCase();
@@ -475,6 +520,56 @@ export function createMasterFloristCanvasController({
     canvas.setAttribute('data-announce', String(message));
   }
 
+  function handleWheel(event) {
+    if (!event) return;
+    const bubble = state?.speechBubble;
+    if (!bubble?.bodyBounds) return;
+    const point = mapPointer(event);
+    if (!isPointInButton(bubble.bodyBounds, point)) return;
+    const deltaY = event.deltaY;
+    if (!Number.isFinite(deltaY) || deltaY === 0) return;
+    const changed = adjustSpeechBubbleIndex(state, deltaY > 0 ? 1 : -1, { userAdjusted: true });
+    if (changed) {
+      onStateChange?.();
+    }
+    event.preventDefault();
+  }
+
+  function handleSpeechBubblePointerDown(point) {
+    const bubble = state?.speechBubble;
+    if (!bubble?.bodyBounds) {
+      const hoverChanged = setSpeechBubbleHover(state, false);
+      return { handled: false, changed: hoverChanged };
+    }
+    const inBody = isPointInButton(bubble.bodyBounds, point);
+    if (!inBody) {
+      const hoverChanged = setSpeechBubbleHover(state, false);
+      return { handled: false, changed: hoverChanged };
+    }
+    const gridBounds = bubble.gridBounds;
+    const inGrid = gridBounds && isPointInButton(gridBounds, point);
+    const hoverChanged = setSpeechBubbleHover(state, inGrid);
+    if (inGrid) {
+      const loaded = loadSpeechBubbleEntrySolution(state, bubble.activeIndex, { userAdjusted: true });
+      return { handled: true, changed: hoverChanged || loaded };
+    }
+    return { handled: true, changed: hoverChanged };
+  }
+
+  function updateSpeechBubbleHover(point) {
+    const bubble = state?.speechBubble;
+    if (!bubble?.bodyBounds) {
+      return setSpeechBubbleHover(state, false);
+    }
+    const inBody = isPointInButton(bubble.bodyBounds, point);
+    if (!inBody) {
+      return setSpeechBubbleHover(state, false);
+    }
+    const gridBounds = bubble.gridBounds;
+    const inGrid = gridBounds && isPointInButton(gridBounds, point);
+    return setSpeechBubbleHover(state, inGrid);
+  }
+
   return { mount, unmount, reset };
 }
 
@@ -543,3 +638,33 @@ function isPointInShowButton(button, point) {
 function isPointInLoopButton(button, point) {
   return isPointInButton(button, point);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
