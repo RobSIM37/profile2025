@@ -309,9 +309,6 @@ function resolvePersonaKey(customer) {
     const last = parts[parts.length - 1];
     if (last) candidates.push(last);
   }
-  if (filler.default) {
-    candidates.push('default');
-  }
   const seen = new Set();
   for (const key of candidates) {
     if (!key || seen.has(key)) continue;

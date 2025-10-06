@@ -8,18 +8,18 @@
         "clauses": {
             "exact": [
                 "{exact} {is_are(exact)} exactly right",
-                "{exact} stem{plural_s(exact)} landed in the right spot",
-                "{exact} {was_were(exact)} perfect"
+                "{exact} stem{plural_s(exact)} work perfecly",
+                "{exact} {is_are(exact)} perfect"
             ],
             "misplaced": [
                 "{misplaced} {is_are(misplaced)} right but in the wrong spot",
                 "{misplaced} stem{plural_s(misplaced)} {is_are(misplaced)} in the wrong place",
-                "{misplaced} {was_were(misplaced)} close, wrong position"
+                "{misplaced} {is_are(misplaced)} close, but not quite there"
             ],
             "wrong": [
                 "{wrong} {is_are(wrong)} completely off",
                 "{wrong} stem{plural_s(wrong)} {dont_doesnt(wrong)} belong here",
-                "{wrong} {was_were(wrong)} not right for what I was thinking"
+                "{wrong} {is_are(wrong)} totally wrong"
             ],
             "rules": {
                 "omit_zero_exact": true,
@@ -50,51 +50,51 @@
             "happy": {
                 "requests": {
                     "prefixes": [
-                        "I'm feeling easy to please.",
-                        "I'm in a good mood.",
-                        "I trust your hands."
+                        "Hi there!",
+                        "Hi!",
+                        "Hello!"
                     ],
                     "suffixes": [
-                        "Surprise me, but keep it tidy.",
-                        "Let's make this pleasant.",
-                        "Make it feel effortless."
+                        "Thanks!",
+                        "Thank you!",
+                        "So exciting!"
                     ]
                 },
                 "responses": {
                     "positive": {
                         "prefixes": [
-                            "Nice—heading the right way.",
-                            "I like that adjustment.",
-                            "You tightened it up."
-                        ],
-                        "suffixes": [
-                            "Keep pushing like that.",
-                            "Do that again.",
-                            "We're closing in."
-                        ]
+                        "Looking good!",
+                        "Wow!",
+                        "Yay!!"
+                    ],
+                    "suffixes": [
+                        "It's getting there!",
+                        "Almost perfect.",
+                        "I like your style."
+                    ]
                     },
                     "neutral": {
                         "prefixes": [
-                            "Hmm, about the same.",
-                            "No better, no worse.",
-                            "We're holding steady."
+                            "Ok!",
+                            "Yep!",
+                            "Yeah."
                         ],
                         "suffixes": [
-                            "Try a bolder change.",
-                            "Nudge a few pieces.",
-                            "Let's mix it up."
+                            "We'll get there!",
+                            "Try Again!",
+                            "Keep going!"
                         ]
                     },
                     "negative": {
                         "prefixes": [
-                            "That's a step back.",
-                            "We drifted off.",
-                            "You lost ground there."
+                            "Oh no!",
+                            "Uh Oh!",
+                            "Oops!"
                         ],
                         "suffixes": [
-                            "Pull it back in.",
-                            "Refocus and correct.",
-                            "Let's fix that fast."
+                            "That was a setback!",
+                            "Go back!",
+                            "Retrace your steps!"
                         ]
                     }
                 }
