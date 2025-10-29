@@ -1005,7 +1005,36 @@ function finishGame(state, winnerIdx, status, hud) {
         try { sessionStorage.setItem('pf:chosen', '1'); } catch {}
         const firstPlayer = Math.random() < 0.5 ? '0' : '1';
         try { sessionStorage.setItem('pf:start-player', firstPlayer); } catch {}
-        location.hash = '#/gallery/predict-four/game';
+        const baseRoute = '#/gallery/predict-four/game';
+        const restartHash = `${baseRoute}?restart=${Date.now()}`;
+        if (location.hash !== restartHash) {
+          location.hash = restartHash;
+        } else {
+          let manualEventDispatched = false;
+          try {
+            window.dispatchEvent(new HashChangeEvent('hashchange', {
+              newURL: window.location.href,
+              oldURL: window.location.href,
+            }));
+            manualEventDispatched = true;
+          } catch {}
+          if (!manualEventDispatched) {
+            try { window.dispatchEvent(new Event('hashchange')); } catch {}
+          }
+        }
+        try {
+          setTimeout(() => {
+            try {
+              if (
+                window.location.hash.startsWith(baseRoute) &&
+                window.history &&
+                typeof window.history.replaceState === 'function'
+              ) {
+                window.history.replaceState(null, '', baseRoute);
+              }
+            } catch {}
+          }, 0);
+        } catch {}
       },
     },
     {
