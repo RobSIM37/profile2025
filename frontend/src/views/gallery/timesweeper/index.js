@@ -315,8 +315,16 @@ export function render(){
   }
 
   function asEl(t){ return t && t.nodeType === 3 ? t.parentElement : t; }
-  boardHost.addEventListener('click', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; onCellPrimary(b.dataset.x|0, b.dataset.y|0); });
-  boardHost.addEventListener('contextmenu', (e)=>{ if (gameOver) return; const el = asEl(e.target); const b = el && el.closest ? el.closest('.ts-cell') : null; if(!b) return; e.preventDefault(); onCellFlag(b.dataset.x|0, b.dataset.y|0); });
+  boardHost.addEventListener('mousedown', (e)=>{
+    if (gameOver) return;
+    const el = asEl(e.target);
+    const b = el && el.closest ? el.closest('.ts-cell') : null;
+    if(!b) return;
+    const x = b.dataset.x|0;
+    const y = b.dataset.y|0;
+    if (e.button === 0) { onCellPrimary(x, y); }
+    else if (e.button === 2) { e.preventDefault(); onCellFlag(x, y); }
+  });
 
   // Modal buttons are now handled via openModal actions
 
